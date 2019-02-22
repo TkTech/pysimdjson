@@ -18,12 +18,28 @@ cdef class ParsedJson:
                 raise JSONDecodeError
 
     def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):
+        """Resize the document buffer to `size` bytes."""
         return self.pj.allocateCapacity(size, max_depth)
 
     def parse(self, source):
+        """Parse the given document (as bytes).
+
+            .. note::
+
+                It's up to the caller to ensure that allocate_capacity has been
+                called with a sufficiently large size before this method is
+                called.
+
+        :param source: The document to be parsed.
+        :ptype source: bytes
+        :returns: True on success, else False.
+        """
         return json_parse(source, len(source), self.pj, True)
 
     def to_obj(self):
+        """Recursively convert a parsed json document to a Python object and
+        return it.
+        """
         iter = new CParsedJson.iterator(self.pj)
         try:
             if not iter.isOk():
