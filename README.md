@@ -30,6 +30,24 @@ with open('sample.json', 'rb') as fin:
     doc = pysimdjson.loads(fin.read())
 ```
 
+However, this doesn't really gain you that much over, say, ujson. You're still
+loading the entire document and converting the entire thing into a series of
+Python objects which is very expensive. You can use the lower-level interface
+to select only what you need and convert only those objects to Python.
+
+```python
+import pysimdjson
+
+with open('sample.json', 'rb') as fin:
+    # Calling ParsedJson with a document is a shortcut for
+    # calling pj.allocate_capacity(<size>) and pj.parse(<doc>). If you're
+    # parsing many JSON documents of similar sizes, you can allocate
+    # a large buffer just once and keep re-using it instead.
+    pj = pysimdjson.ParsedJson(fin.read())
+
+    doc = pj.items('country.name')
+```
+
 ## AVX2
 
 simdjson requires AVX2 support to function. Check to see if your OS/processor supports it:
