@@ -1,6 +1,7 @@
 # cython: language_level=2
 from json import JSONDecodeError
 from pysimdjson cimport CParsedJson, json_parse
+from cpython.dict cimport PyDict_SetItem
 
 cdef int DEFAULT_MAX_DEPTH = 1024
 
@@ -15,7 +16,13 @@ cdef class ParsedJson:
                 raise MemoryError
 
             if not self.parse(source):
-                raise JSONDecodeError
+                # We have no idea what really went wrong, simdjson oddly just
+                # writes to cerr instead of setting any kind of error codes.
+                raise JSONDecodeError(
+                    'Error parsing document', 
+                    source.decode('utf-8'),
+                    0
+                )
 
     def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):
         """Resize the document buffer to `size` bytes."""
@@ -44,7 +51,7 @@ cdef class ParsedJson:
         try:
             if not iter.isOk():
                 # Prooooably not the right exception
-                raise JSONDecodeError
+                raise JSONDecodeError('Error iterating over document', '', 0)
             return self._to_obj(iter)
         finally:
             del iter
@@ -78,7 +85,7 @@ cdef class ParsedJson:
                     k = iter.get_string().decode('utf-8')
                     iter.next()
                     v = self._to_obj(iter)
-                    d[k] = v
+                    PyDict_SetItem(d, k, v)
 
                     if not iter.next():
                         break
