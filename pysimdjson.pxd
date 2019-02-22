@@ -21,6 +21,7 @@ cdef extern from 'simdjson.h':
             inline bool next()
             inline bool down()
             inline bool up()
+            bool move_to_key(const char*)
             inline uint8_t get_type()
 
             bool is_object_or_array()

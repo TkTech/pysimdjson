@@ -3,6 +3,7 @@ from json import JSONDecodeError
 from pysimdjson cimport CParsedJson, json_parse
 from cpython.dict cimport PyDict_SetItem
 
+#: Maximum default depth used when allocating capacity.
 cdef int DEFAULT_MAX_DEPTH = 1024
 
 
@@ -105,6 +106,75 @@ cdef class ParsedJson:
         elif t == 'n':
             return None
 
+    def items(self, prefix):
+        """Similar to the ijson.items() interface, this method allows you to
+        extract part of a document without converting the entire document to
+        Python objects, which is very expensive.
+        """
+        cdef list parsed_prefix = parse_prefix(prefix)
+        iter = new CParsedJson.iterator(self.pj)
+        try:
+            if not iter.isOk():
+                raise JSONDecodeError('Error iterating over document', '', 0)
+
+            for key in parsed_prefix:
+                if not iter.move_to_key(key):
+                    return None
+
+            return self._to_obj(iter)
+        finally:
+            del iter
+
 
 def loads(s):
     return ParsedJson(s).to_obj()
+
+
+#: State machine states for parsing item() query strings.
+cdef enum:
+    Q_UNQUOTED = 10
+    Q_QUOTED = 20
+    Q_ESCAPE = 30
+
+
+cpdef list parse_prefix(prefix):
+    cdef int current_state = Q_UNQUOTED
+    cdef list result = []
+    cdef list buff = []
+
+    for c in prefix:
+        if current_state == Q_UNQUOTED:
+            # Unquoted string
+            if c == '"':
+                current_state = Q_QUOTED
+            elif c == '.':
+                if buff:
+                    result.append(''.join(buff).encode('utf-8'))
+                    del buff[:]
+            else:
+                buff.append(c)
+        elif current_state == Q_QUOTED:
+            # Quoted string
+            if c == '\\':
+                current_state = Q_ESCAPE
+            elif c == '"':
+                current_state = Q_UNQUOTED
+                result.append(''.join(buff).encode('utf-8'))
+                del buff[:]
+            else:
+                buff.append(c)
+        elif current_state == Q_ESCAPE:
+            # Escape within a quoted string
+            buff.append(c)
+            current_state = Q_ESCAPE if c == '\\' else Q_QUOTED
+
+    if current_state == Q_QUOTED:
+        raise ValueError('Incomplete quoted string')
+
+    if current_state == Q_ESCAPE:
+        raise ValueError('Incomplete escape sequence')
+
+    if buff:
+        result.append(''.join(buff).encode('utf-8'))
+
+    return result
