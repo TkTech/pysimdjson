@@ -6,25 +6,40 @@ might yield some parse time improvements in real-world applications.
 These bindings are currently only tested on OS X, but should work everywhere
 simdjson does although you'll probably have to tweak your build flags.
 
-## Example
+## Installation
+
+There are binary wheels available for OS X 10.12. On other platforms you'll need a
+C++11-capable compiler.
+
+`pip install pysimdjson`
+
+or from source:
 
 ```
+git clone https://github.com/TkTech/pysimdjson.git
+cd pysimdjson
+python setup.py install
+```
+
+## Example
+
+```python
 import pysimdjson
 
 with open('sample.json', 'rb') as fin:
-    doc = pysimdjson.loads(fin)
+    doc = pysimdjson.loads(fin.read())
 ```
 
 ## AVX2
 
 simdjson requires AVX2 support to function. Check to see if your OS/processor supports it:
 
-OS X: `sysctl -a | grep machdep.cpu.leaf7_features`
-Linux: `grep avx2 /proc/cpuinfo`
+- OS X: `sysctl -a | grep machdep.cpu.leaf7_features`
+- Linux: `grep avx2 /proc/cpuinfo`
 
 ## Early Benchmark
 
-Comparing the built-in json module on py3.7 to pysimdjson.
+Comparing the built-in json module `loads` on py3.7 to pysimdjson `loads`.
 
 | File | `json` time | `pysimdjson` time |
 | ---- | ----------- | ----------------- |
@@ -43,12 +58,10 @@ Comparing the built-in json module on py3.7 to pysimdjson.
 | `jsonexamples/twitterescaped.json` | 0.7587005720000022 | 0.41576198399999953 |
 | `jsonexamples/update-center.json` | 0.5577604210000011 | 0.4961777420000004 |
 
-The overhead of constructing the python dict is immense, as is decoding strings
-to python's UTF-8 objects. JSON files that are 99% strings and dicts will see
-little improvements, but all others see significant improvement.
+Creating python objects is expensive, as is decoding a C `const char *` to a
+CPython unicode string. On examples that are mostly strings and dicts,
+pysimdjson doesn't offer much improvement when using `loads`, since the entire
+document will be converted to Python objects.
 
-Providing an API for iteration without converting the entire document into a
-python object would yield significant improvements when you only care about
-part of the document.
 
 [simdjson]: https://github.com/lemire/simdjson
