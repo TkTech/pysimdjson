@@ -627,7 +627,6 @@ static CYTHON_INLINE float __PYX_NAN() {
 #define __PYX_HAVE_API__pysimdjson
 /* Early includes */
 #include <stdint.h>
-#include <iostream>
 #include "ios"
 #include "new"
 #include "stdexcept"
@@ -843,15 +842,16 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "pysimdjson.pyx",
   "stringsource",
+  "pysimdjson.pyx",
   "type.pxd",
 };
 
 /*--- Type declarations ---*/
+struct __pyx_obj_10pysimdjson_Iterator;
 struct __pyx_obj_10pysimdjson_ParsedJson;
 
-/* "pysimdjson.pyx":134
+/* "pysimdjson.pyx":166
  * 
  * #: State machine states for parsing item() query strings.
  * cdef enum:             # <<<<<<<<<<<<<<
@@ -867,22 +867,51 @@ enum  {
 /* "pysimdjson.pyx":10
  * 
  * 
+ * cdef class Iterator:             # <<<<<<<<<<<<<<
+ *     cdef CParsedJson.iterator* iter
+ * 
+ */
+struct __pyx_obj_10pysimdjson_Iterator {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_10pysimdjson_Iterator *__pyx_vtab;
+  ParsedJson::iterator *iter;
+};
+
+
+/* "pysimdjson.pyx":96
+ * 
+ * 
  * cdef class ParsedJson:             # <<<<<<<<<<<<<<
  *     """Low-level wrapper for simdjson."""
  *     cdef CParsedJson pj
  */
 struct __pyx_obj_10pysimdjson_ParsedJson {
   PyObject_HEAD
-  struct __pyx_vtabstruct_10pysimdjson_ParsedJson *__pyx_vtab;
   ParsedJson pj;
 };
 
 
 
-struct __pyx_vtabstruct_10pysimdjson_ParsedJson {
-  PyObject *(*_to_obj)(struct __pyx_obj_10pysimdjson_ParsedJson *, ParsedJson::iterator *);
+/* "pysimdjson.pyx":10
+ * 
+ * 
+ * cdef class Iterator:             # <<<<<<<<<<<<<<
+ *     cdef CParsedJson.iterator* iter
+ * 
+ */
+
+struct __pyx_vtabstruct_10pysimdjson_Iterator {
+  uint8_t (*get_type)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch);
+  bool (*isOk)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch);
+  bool (*next)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch);
+  bool (*down)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch);
+  bool (*up)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch);
+  double (*get_double)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch);
+  int64_t (*get_integer)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch);
+  char const *(*get_string)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch);
+  PyObject *(*_to_obj)(struct __pyx_obj_10pysimdjson_Iterator *, ParsedJson::iterator *);
 };
-static struct __pyx_vtabstruct_10pysimdjson_ParsedJson *__pyx_vtabptr_10pysimdjson_ParsedJson;
+static struct __pyx_vtabstruct_10pysimdjson_Iterator *__pyx_vtabptr_10pysimdjson_Iterator;
 
 /* --- Runtime support code (head) --- */
 /* Refnanny.proto */
@@ -970,11 +999,36 @@ static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
 static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
     Py_ssize_t num_min, Py_ssize_t num_max, Py_ssize_t num_found);
 
-/* PyCFunctionFastCall.proto */
-#if CYTHON_FAST_PYCCALL
-static CYTHON_INLINE PyObject *__Pyx_PyCFunction_FastCall(PyObject *func, PyObject **args, Py_ssize_t nargs);
+/* ArgTypeTest.proto */
+#define __Pyx_ArgTypeTest(obj, type, none_allowed, name, exact)\
+    ((likely((Py_TYPE(obj) == type) | (none_allowed && (obj == Py_None)))) ? 1 :\
+        __Pyx__ArgTypeTest(obj, type, name, exact))
+static int __Pyx__ArgTypeTest(PyObject *obj, PyTypeObject *type, const char *name, int exact);
+
+/* PyDictVersioning.proto */
+#if CYTHON_USE_DICT_VERSIONS
+#define __PYX_DICT_VERSION_INIT  ((PY_UINT64_T) -1)
+#define __PYX_GET_DICT_VERSION(dict)  (((PyDictObject*)(dict))->ma_version_tag)
+#define __PYX_UPDATE_DICT_CACHE(dict, value, cache_var, version_var)\
+    (version_var) = __PYX_GET_DICT_VERSION(dict);\
+    (cache_var) = (value);
+#define __PYX_PY_DICT_LOOKUP_IF_MODIFIED(VAR, DICT, LOOKUP) {\
+    static PY_UINT64_T __pyx_dict_version = 0;\
+    static PyObject *__pyx_dict_cached_value = NULL;\
+    if (likely(__PYX_GET_DICT_VERSION(DICT) == __pyx_dict_version)) {\
+        (VAR) = __pyx_dict_cached_value;\
+    } else {\
+        (VAR) = __pyx_dict_cached_value = (LOOKUP);\
+        __pyx_dict_version = __PYX_GET_DICT_VERSION(DICT);\
+    }\
+}
+static CYTHON_INLINE PY_UINT64_T __Pyx_get_tp_dict_version(PyObject *obj);
+static CYTHON_INLINE PY_UINT64_T __Pyx_get_object_dict_version(PyObject *obj);
+static CYTHON_INLINE int __Pyx_object_dict_version_matches(PyObject* obj, PY_UINT64_T tp_dict_version, PY_UINT64_T obj_dict_version);
 #else
-#define __Pyx_PyCFunction_FastCall(func, args, nargs)  (assert(0), NULL)
+#define __PYX_GET_DICT_VERSION(dict)  (0)
+#define __PYX_UPDATE_DICT_CACHE(dict, value, cache_var, version_var)
+#define __PYX_PY_DICT_LOOKUP_IF_MODIFIED(VAR, DICT, LOOKUP)  (VAR) = (LOOKUP);
 #endif
 
 /* PyFunctionFastCall.proto */
@@ -1007,63 +1061,27 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
 #define __Pyx_PyObject_Call(func, arg, kw) PyObject_Call(func, arg, kw)
 #endif
 
-/* PyObjectCall2Args.proto */
-static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2);
-
 /* PyObjectCallMethO.proto */
 #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg);
 #endif
 
+/* PyObjectCallNoArg.proto */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
+#else
+#define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
+#endif
+
+/* PyCFunctionFastCall.proto */
+#if CYTHON_FAST_PYCCALL
+static CYTHON_INLINE PyObject *__Pyx_PyCFunction_FastCall(PyObject *func, PyObject **args, Py_ssize_t nargs);
+#else
+#define __Pyx_PyCFunction_FastCall(func, args, nargs)  (assert(0), NULL)
+#endif
+
 /* PyObjectCallOneArg.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObject *arg);
-
-/* PyDictVersioning.proto */
-#if CYTHON_USE_DICT_VERSIONS
-#define __PYX_DICT_VERSION_INIT  ((PY_UINT64_T) -1)
-#define __PYX_GET_DICT_VERSION(dict)  (((PyDictObject*)(dict))->ma_version_tag)
-#define __PYX_UPDATE_DICT_CACHE(dict, value, cache_var, version_var)\
-    (version_var) = __PYX_GET_DICT_VERSION(dict);\
-    (cache_var) = (value);
-#define __PYX_PY_DICT_LOOKUP_IF_MODIFIED(VAR, DICT, LOOKUP) {\
-    static PY_UINT64_T __pyx_dict_version = 0;\
-    static PyObject *__pyx_dict_cached_value = NULL;\
-    if (likely(__PYX_GET_DICT_VERSION(DICT) == __pyx_dict_version)) {\
-        (VAR) = __pyx_dict_cached_value;\
-    } else {\
-        (VAR) = __pyx_dict_cached_value = (LOOKUP);\
-        __pyx_dict_version = __PYX_GET_DICT_VERSION(DICT);\
-    }\
-}
-static CYTHON_INLINE PY_UINT64_T __Pyx_get_tp_dict_version(PyObject *obj);
-static CYTHON_INLINE PY_UINT64_T __Pyx_get_object_dict_version(PyObject *obj);
-static CYTHON_INLINE int __Pyx_object_dict_version_matches(PyObject* obj, PY_UINT64_T tp_dict_version, PY_UINT64_T obj_dict_version);
-#else
-#define __PYX_GET_DICT_VERSION(dict)  (0)
-#define __PYX_UPDATE_DICT_CACHE(dict, value, cache_var, version_var)
-#define __PYX_PY_DICT_LOOKUP_IF_MODIFIED(VAR, DICT, LOOKUP)  (VAR) = (LOOKUP);
-#endif
-
-/* GetModuleGlobalName.proto */
-#if CYTHON_USE_DICT_VERSIONS
-#define __Pyx_GetModuleGlobalName(var, name)  {\
-    static PY_UINT64_T __pyx_dict_version = 0;\
-    static PyObject *__pyx_dict_cached_value = NULL;\
-    (var) = (likely(__pyx_dict_version == __PYX_GET_DICT_VERSION(__pyx_d))) ?\
-        (likely(__pyx_dict_cached_value) ? __Pyx_NewRef(__pyx_dict_cached_value) : __Pyx_GetBuiltinName(name)) :\
-        __Pyx__GetModuleGlobalName(name, &__pyx_dict_version, &__pyx_dict_cached_value);\
-}
-#define __Pyx_GetModuleGlobalNameUncached(var, name)  {\
-    PY_UINT64_T __pyx_dict_version;\
-    PyObject *__pyx_dict_cached_value;\
-    (var) = __Pyx__GetModuleGlobalName(name, &__pyx_dict_version, &__pyx_dict_cached_value);\
-}
-static PyObject *__Pyx__GetModuleGlobalName(PyObject *name, PY_UINT64_T *dict_version, PyObject **dict_cached_value);
-#else
-#define __Pyx_GetModuleGlobalName(var, name)  (var) = __Pyx__GetModuleGlobalName(name)
-#define __Pyx_GetModuleGlobalNameUncached(var, name)  (var) = __Pyx__GetModuleGlobalName(name)
-static CYTHON_INLINE PyObject *__Pyx__GetModuleGlobalName(PyObject *name);
-#endif
 
 /* PyThreadStateGet.proto */
 #if CYTHON_FAST_THREAD_STATE
@@ -1101,40 +1119,10 @@ static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject 
 #define __Pyx_ErrFetch(type, value, tb)  PyErr_Fetch(type, value, tb)
 #endif
 
-/* RaiseException.proto */
-static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
-
-/* GetException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_GetException(type, value, tb)  __Pyx__GetException(__pyx_tstate, type, value, tb)
-static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#else
-static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
-#endif
-
-/* SwapException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_ExceptionSwap(type, value, tb)  __Pyx__ExceptionSwap(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionSwap(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#else
-static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value, PyObject **tb);
-#endif
-
-/* GetTopmostException.proto */
-#if CYTHON_USE_EXC_INFO_STACK
-static _PyErr_StackItem * __Pyx_PyErr_GetTopmostException(PyThreadState *tstate);
-#endif
-
-/* SaveResetException.proto */
-#if CYTHON_FAST_THREAD_STATE
-#define __Pyx_ExceptionSave(type, value, tb)  __Pyx__ExceptionSave(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb);
-#define __Pyx_ExceptionReset(type, value, tb)  __Pyx__ExceptionReset(__pyx_tstate, type, value, tb)
-static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb);
-#else
-#define __Pyx_ExceptionSave(type, value, tb)   PyErr_GetExcInfo(type, value, tb)
-#define __Pyx_ExceptionReset(type, value, tb)  PyErr_SetExcInfo(type, value, tb)
-#endif
+/* WriteUnraisableException.proto */
+static void __Pyx_WriteUnraisable(const char *name, int clineno,
+                                  int lineno, const char *filename,
+                                  int full_traceback, int nogil);
 
 /* ListAppend.proto */
 #if CYTHON_USE_PYLIST_INTERNALS && CYTHON_ASSUME_SAFE_MACROS
@@ -1176,11 +1164,31 @@ static CYTHON_INLINE PyObject* __Pyx_decode_c_string(
          const char* encoding, const char* errors,
          PyObject* (*decode_func)(const char *s, Py_ssize_t size, const char *errors));
 
-/* PyObjectCallNoArg.proto */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func);
+/* RaiseException.proto */
+static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
+
+/* PyObjectCall2Args.proto */
+static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2);
+
+/* GetModuleGlobalName.proto */
+#if CYTHON_USE_DICT_VERSIONS
+#define __Pyx_GetModuleGlobalName(var, name)  {\
+    static PY_UINT64_T __pyx_dict_version = 0;\
+    static PyObject *__pyx_dict_cached_value = NULL;\
+    (var) = (likely(__pyx_dict_version == __PYX_GET_DICT_VERSION(__pyx_d))) ?\
+        (likely(__pyx_dict_cached_value) ? __Pyx_NewRef(__pyx_dict_cached_value) : __Pyx_GetBuiltinName(name)) :\
+        __Pyx__GetModuleGlobalName(name, &__pyx_dict_version, &__pyx_dict_cached_value);\
+}
+#define __Pyx_GetModuleGlobalNameUncached(var, name)  {\
+    PY_UINT64_T __pyx_dict_version;\
+    PyObject *__pyx_dict_cached_value;\
+    (var) = __Pyx__GetModuleGlobalName(name, &__pyx_dict_version, &__pyx_dict_cached_value);\
+}
+static PyObject *__Pyx__GetModuleGlobalName(PyObject *name, PY_UINT64_T *dict_version, PyObject **dict_cached_value);
 #else
-#define __Pyx_PyObject_CallNoArg(func) __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL)
+#define __Pyx_GetModuleGlobalName(var, name)  (var) = __Pyx__GetModuleGlobalName(name)
+#define __Pyx_GetModuleGlobalNameUncached(var, name)  (var) = __Pyx__GetModuleGlobalName(name)
+static CYTHON_INLINE PyObject *__Pyx__GetModuleGlobalName(PyObject *name);
 #endif
 
 /* BytesEquals.proto */
@@ -1292,7 +1300,16 @@ static void __Pyx_AddTraceback(const char *funcname, int c_line,
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
 /* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_uint8_t(uint8_t value);
+
+/* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int64_t(int64_t value);
+
+/* CIntFromPy.proto */
+static CYTHON_INLINE uint8_t __Pyx_PyInt_As_uint8_t(PyObject *);
+
+/* CIntFromPy.proto */
+static CYTHON_INLINE int64_t __Pyx_PyInt_As_int64_t(PyObject *);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE size_t __Pyx_PyInt_As_size_t(PyObject *);
@@ -1325,7 +1342,15 @@ static int __Pyx_check_binary_version(void);
 /* InitStrings.proto */
 static int __Pyx_InitStrings(__Pyx_StringTabEntry *t);
 
-static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, ParsedJson::iterator *__pyx_v_iter); /* proto*/
+static uint8_t __pyx_f_10pysimdjson_8Iterator_get_type(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static bool __pyx_f_10pysimdjson_8Iterator_isOk(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static bool __pyx_f_10pysimdjson_8Iterator_next(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static bool __pyx_f_10pysimdjson_8Iterator_down(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static bool __pyx_f_10pysimdjson_8Iterator_up(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static double __pyx_f_10pysimdjson_8Iterator_get_double(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static int64_t __pyx_f_10pysimdjson_8Iterator_get_integer(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static char const *__pyx_f_10pysimdjson_8Iterator_get_string(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch); /* proto*/
+static PyObject *__pyx_f_10pysimdjson_8Iterator__to_obj(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, ParsedJson::iterator *__pyx_v_iter); /* proto*/
 
 /* Module declarations from 'libc.stdint' */
 
@@ -1347,6 +1372,7 @@ static PyTypeObject *__pyx_ptype_7cpython_4type_type = 0;
 /* Module declarations from 'cpython.dict' */
 
 /* Module declarations from 'pysimdjson' */
+static PyTypeObject *__pyx_ptype_10pysimdjson_Iterator = 0;
 static PyTypeObject *__pyx_ptype_10pysimdjson_ParsedJson = 0;
 static int __pyx_v_10pysimdjson_DEFAULT_MAX_DEPTH;
 static PyObject *__pyx_f_10pysimdjson_parse_prefix(PyObject *, int __pyx_skip_dispatch); /*proto*/
@@ -1355,18 +1381,23 @@ extern int __pyx_module_is_main_pysimdjson;
 int __pyx_module_is_main_pysimdjson = 0;
 
 /* Implementation of 'pysimdjson' */
-static PyObject *__pyx_builtin_MemoryError;
 static PyObject *__pyx_builtin_TypeError;
+static PyObject *__pyx_builtin_MemoryError;
 static PyObject *__pyx_builtin_ValueError;
 static const char __pyx_k_s[] = "s";
-static const char __pyx_k__2[] = "";
-static const char __pyx_k__6[] = "\"";
-static const char __pyx_k__7[] = ".";
-static const char __pyx_k__8[] = "\\";
+static const char __pyx_k__4[] = "";
+static const char __pyx_k__8[] = "\"";
+static const char __pyx_k__9[] = ".";
+static const char __pyx_k_pj[] = "pj";
+static const char __pyx_k_up[] = "up";
+static const char __pyx_k__10[] = "\\";
+static const char __pyx_k_down[] = "down";
+static const char __pyx_k_isOk[] = "isOk";
 static const char __pyx_k_join[] = "join";
 static const char __pyx_k_json[] = "json";
 static const char __pyx_k_main[] = "__main__";
 static const char __pyx_k_name[] = "__name__";
+static const char __pyx_k_next[] = "next";
 static const char __pyx_k_size[] = "size";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_loads[] = "loads";
@@ -1378,6 +1409,8 @@ static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_reduce[] = "__reduce__";
 static const char __pyx_k_source[] = "source";
 static const char __pyx_k_to_obj[] = "to_obj";
+static const char __pyx_k_Iterator[] = "Iterator";
+static const char __pyx_k_get_type[] = "get_type";
 static const char __pyx_k_getstate[] = "__getstate__";
 static const char __pyx_k_setstate[] = "__setstate__";
 static const char __pyx_k_TypeError[] = "TypeError";
@@ -1385,9 +1418,13 @@ static const char __pyx_k_max_depth[] = "max_depth";
 static const char __pyx_k_reduce_ex[] = "__reduce_ex__";
 static const char __pyx_k_ParsedJson[] = "ParsedJson";
 static const char __pyx_k_ValueError[] = "ValueError";
+static const char __pyx_k_get_double[] = "get_double";
+static const char __pyx_k_get_string[] = "get_string";
 static const char __pyx_k_pysimdjson[] = "pysimdjson";
 static const char __pyx_k_pyx_vtable[] = "__pyx_vtable__";
 static const char __pyx_k_MemoryError[] = "MemoryError";
+static const char __pyx_k_get_integer[] = "get_integer";
+static const char __pyx_k_move_to_key[] = "move_to_key";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
 static const char __pyx_k_pysimdjson_pyx[] = "pysimdjson.pyx";
 static const char __pyx_k_JSONDecodeError[] = "JSONDecodeError";
@@ -1398,33 +1435,45 @@ static const char __pyx_k_Error_parsing_document[] = "Error parsing document";
 static const char __pyx_k_Incomplete_quoted_string[] = "Incomplete quoted string";
 static const char __pyx_k_Incomplete_escape_sequence[] = "Incomplete escape sequence";
 static const char __pyx_k_Error_iterating_over_document[] = "Error iterating over document";
+static const char __pyx_k_no_default___reduce___due_to_non[] = "no default __reduce__ due to non-trivial __cinit__";
 static const char __pyx_k_self_pj_cannot_be_converted_to_a[] = "self.pj cannot be converted to a Python object for pickling";
 static PyObject *__pyx_kp_s_Error_iterating_over_document;
 static PyObject *__pyx_kp_s_Error_parsing_document;
 static PyObject *__pyx_kp_s_Incomplete_escape_sequence;
 static PyObject *__pyx_kp_s_Incomplete_quoted_string;
+static PyObject *__pyx_n_s_Iterator;
 static PyObject *__pyx_n_s_JSONDecodeError;
 static PyObject *__pyx_n_s_MemoryError;
 static PyObject *__pyx_n_s_ParsedJson;
 static PyObject *__pyx_n_s_TypeError;
 static PyObject *__pyx_n_s_ValueError;
-static PyObject *__pyx_kp_s__2;
-static PyObject *__pyx_kp_s__6;
-static PyObject *__pyx_kp_s__7;
+static PyObject *__pyx_kp_s__10;
+static PyObject *__pyx_kp_s__4;
 static PyObject *__pyx_kp_s__8;
+static PyObject *__pyx_kp_s__9;
 static PyObject *__pyx_n_s_allocate_capacity;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_decode;
+static PyObject *__pyx_n_s_down;
 static PyObject *__pyx_n_s_encode;
+static PyObject *__pyx_n_s_get_double;
+static PyObject *__pyx_n_s_get_integer;
+static PyObject *__pyx_n_s_get_string;
+static PyObject *__pyx_n_s_get_type;
 static PyObject *__pyx_n_s_getstate;
 static PyObject *__pyx_n_s_import;
+static PyObject *__pyx_n_s_isOk;
 static PyObject *__pyx_n_s_join;
 static PyObject *__pyx_n_s_json;
 static PyObject *__pyx_n_s_loads;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_max_depth;
+static PyObject *__pyx_n_s_move_to_key;
 static PyObject *__pyx_n_s_name;
+static PyObject *__pyx_n_s_next;
+static PyObject *__pyx_kp_s_no_default___reduce___due_to_non;
 static PyObject *__pyx_n_s_parse;
+static PyObject *__pyx_n_s_pj;
 static PyObject *__pyx_n_s_pysimdjson;
 static PyObject *__pyx_kp_s_pysimdjson_pyx;
 static PyObject *__pyx_n_s_pyx_vtable;
@@ -1439,7 +1488,21 @@ static PyObject *__pyx_n_s_size;
 static PyObject *__pyx_n_s_source;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_to_obj;
+static PyObject *__pyx_n_s_up;
 static PyObject *__pyx_kp_s_utf_8;
+static int __pyx_pf_10pysimdjson_8Iterator___cinit__(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_pj); /* proto */
+static void __pyx_pf_10pysimdjson_8Iterator_2__dealloc__(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_4get_type(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_6isOk(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_8next(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_10down(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_12up(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_14get_double(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_16get_integer(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_18get_string(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_20to_obj(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_22__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_24__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static int __pyx_pf_10pysimdjson_10ParsedJson___init__(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, PyObject *__pyx_v_source); /* proto */
 static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_2allocate_capacity(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, PyObject *__pyx_v_size, PyObject *__pyx_v_max_depth); /* proto */
 static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_4parse(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, PyObject *__pyx_v_source); /* proto */
@@ -1449,37 +1512,39 @@ static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_10__reduce_cython__(CYTHON_U
 static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_12__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_pf_10pysimdjson_loads(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_s); /* proto */
 static PyObject *__pyx_pf_10pysimdjson_2parse_prefix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_prefix); /* proto */
+static PyObject *__pyx_tp_new_10pysimdjson_Iterator(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_tp_new_10pysimdjson_ParsedJson(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
 static PyObject *__pyx_int_0;
-static PyObject *__pyx_k_;
-static PyObject *__pyx_tuple__3;
-static PyObject *__pyx_tuple__4;
+static PyObject *__pyx_k__3;
+static PyObject *__pyx_tuple_;
+static PyObject *__pyx_tuple__2;
 static PyObject *__pyx_tuple__5;
-static PyObject *__pyx_tuple__9;
-static PyObject *__pyx_tuple__10;
+static PyObject *__pyx_tuple__6;
+static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__11;
-static PyObject *__pyx_codeobj__12;
+static PyObject *__pyx_tuple__12;
+static PyObject *__pyx_tuple__13;
+static PyObject *__pyx_codeobj__14;
 /* Late includes */
 
-/* "pysimdjson.pyx":14
- *     cdef CParsedJson pj
+/* "pysimdjson.pyx":13
+ *     cdef CParsedJson.iterator* iter
  * 
- *     def __init__(self, source=None):             # <<<<<<<<<<<<<<
- *         if source:
- *             if not self.allocate_capacity(len(source)):
+ *     def __cinit__(self, ParsedJson pj):             # <<<<<<<<<<<<<<
+ *         self.iter = new CParsedJson.iterator(pj.pj)
+ * 
  */
 
 /* Python wrapper */
-static int __pyx_pw_10pysimdjson_10ParsedJson_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_10pysimdjson_10ParsedJson_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_source = 0;
+static int __pyx_pw_10pysimdjson_8Iterator_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_10pysimdjson_8Iterator_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_pj = 0;
   int __pyx_r;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__init__ (wrapper)", 0);
+  __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_source,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_pj,0};
     PyObject* values[1] = {0};
-    values[0] = ((PyObject *)Py_None);
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
@@ -1492,383 +1557,632 @@ static int __pyx_pw_10pysimdjson_10ParsedJson_1__init__(PyObject *__pyx_v_self, 
       kw_args = PyDict_Size(__pyx_kwds);
       switch (pos_args) {
         case  0:
-        if (kw_args > 0) {
-          PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_source);
-          if (value) { values[0] = value; kw_args--; }
-        }
+        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_pj)) != 0)) kw_args--;
+        else goto __pyx_L5_argtuple_error;
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 14, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(1, 13, __pyx_L3_error)
       }
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 1) {
+      goto __pyx_L5_argtuple_error;
     } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
+      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
     }
-    __pyx_v_source = values[0];
+    __pyx_v_pj = ((struct __pyx_obj_10pysimdjson_ParsedJson *)values[0]);
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 14, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 1, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 13, __pyx_L3_error)
   __pyx_L3_error:;
-  __Pyx_AddTraceback("pysimdjson.ParsedJson.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pysimdjson.Iterator.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return -1;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10pysimdjson_10ParsedJson___init__(((struct __pyx_obj_10pysimdjson_ParsedJson *)__pyx_v_self), __pyx_v_source);
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_pj), __pyx_ptype_10pysimdjson_ParsedJson, 1, "pj", 0))) __PYX_ERR(1, 13, __pyx_L1_error)
+  __pyx_r = __pyx_pf_10pysimdjson_8Iterator___cinit__(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self), __pyx_v_pj);
 
   /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static int __pyx_pf_10pysimdjson_10ParsedJson___init__(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, PyObject *__pyx_v_source) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  Py_ssize_t __pyx_t_4;
-  PyObject *__pyx_t_5 = NULL;
-  PyObject *__pyx_t_6 = NULL;
-  int __pyx_t_7;
-  PyObject *__pyx_t_8 = NULL;
-  int __pyx_t_9;
-  __Pyx_RefNannySetupContext("__init__", 0);
-
-  /* "pysimdjson.pyx":15
- * 
- *     def __init__(self, source=None):
- *         if source:             # <<<<<<<<<<<<<<
- *             if not self.allocate_capacity(len(source)):
- *                 raise MemoryError
- */
-  __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_source); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 15, __pyx_L1_error)
-  if (__pyx_t_1) {
-
-    /* "pysimdjson.pyx":16
- *     def __init__(self, source=None):
- *         if source:
- *             if not self.allocate_capacity(len(source)):             # <<<<<<<<<<<<<<
- *                 raise MemoryError
- * 
- */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_allocate_capacity); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 16, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = PyObject_Length(__pyx_v_source); if (unlikely(__pyx_t_4 == ((Py_ssize_t)-1))) __PYX_ERR(0, 16, __pyx_L1_error)
-    __pyx_t_5 = PyInt_FromSsize_t(__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 16, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = NULL;
-    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
-      __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_3);
-      if (likely(__pyx_t_6)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-        __Pyx_INCREF(__pyx_t_6);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_3, function);
-      }
-    }
-    __pyx_t_2 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_6, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5);
-    __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 16, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 16, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_7 = ((!__pyx_t_1) != 0);
-    if (unlikely(__pyx_t_7)) {
-
-      /* "pysimdjson.pyx":17
- *         if source:
- *             if not self.allocate_capacity(len(source)):
- *                 raise MemoryError             # <<<<<<<<<<<<<<
- * 
- *             if not self.parse(source):
- */
-      PyErr_NoMemory(); __PYX_ERR(0, 17, __pyx_L1_error)
-
-      /* "pysimdjson.pyx":16
- *     def __init__(self, source=None):
- *         if source:
- *             if not self.allocate_capacity(len(source)):             # <<<<<<<<<<<<<<
- *                 raise MemoryError
- * 
- */
-    }
-
-    /* "pysimdjson.pyx":19
- *                 raise MemoryError
- * 
- *             if not self.parse(source):             # <<<<<<<<<<<<<<
- *                 # We have no idea what really went wrong, simdjson oddly just
- *                 # writes to cerr instead of setting any kind of error codes.
- */
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_parse); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 19, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_5 = NULL;
-    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
-      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_3);
-      if (likely(__pyx_t_5)) {
-        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-        __Pyx_INCREF(__pyx_t_5);
-        __Pyx_INCREF(function);
-        __Pyx_DECREF_SET(__pyx_t_3, function);
-      }
-    }
-    __pyx_t_2 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_5, __pyx_v_source) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_source);
-    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 19, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 19, __pyx_L1_error)
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_1 = ((!__pyx_t_7) != 0);
-    if (unlikely(__pyx_t_1)) {
-
-      /* "pysimdjson.pyx":22
- *                 # We have no idea what really went wrong, simdjson oddly just
- *                 # writes to cerr instead of setting any kind of error codes.
- *                 raise JSONDecodeError(             # <<<<<<<<<<<<<<
- *                     'Error parsing document',
- *                     source.decode('utf-8'),
- */
-      __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_JSONDecodeError); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 22, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_3);
-
-      /* "pysimdjson.pyx":24
- *                 raise JSONDecodeError(
- *                     'Error parsing document',
- *                     source.decode('utf-8'),             # <<<<<<<<<<<<<<
- *                     0
- *                 )
- */
-      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_source, __pyx_n_s_decode); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 24, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_8 = NULL;
-      if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
-        __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_6);
-        if (likely(__pyx_t_8)) {
-          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
-          __Pyx_INCREF(__pyx_t_8);
-          __Pyx_INCREF(function);
-          __Pyx_DECREF_SET(__pyx_t_6, function);
-        }
-      }
-      __pyx_t_5 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_8, __pyx_kp_s_utf_8) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_kp_s_utf_8);
-      __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 24, __pyx_L1_error)
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __pyx_t_6 = NULL;
-      __pyx_t_9 = 0;
-      if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
-        __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_3);
-        if (likely(__pyx_t_6)) {
-          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-          __Pyx_INCREF(__pyx_t_6);
-          __Pyx_INCREF(function);
-          __Pyx_DECREF_SET(__pyx_t_3, function);
-          __pyx_t_9 = 1;
-        }
-      }
-      #if CYTHON_FAST_PYCALL
-      if (PyFunction_Check(__pyx_t_3)) {
-        PyObject *__pyx_temp[4] = {__pyx_t_6, __pyx_kp_s_Error_parsing_document, __pyx_t_5, __pyx_int_0};
-        __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_9, 3+__pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
-        __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __Pyx_GOTREF(__pyx_t_2);
-        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      } else
-      #endif
-      #if CYTHON_FAST_PYCCALL
-      if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
-        PyObject *__pyx_temp[4] = {__pyx_t_6, __pyx_kp_s_Error_parsing_document, __pyx_t_5, __pyx_int_0};
-        __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_9, 3+__pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
-        __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __Pyx_GOTREF(__pyx_t_2);
-        __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      } else
-      #endif
-      {
-        __pyx_t_8 = PyTuple_New(3+__pyx_t_9); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 22, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_8);
-        if (__pyx_t_6) {
-          __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6); __pyx_t_6 = NULL;
-        }
-        __Pyx_INCREF(__pyx_kp_s_Error_parsing_document);
-        __Pyx_GIVEREF(__pyx_kp_s_Error_parsing_document);
-        PyTuple_SET_ITEM(__pyx_t_8, 0+__pyx_t_9, __pyx_kp_s_Error_parsing_document);
-        __Pyx_GIVEREF(__pyx_t_5);
-        PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_9, __pyx_t_5);
-        __Pyx_INCREF(__pyx_int_0);
-        __Pyx_GIVEREF(__pyx_int_0);
-        PyTuple_SET_ITEM(__pyx_t_8, 2+__pyx_t_9, __pyx_int_0);
-        __pyx_t_5 = 0;
-        __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 22, __pyx_L1_error)
-        __Pyx_GOTREF(__pyx_t_2);
-        __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      }
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __Pyx_Raise(__pyx_t_2, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __PYX_ERR(0, 22, __pyx_L1_error)
-
-      /* "pysimdjson.pyx":19
- *                 raise MemoryError
- * 
- *             if not self.parse(source):             # <<<<<<<<<<<<<<
- *                 # We have no idea what really went wrong, simdjson oddly just
- *                 # writes to cerr instead of setting any kind of error codes.
- */
-    }
-
-    /* "pysimdjson.pyx":15
- * 
- *     def __init__(self, source=None):
- *         if source:             # <<<<<<<<<<<<<<
- *             if not self.allocate_capacity(len(source)):
- *                 raise MemoryError
- */
-  }
-
-  /* "pysimdjson.pyx":14
- *     cdef CParsedJson pj
- * 
- *     def __init__(self, source=None):             # <<<<<<<<<<<<<<
- *         if source:
- *             if not self.allocate_capacity(len(source)):
- */
-
-  /* function exit code */
-  __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_AddTraceback("pysimdjson.ParsedJson.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = -1;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "pysimdjson.pyx":28
- *                 )
+static int __pyx_pf_10pysimdjson_8Iterator___cinit__(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_pj) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__cinit__", 0);
+
+  /* "pysimdjson.pyx":14
  * 
- *     def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):             # <<<<<<<<<<<<<<
- *         """Resize the document buffer to `size` bytes."""
- *         return self.pj.allocateCapacity(size, max_depth)
+ *     def __cinit__(self, ParsedJson pj):
+ *         self.iter = new CParsedJson.iterator(pj.pj)             # <<<<<<<<<<<<<<
+ * 
+ *     def __dealloc__(self):
+ */
+  __pyx_v_self->iter = new ParsedJson::iterator(__pyx_v_pj->pj);
+
+  /* "pysimdjson.pyx":13
+ *     cdef CParsedJson.iterator* iter
+ * 
+ *     def __cinit__(self, ParsedJson pj):             # <<<<<<<<<<<<<<
+ *         self.iter = new CParsedJson.iterator(pj.pj)
+ * 
+ */
+
+  /* function exit code */
+  __pyx_r = 0;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "pysimdjson.pyx":16
+ *         self.iter = new CParsedJson.iterator(pj.pj)
+ * 
+ *     def __dealloc__(self):             # <<<<<<<<<<<<<<
+ *         del self.iter
+ * 
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_3allocate_capacity(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_10pysimdjson_10ParsedJson_2allocate_capacity[] = "Resize the document buffer to `size` bytes.";
-static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_3allocate_capacity(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  PyObject *__pyx_v_size = 0;
-  PyObject *__pyx_v_max_depth = 0;
+static void __pyx_pw_10pysimdjson_8Iterator_3__dealloc__(PyObject *__pyx_v_self); /*proto*/
+static void __pyx_pw_10pysimdjson_8Iterator_3__dealloc__(PyObject *__pyx_v_self) {
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__dealloc__ (wrapper)", 0);
+  __pyx_pf_10pysimdjson_8Iterator_2__dealloc__(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+}
+
+static void __pyx_pf_10pysimdjson_8Iterator_2__dealloc__(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__dealloc__", 0);
+
+  /* "pysimdjson.pyx":17
+ * 
+ *     def __dealloc__(self):
+ *         del self.iter             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef uint8_t get_type(self):
+ */
+  delete __pyx_v_self->iter;
+
+  /* "pysimdjson.pyx":16
+ *         self.iter = new CParsedJson.iterator(pj.pj)
+ * 
+ *     def __dealloc__(self):             # <<<<<<<<<<<<<<
+ *         del self.iter
+ * 
+ */
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+}
+
+/* "pysimdjson.pyx":19
+ *         del self.iter
+ * 
+ *     cpdef uint8_t get_type(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.get_type()
+ * 
+ */
+
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_5get_type(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static uint8_t __pyx_f_10pysimdjson_8Iterator_get_type(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch) {
+  uint8_t __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  uint8_t __pyx_t_5;
+  __Pyx_RefNannySetupContext("get_type", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || (Py_TYPE(((PyObject *)__pyx_v_self))->tp_flags & (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
+    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
+      PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      #endif
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_type); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 19, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_10pysimdjson_8Iterator_5get_type)) {
+        __Pyx_INCREF(__pyx_t_1);
+        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+          }
+        }
+        __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 19, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __pyx_t_5 = __Pyx_PyInt_As_uint8_t(__pyx_t_2); if (unlikely((__pyx_t_5 == ((uint8_t)-1)) && PyErr_Occurred())) __PYX_ERR(1, 19, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_r = __pyx_t_5;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        goto __pyx_L0;
+      }
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
+      if (unlikely(__pyx_type_dict_guard != __pyx_tp_dict_version)) {
+        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+      }
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    }
+    #endif
+  }
+
+  /* "pysimdjson.pyx":20
+ * 
+ *     cpdef uint8_t get_type(self):
+ *         return self.iter.get_type()             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef bool isOk(self):
+ */
+  __pyx_r = __pyx_v_self->iter->get_type();
+  goto __pyx_L0;
+
+  /* "pysimdjson.pyx":19
+ *         del self.iter
+ * 
+ *     cpdef uint8_t get_type(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.get_type()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_WriteUnraisable("pysimdjson.Iterator.get_type", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_5get_type(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_5get_type(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("allocate_capacity (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_size,&__pyx_n_s_max_depth,0};
-    PyObject* values[2] = {0,0};
-    values[1] = __pyx_k_;
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        CYTHON_FALLTHROUGH;
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_size)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        CYTHON_FALLTHROUGH;
-        case  1:
-        if (kw_args > 0) {
-          PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_max_depth);
-          if (value) { values[1] = value; kw_args--; }
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "allocate_capacity") < 0)) __PYX_ERR(0, 28, __pyx_L3_error)
-      }
-    } else {
-      switch (PyTuple_GET_SIZE(__pyx_args)) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        CYTHON_FALLTHROUGH;
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-    }
-    __pyx_v_size = values[0];
-    __pyx_v_max_depth = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("allocate_capacity", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 28, __pyx_L3_error)
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("pysimdjson.ParsedJson.allocate_capacity", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_10pysimdjson_10ParsedJson_2allocate_capacity(((struct __pyx_obj_10pysimdjson_ParsedJson *)__pyx_v_self), __pyx_v_size, __pyx_v_max_depth);
+  __Pyx_RefNannySetupContext("get_type (wrapper)", 0);
+  __pyx_r = __pyx_pf_10pysimdjson_8Iterator_4get_type(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_2allocate_capacity(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, PyObject *__pyx_v_size, PyObject *__pyx_v_max_depth) {
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_4get_type(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  size_t __pyx_t_1;
-  size_t __pyx_t_2;
-  PyObject *__pyx_t_3 = NULL;
-  __Pyx_RefNannySetupContext("allocate_capacity", 0);
-
-  /* "pysimdjson.pyx":30
- *     def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):
- *         """Resize the document buffer to `size` bytes."""
- *         return self.pj.allocateCapacity(size, max_depth)             # <<<<<<<<<<<<<<
- * 
- *     def parse(self, source):
- */
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("get_type", 0);
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_As_size_t(__pyx_v_size); if (unlikely((__pyx_t_1 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 30, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyInt_As_size_t(__pyx_v_max_depth); if (unlikely((__pyx_t_2 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 30, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_v_self->pj.allocateCapacity(__pyx_t_1, __pyx_t_2)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 30, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_r = __pyx_t_3;
-  __pyx_t_3 = 0;
+  __pyx_t_1 = __Pyx_PyInt_From_uint8_t(__pyx_f_10pysimdjson_8Iterator_get_type(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 19, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("pysimdjson.Iterator.get_type", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "pysimdjson.pyx":22
+ *         return self.iter.get_type()
+ * 
+ *     cpdef bool isOk(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.isOk()
+ * 
+ */
+
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_7isOk(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static bool __pyx_f_10pysimdjson_8Iterator_isOk(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch) {
+  bool __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  bool __pyx_t_5;
+  __Pyx_RefNannySetupContext("isOk", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || (Py_TYPE(((PyObject *)__pyx_v_self))->tp_flags & (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
+    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
+      PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      #endif
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_isOk); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 22, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_10pysimdjson_8Iterator_7isOk)) {
+        __Pyx_INCREF(__pyx_t_1);
+        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+          }
+        }
+        __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 22, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(1, 22, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_r = __pyx_t_5;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        goto __pyx_L0;
+      }
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
+      if (unlikely(__pyx_type_dict_guard != __pyx_tp_dict_version)) {
+        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+      }
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    }
+    #endif
+  }
+
+  /* "pysimdjson.pyx":23
+ * 
+ *     cpdef bool isOk(self):
+ *         return self.iter.isOk()             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef bool next(self):
+ */
+  __pyx_r = __pyx_v_self->iter->isOk();
+  goto __pyx_L0;
+
+  /* "pysimdjson.pyx":22
+ *         return self.iter.get_type()
+ * 
+ *     cpdef bool isOk(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.isOk()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_WriteUnraisable("pysimdjson.Iterator.isOk", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_7isOk(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_7isOk(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("isOk (wrapper)", 0);
+  __pyx_r = __pyx_pf_10pysimdjson_8Iterator_6isOk(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_6isOk(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("isOk", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_10pysimdjson_8Iterator_isOk(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 22, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("pysimdjson.Iterator.isOk", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "pysimdjson.pyx":25
+ *         return self.iter.isOk()
+ * 
+ *     cpdef bool next(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.next()
+ * 
+ */
+
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_9next(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static bool __pyx_f_10pysimdjson_8Iterator_next(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch) {
+  bool __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  bool __pyx_t_5;
+  __Pyx_RefNannySetupContext("next", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || (Py_TYPE(((PyObject *)__pyx_v_self))->tp_flags & (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
+    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
+      PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      #endif
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_next); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 25, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_10pysimdjson_8Iterator_9next)) {
+        __Pyx_INCREF(__pyx_t_1);
+        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+          }
+        }
+        __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 25, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(1, 25, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_r = __pyx_t_5;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        goto __pyx_L0;
+      }
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
+      if (unlikely(__pyx_type_dict_guard != __pyx_tp_dict_version)) {
+        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+      }
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    }
+    #endif
+  }
+
+  /* "pysimdjson.pyx":26
+ * 
+ *     cpdef bool next(self):
+ *         return self.iter.next()             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef bool down(self):
+ */
+  __pyx_r = __pyx_v_self->iter->next();
+  goto __pyx_L0;
+
+  /* "pysimdjson.pyx":25
+ *         return self.iter.isOk()
+ * 
+ *     cpdef bool next(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.next()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_WriteUnraisable("pysimdjson.Iterator.next", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_9next(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_9next(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("next (wrapper)", 0);
+  __pyx_r = __pyx_pf_10pysimdjson_8Iterator_8next(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_8next(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("next", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_10pysimdjson_8Iterator_next(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 25, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("pysimdjson.Iterator.next", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "pysimdjson.pyx":28
+ *         return self.iter.next()
+ * 
+ *     cpdef bool down(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.down()
+ * 
+ */
+
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_11down(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static bool __pyx_f_10pysimdjson_8Iterator_down(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch) {
+  bool __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  bool __pyx_t_5;
+  __Pyx_RefNannySetupContext("down", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || (Py_TYPE(((PyObject *)__pyx_v_self))->tp_flags & (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
+    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
+      PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      #endif
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_down); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 28, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_10pysimdjson_8Iterator_11down)) {
+        __Pyx_INCREF(__pyx_t_1);
+        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+          }
+        }
+        __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 28, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(1, 28, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_r = __pyx_t_5;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        goto __pyx_L0;
+      }
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
+      if (unlikely(__pyx_type_dict_guard != __pyx_tp_dict_version)) {
+        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+      }
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    }
+    #endif
+  }
+
+  /* "pysimdjson.pyx":29
+ * 
+ *     cpdef bool down(self):
+ *         return self.iter.down()             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef bool up(self):
+ */
+  __pyx_r = __pyx_v_self->iter->down();
   goto __pyx_L0;
 
   /* "pysimdjson.pyx":28
- *                 )
+ *         return self.iter.next()
  * 
- *     def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):             # <<<<<<<<<<<<<<
- *         """Resize the document buffer to `size` bytes."""
- *         return self.pj.allocateCapacity(size, max_depth)
+ *     cpdef bool down(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.down()
+ * 
  */
 
   /* function exit code */
   __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("pysimdjson.ParsedJson.allocate_capacity", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_WriteUnraisable("pysimdjson.Iterator.down", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_11down(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_11down(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("down (wrapper)", 0);
+  __pyx_r = __pyx_pf_10pysimdjson_8Iterator_10down(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_10down(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("down", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_10pysimdjson_8Iterator_down(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 28, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("pysimdjson.Iterator.down", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -1876,64 +2190,527 @@ static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_2allocate_capacity(struct __
   return __pyx_r;
 }
 
-/* "pysimdjson.pyx":32
- *         return self.pj.allocateCapacity(size, max_depth)
+/* "pysimdjson.pyx":31
+ *         return self.iter.down()
  * 
- *     def parse(self, source):             # <<<<<<<<<<<<<<
- *         """Parse the given document (as bytes).
+ *     cpdef bool up(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.up()
  * 
  */
 
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_13up(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static bool __pyx_f_10pysimdjson_8Iterator_up(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch) {
+  bool __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  bool __pyx_t_5;
+  __Pyx_RefNannySetupContext("up", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || (Py_TYPE(((PyObject *)__pyx_v_self))->tp_flags & (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
+    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
+      PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      #endif
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_up); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 31, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_10pysimdjson_8Iterator_13up)) {
+        __Pyx_INCREF(__pyx_t_1);
+        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+          }
+        }
+        __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 31, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely((__pyx_t_5 == ((bool)-1)) && PyErr_Occurred())) __PYX_ERR(1, 31, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_r = __pyx_t_5;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        goto __pyx_L0;
+      }
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
+      if (unlikely(__pyx_type_dict_guard != __pyx_tp_dict_version)) {
+        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+      }
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    }
+    #endif
+  }
+
+  /* "pysimdjson.pyx":32
+ * 
+ *     cpdef bool up(self):
+ *         return self.iter.up()             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef double get_double(self):
+ */
+  __pyx_r = __pyx_v_self->iter->up();
+  goto __pyx_L0;
+
+  /* "pysimdjson.pyx":31
+ *         return self.iter.down()
+ * 
+ *     cpdef bool up(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.up()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_WriteUnraisable("pysimdjson.Iterator.up", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
 /* Python wrapper */
-static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_5parse(PyObject *__pyx_v_self, PyObject *__pyx_v_source); /*proto*/
-static char __pyx_doc_10pysimdjson_10ParsedJson_4parse[] = "Parse the given document (as bytes).\n\n            .. note::\n\n                It's up to the caller to ensure that allocate_capacity has been\n                called with a sufficiently large size before this method is\n                called.\n\n        :param source: The document to be parsed.\n        :ptype source: bytes\n        :returns: True on success, else False.\n        ";
-static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_5parse(PyObject *__pyx_v_self, PyObject *__pyx_v_source) {
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_13up(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_13up(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("parse (wrapper)", 0);
-  __pyx_r = __pyx_pf_10pysimdjson_10ParsedJson_4parse(((struct __pyx_obj_10pysimdjson_ParsedJson *)__pyx_v_self), ((PyObject *)__pyx_v_source));
+  __Pyx_RefNannySetupContext("up (wrapper)", 0);
+  __pyx_r = __pyx_pf_10pysimdjson_8Iterator_12up(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_4parse(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, PyObject *__pyx_v_source) {
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_12up(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  char const *__pyx_t_1;
-  Py_ssize_t __pyx_t_2;
-  PyObject *__pyx_t_3 = NULL;
-  __Pyx_RefNannySetupContext("parse", 0);
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("up", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_f_10pysimdjson_8Iterator_up(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 31, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
 
-  /* "pysimdjson.pyx":45
- *         :returns: True on success, else False.
- *         """
- *         return json_parse(source, len(source), self.pj, True)             # <<<<<<<<<<<<<<
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("pysimdjson.Iterator.up", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "pysimdjson.pyx":34
+ *         return self.iter.up()
+ * 
+ *     cpdef double get_double(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.get_double()
+ * 
+ */
+
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_15get_double(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static double __pyx_f_10pysimdjson_8Iterator_get_double(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch) {
+  double __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  double __pyx_t_5;
+  __Pyx_RefNannySetupContext("get_double", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || (Py_TYPE(((PyObject *)__pyx_v_self))->tp_flags & (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
+    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
+      PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      #endif
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_double); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 34, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_10pysimdjson_8Iterator_15get_double)) {
+        __Pyx_INCREF(__pyx_t_1);
+        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+          }
+        }
+        __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 34, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __pyx_t_5 = __pyx_PyFloat_AsDouble(__pyx_t_2); if (unlikely((__pyx_t_5 == (double)-1) && PyErr_Occurred())) __PYX_ERR(1, 34, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_r = __pyx_t_5;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        goto __pyx_L0;
+      }
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
+      if (unlikely(__pyx_type_dict_guard != __pyx_tp_dict_version)) {
+        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+      }
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    }
+    #endif
+  }
+
+  /* "pysimdjson.pyx":35
+ * 
+ *     cpdef double get_double(self):
+ *         return self.iter.get_double()             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef int64_t get_integer(self):
+ */
+  __pyx_r = __pyx_v_self->iter->get_double();
+  goto __pyx_L0;
+
+  /* "pysimdjson.pyx":34
+ *         return self.iter.up()
+ * 
+ *     cpdef double get_double(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.get_double()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_WriteUnraisable("pysimdjson.Iterator.get_double", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_15get_double(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_15get_double(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("get_double (wrapper)", 0);
+  __pyx_r = __pyx_pf_10pysimdjson_8Iterator_14get_double(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_14get_double(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("get_double", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_f_10pysimdjson_8Iterator_get_double(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 34, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("pysimdjson.Iterator.get_double", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "pysimdjson.pyx":37
+ *         return self.iter.get_double()
+ * 
+ *     cpdef int64_t get_integer(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.get_integer()
+ * 
+ */
+
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_17get_integer(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static int64_t __pyx_f_10pysimdjson_8Iterator_get_integer(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch) {
+  int64_t __pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  int64_t __pyx_t_5;
+  __Pyx_RefNannySetupContext("get_integer", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || (Py_TYPE(((PyObject *)__pyx_v_self))->tp_flags & (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
+    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
+      PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      #endif
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_integer); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 37, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_10pysimdjson_8Iterator_17get_integer)) {
+        __Pyx_INCREF(__pyx_t_1);
+        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+          }
+        }
+        __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 37, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __pyx_t_5 = __Pyx_PyInt_As_int64_t(__pyx_t_2); if (unlikely((__pyx_t_5 == ((int64_t)-1)) && PyErr_Occurred())) __PYX_ERR(1, 37, __pyx_L1_error)
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __pyx_r = __pyx_t_5;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        goto __pyx_L0;
+      }
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
+      if (unlikely(__pyx_type_dict_guard != __pyx_tp_dict_version)) {
+        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+      }
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    }
+    #endif
+  }
+
+  /* "pysimdjson.pyx":38
+ * 
+ *     cpdef int64_t get_integer(self):
+ *         return self.iter.get_integer()             # <<<<<<<<<<<<<<
+ * 
+ *     cpdef const char * get_string(self):
+ */
+  __pyx_r = __pyx_v_self->iter->get_integer();
+  goto __pyx_L0;
+
+  /* "pysimdjson.pyx":37
+ *         return self.iter.get_double()
+ * 
+ *     cpdef int64_t get_integer(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.get_integer()
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_WriteUnraisable("pysimdjson.Iterator.get_integer", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_17get_integer(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_17get_integer(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("get_integer (wrapper)", 0);
+  __pyx_r = __pyx_pf_10pysimdjson_8Iterator_16get_integer(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_16get_integer(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("get_integer", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyInt_From_int64_t(__pyx_f_10pysimdjson_8Iterator_get_integer(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 37, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("pysimdjson.Iterator.get_integer", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "pysimdjson.pyx":40
+ *         return self.iter.get_integer()
+ * 
+ *     cpdef const char * get_string(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.get_string()
+ * 
+ */
+
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_19get_string(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char const *__pyx_f_10pysimdjson_8Iterator_get_string(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, int __pyx_skip_dispatch) {
+  char const *__pyx_r;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  PyObject *__pyx_t_4 = NULL;
+  char const *__pyx_t_5;
+  __Pyx_RefNannySetupContext("get_string", 0);
+  /* Check if called by wrapper */
+  if (unlikely(__pyx_skip_dispatch)) ;
+  /* Check if overridden in Python */
+  else if (unlikely((Py_TYPE(((PyObject *)__pyx_v_self))->tp_dictoffset != 0) || (Py_TYPE(((PyObject *)__pyx_v_self))->tp_flags & (Py_TPFLAGS_IS_ABSTRACT | Py_TPFLAGS_HEAPTYPE)))) {
+    #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    static PY_UINT64_T __pyx_tp_dict_version = __PYX_DICT_VERSION_INIT, __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+    if (unlikely(!__Pyx_object_dict_version_matches(((PyObject *)__pyx_v_self), __pyx_tp_dict_version, __pyx_obj_dict_version))) {
+      PY_UINT64_T __pyx_type_dict_guard = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      #endif
+      __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_get_string); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 40, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      if (!PyCFunction_Check(__pyx_t_1) || (PyCFunction_GET_FUNCTION(__pyx_t_1) != (PyCFunction)(void*)__pyx_pw_10pysimdjson_8Iterator_19get_string)) {
+        __Pyx_INCREF(__pyx_t_1);
+        __pyx_t_3 = __pyx_t_1; __pyx_t_4 = NULL;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_4)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_4);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+          }
+        }
+        __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
+        __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+        if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 40, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_2);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __pyx_t_5 = __Pyx_PyObject_AsString(__pyx_t_2); if (unlikely((!__pyx_t_5) && PyErr_Occurred())) __PYX_ERR(1, 40, __pyx_L1_error)
+        __pyx_r = __pyx_t_5;
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+        goto __pyx_L0;
+      }
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+      __pyx_tp_dict_version = __Pyx_get_tp_dict_version(((PyObject *)__pyx_v_self));
+      __pyx_obj_dict_version = __Pyx_get_object_dict_version(((PyObject *)__pyx_v_self));
+      if (unlikely(__pyx_type_dict_guard != __pyx_tp_dict_version)) {
+        __pyx_tp_dict_version = __pyx_obj_dict_version = __PYX_DICT_VERSION_INIT;
+      }
+      #endif
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      #if CYTHON_USE_DICT_VERSIONS && CYTHON_USE_PYTYPE_LOOKUP
+    }
+    #endif
+  }
+
+  /* "pysimdjson.pyx":41
+ * 
+ *     cpdef const char * get_string(self):
+ *         return self.iter.get_string()             # <<<<<<<<<<<<<<
  * 
  *     def to_obj(self):
  */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_AsString(__pyx_v_source); if (unlikely((!__pyx_t_1) && PyErr_Occurred())) __PYX_ERR(0, 45, __pyx_L1_error)
-  __pyx_t_2 = PyObject_Length(__pyx_v_source); if (unlikely(__pyx_t_2 == ((Py_ssize_t)-1))) __PYX_ERR(0, 45, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyBool_FromLong(json_parse(__pyx_t_1, __pyx_t_2, __pyx_v_self->pj, 1)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 45, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_r = __pyx_t_3;
-  __pyx_t_3 = 0;
+  __pyx_r = __pyx_v_self->iter->get_string();
   goto __pyx_L0;
 
-  /* "pysimdjson.pyx":32
- *         return self.pj.allocateCapacity(size, max_depth)
+  /* "pysimdjson.pyx":40
+ *         return self.iter.get_integer()
  * 
- *     def parse(self, source):             # <<<<<<<<<<<<<<
- *         """Parse the given document (as bytes).
+ *     cpdef const char * get_string(self):             # <<<<<<<<<<<<<<
+ *         return self.iter.get_string()
  * 
  */
 
   /* function exit code */
   __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("pysimdjson.ParsedJson.parse", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_WriteUnraisable("pysimdjson.Iterator.get_string", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_19get_string(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_19get_string(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("get_string (wrapper)", 0);
+  __pyx_r = __pyx_pf_10pysimdjson_8Iterator_18get_string(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_18get_string(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("get_string", 0);
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __Pyx_PyBytes_FromString(__pyx_f_10pysimdjson_8Iterator_get_string(__pyx_v_self, 1)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 40, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("pysimdjson.Iterator.get_string", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -1941,178 +2718,59 @@ static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_4parse(struct __pyx_obj_10py
   return __pyx_r;
 }
 
-/* "pysimdjson.pyx":47
- *         return json_parse(source, len(source), self.pj, True)
+/* "pysimdjson.pyx":43
+ *         return self.iter.get_string()
  * 
  *     def to_obj(self):             # <<<<<<<<<<<<<<
- *         """Recursively convert a parsed json document to a Python object and
- *         return it.
+ *         return self._to_obj(self.iter)
+ * 
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_7to_obj(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_10pysimdjson_10ParsedJson_6to_obj[] = "Recursively convert a parsed json document to a Python object and\n        return it.\n        ";
-static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_7to_obj(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_21to_obj(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_10pysimdjson_8Iterator_21to_obj(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("to_obj (wrapper)", 0);
-  __pyx_r = __pyx_pf_10pysimdjson_10ParsedJson_6to_obj(((struct __pyx_obj_10pysimdjson_ParsedJson *)__pyx_v_self));
+  __pyx_r = __pyx_pf_10pysimdjson_8Iterator_20to_obj(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_6to_obj(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self) {
-  ParsedJson::iterator *__pyx_v_iter;
+static PyObject *__pyx_pf_10pysimdjson_8Iterator_20to_obj(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  int __pyx_t_4;
-  int __pyx_t_5;
-  char const *__pyx_t_6;
-  PyObject *__pyx_t_7 = NULL;
-  PyObject *__pyx_t_8 = NULL;
-  PyObject *__pyx_t_9 = NULL;
-  PyObject *__pyx_t_10 = NULL;
-  PyObject *__pyx_t_11 = NULL;
-  PyObject *__pyx_t_12 = NULL;
+  PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("to_obj", 0);
 
-  /* "pysimdjson.pyx":51
- *         return it.
- *         """
- *         iter = new CParsedJson.iterator(self.pj)             # <<<<<<<<<<<<<<
- *         try:
- *             if not iter.isOk():
- */
-  __pyx_v_iter = new ParsedJson::iterator(__pyx_v_self->pj);
-
-  /* "pysimdjson.pyx":52
- *         """
- *         iter = new CParsedJson.iterator(self.pj)
- *         try:             # <<<<<<<<<<<<<<
- *             if not iter.isOk():
- *                 # Prooooably not the right exception
- */
-  /*try:*/ {
-
-    /* "pysimdjson.pyx":53
- *         iter = new CParsedJson.iterator(self.pj)
- *         try:
- *             if not iter.isOk():             # <<<<<<<<<<<<<<
- *                 # Prooooably not the right exception
- *                 raise JSONDecodeError('Error iterating over document', '', 0)
- */
-    __pyx_t_1 = ((!(__pyx_v_iter->isOk() != 0)) != 0);
-    if (unlikely(__pyx_t_1)) {
-
-      /* "pysimdjson.pyx":55
- *             if not iter.isOk():
- *                 # Prooooably not the right exception
- *                 raise JSONDecodeError('Error iterating over document', '', 0)             # <<<<<<<<<<<<<<
- *             return self._to_obj(iter)
- *         finally:
- */
-      __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_JSONDecodeError); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 55, __pyx_L4_error)
-      __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 55, __pyx_L4_error)
-      __Pyx_GOTREF(__pyx_t_3);
-      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __Pyx_Raise(__pyx_t_3, 0, 0, 0);
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __PYX_ERR(0, 55, __pyx_L4_error)
-
-      /* "pysimdjson.pyx":53
- *         iter = new CParsedJson.iterator(self.pj)
- *         try:
- *             if not iter.isOk():             # <<<<<<<<<<<<<<
- *                 # Prooooably not the right exception
- *                 raise JSONDecodeError('Error iterating over document', '', 0)
- */
-    }
-
-    /* "pysimdjson.pyx":56
- *                 # Prooooably not the right exception
- *                 raise JSONDecodeError('Error iterating over document', '', 0)
- *             return self._to_obj(iter)             # <<<<<<<<<<<<<<
- *         finally:
- *             del iter
- */
-    __Pyx_XDECREF(__pyx_r);
-    __pyx_t_3 = ((struct __pyx_vtabstruct_10pysimdjson_ParsedJson *)__pyx_v_self->__pyx_vtab)->_to_obj(__pyx_v_self, __pyx_v_iter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 56, __pyx_L4_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __pyx_r = __pyx_t_3;
-    __pyx_t_3 = 0;
-    goto __pyx_L3_return;
-  }
-
-  /* "pysimdjson.pyx":58
- *             return self._to_obj(iter)
- *         finally:
- *             del iter             # <<<<<<<<<<<<<<
+  /* "pysimdjson.pyx":44
  * 
- *     cdef object _to_obj(self, CParsedJson.iterator *iter):
+ *     def to_obj(self):
+ *         return self._to_obj(self.iter)             # <<<<<<<<<<<<<<
+ * 
+ *     cdef object _to_obj(self, CParsedJson.iterator* iter):
  */
-  /*finally:*/ {
-    __pyx_L4_error:;
-    /*exception exit:*/{
-      __Pyx_PyThreadState_declare
-      __Pyx_PyThreadState_assign
-      __pyx_t_7 = 0; __pyx_t_8 = 0; __pyx_t_9 = 0; __pyx_t_10 = 0; __pyx_t_11 = 0; __pyx_t_12 = 0;
-      __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-      if (PY_MAJOR_VERSION >= 3) __Pyx_ExceptionSwap(&__pyx_t_10, &__pyx_t_11, &__pyx_t_12);
-      if ((PY_MAJOR_VERSION < 3) || unlikely(__Pyx_GetException(&__pyx_t_7, &__pyx_t_8, &__pyx_t_9) < 0)) __Pyx_ErrFetch(&__pyx_t_7, &__pyx_t_8, &__pyx_t_9);
-      __Pyx_XGOTREF(__pyx_t_7);
-      __Pyx_XGOTREF(__pyx_t_8);
-      __Pyx_XGOTREF(__pyx_t_9);
-      __Pyx_XGOTREF(__pyx_t_10);
-      __Pyx_XGOTREF(__pyx_t_11);
-      __Pyx_XGOTREF(__pyx_t_12);
-      __pyx_t_4 = __pyx_lineno; __pyx_t_5 = __pyx_clineno; __pyx_t_6 = __pyx_filename;
-      {
-        delete __pyx_v_iter;
-      }
-      if (PY_MAJOR_VERSION >= 3) {
-        __Pyx_XGIVEREF(__pyx_t_10);
-        __Pyx_XGIVEREF(__pyx_t_11);
-        __Pyx_XGIVEREF(__pyx_t_12);
-        __Pyx_ExceptionReset(__pyx_t_10, __pyx_t_11, __pyx_t_12);
-      }
-      __Pyx_XGIVEREF(__pyx_t_7);
-      __Pyx_XGIVEREF(__pyx_t_8);
-      __Pyx_XGIVEREF(__pyx_t_9);
-      __Pyx_ErrRestore(__pyx_t_7, __pyx_t_8, __pyx_t_9);
-      __pyx_t_7 = 0; __pyx_t_8 = 0; __pyx_t_9 = 0; __pyx_t_10 = 0; __pyx_t_11 = 0; __pyx_t_12 = 0;
-      __pyx_lineno = __pyx_t_4; __pyx_clineno = __pyx_t_5; __pyx_filename = __pyx_t_6;
-      goto __pyx_L1_error;
-    }
-    __pyx_L3_return: {
-      __pyx_t_12 = __pyx_r;
-      __pyx_r = 0;
-      delete __pyx_v_iter;
-      __pyx_r = __pyx_t_12;
-      __pyx_t_12 = 0;
-      goto __pyx_L0;
-    }
-  }
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = ((struct __pyx_vtabstruct_10pysimdjson_Iterator *)__pyx_v_self->__pyx_vtab)->_to_obj(__pyx_v_self, __pyx_v_self->iter); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 44, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
 
-  /* "pysimdjson.pyx":47
- *         return json_parse(source, len(source), self.pj, True)
+  /* "pysimdjson.pyx":43
+ *         return self.iter.get_string()
  * 
  *     def to_obj(self):             # <<<<<<<<<<<<<<
- *         """Recursively convert a parsed json document to a Python object and
- *         return it.
+ *         return self._to_obj(self.iter)
+ * 
  */
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("pysimdjson.ParsedJson.to_obj", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("pysimdjson.Iterator.to_obj", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -2120,15 +2778,15 @@ static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_6to_obj(struct __pyx_obj_10p
   return __pyx_r;
 }
 
-/* "pysimdjson.pyx":60
- *             del iter
+/* "pysimdjson.pyx":46
+ *         return self._to_obj(self.iter)
  * 
- *     cdef object _to_obj(self, CParsedJson.iterator *iter):             # <<<<<<<<<<<<<<
+ *     cdef object _to_obj(self, CParsedJson.iterator* iter):             # <<<<<<<<<<<<<<
  *         # This is going to be by far the slowest part of this, as the cost of
  *         # creating python objects is quite high.
  */
 
-static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, ParsedJson::iterator *__pyx_v_iter) {
+static PyObject *__pyx_f_10pysimdjson_8Iterator__to_obj(struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, ParsedJson::iterator *__pyx_v_iter) {
   char __pyx_v_t;
   PyObject *__pyx_v_k = 0;
   PyObject *__pyx_v_d = 0;
@@ -2143,7 +2801,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
   int __pyx_t_5;
   __Pyx_RefNannySetupContext("_to_obj", 0);
 
-  /* "pysimdjson.pyx":63
+  /* "pysimdjson.pyx":49
  *         # This is going to be by far the slowest part of this, as the cost of
  *         # creating python objects is quite high.
  *         cdef char t = <char>iter.get_type()             # <<<<<<<<<<<<<<
@@ -2152,7 +2810,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
   __pyx_v_t = ((char)__pyx_v_iter->get_type());
 
-  /* "pysimdjson.pyx":68
+  /* "pysimdjson.pyx":54
  *         cdef list l
  * 
  *         if t == '[':             # <<<<<<<<<<<<<<
@@ -2162,19 +2820,19 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
   switch (__pyx_v_t) {
     case '[':
 
-    /* "pysimdjson.pyx":69
+    /* "pysimdjson.pyx":55
  * 
  *         if t == '[':
  *             l = []             # <<<<<<<<<<<<<<
  *             if iter.down():
  *                 while True:
  */
-    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 69, __pyx_L1_error)
+    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 55, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_v_l = ((PyObject*)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "pysimdjson.pyx":70
+    /* "pysimdjson.pyx":56
  *         if t == '[':
  *             l = []
  *             if iter.down():             # <<<<<<<<<<<<<<
@@ -2184,7 +2842,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     __pyx_t_2 = (__pyx_v_iter->down() != 0);
     if (__pyx_t_2) {
 
-      /* "pysimdjson.pyx":71
+      /* "pysimdjson.pyx":57
  *             l = []
  *             if iter.down():
  *                 while True:             # <<<<<<<<<<<<<<
@@ -2193,28 +2851,28 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
       while (1) {
 
-        /* "pysimdjson.pyx":72
+        /* "pysimdjson.pyx":58
  *             if iter.down():
  *                 while True:
  *                     v = self._to_obj(iter)             # <<<<<<<<<<<<<<
  *                     l.append(v)
  * 
  */
-        __pyx_t_1 = ((struct __pyx_vtabstruct_10pysimdjson_ParsedJson *)__pyx_v_self->__pyx_vtab)->_to_obj(__pyx_v_self, __pyx_v_iter); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 72, __pyx_L1_error)
+        __pyx_t_1 = ((struct __pyx_vtabstruct_10pysimdjson_Iterator *)__pyx_v_self->__pyx_vtab)->_to_obj(__pyx_v_self, __pyx_v_iter); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 58, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_XDECREF_SET(__pyx_v_v, __pyx_t_1);
         __pyx_t_1 = 0;
 
-        /* "pysimdjson.pyx":73
+        /* "pysimdjson.pyx":59
  *                 while True:
  *                     v = self._to_obj(iter)
  *                     l.append(v)             # <<<<<<<<<<<<<<
  * 
  *                     if not iter.next():
  */
-        __pyx_t_3 = __Pyx_PyList_Append(__pyx_v_l, __pyx_v_v); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(0, 73, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_PyList_Append(__pyx_v_l, __pyx_v_v); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(1, 59, __pyx_L1_error)
 
-        /* "pysimdjson.pyx":75
+        /* "pysimdjson.pyx":61
  *                     l.append(v)
  * 
  *                     if not iter.next():             # <<<<<<<<<<<<<<
@@ -2224,7 +2882,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
         __pyx_t_2 = ((!(__pyx_v_iter->next() != 0)) != 0);
         if (__pyx_t_2) {
 
-          /* "pysimdjson.pyx":76
+          /* "pysimdjson.pyx":62
  * 
  *                     if not iter.next():
  *                         break             # <<<<<<<<<<<<<<
@@ -2233,7 +2891,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
           goto __pyx_L5_break;
 
-          /* "pysimdjson.pyx":75
+          /* "pysimdjson.pyx":61
  *                     l.append(v)
  * 
  *                     if not iter.next():             # <<<<<<<<<<<<<<
@@ -2244,7 +2902,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       }
       __pyx_L5_break:;
 
-      /* "pysimdjson.pyx":78
+      /* "pysimdjson.pyx":64
  *                         break
  * 
  *                 iter.up()             # <<<<<<<<<<<<<<
@@ -2253,7 +2911,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
       (void)(__pyx_v_iter->up());
 
-      /* "pysimdjson.pyx":70
+      /* "pysimdjson.pyx":56
  *         if t == '[':
  *             l = []
  *             if iter.down():             # <<<<<<<<<<<<<<
@@ -2262,7 +2920,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
     }
 
-    /* "pysimdjson.pyx":79
+    /* "pysimdjson.pyx":65
  * 
  *                 iter.up()
  *             return l             # <<<<<<<<<<<<<<
@@ -2274,7 +2932,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     __pyx_r = __pyx_v_l;
     goto __pyx_L0;
 
-    /* "pysimdjson.pyx":68
+    /* "pysimdjson.pyx":54
  *         cdef list l
  * 
  *         if t == '[':             # <<<<<<<<<<<<<<
@@ -2284,19 +2942,19 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     break;
     case '{':
 
-      /* "pysimdjson.pyx":83
+      /* "pysimdjson.pyx":69
  *             # Updating the dict is incredibly expensive, consuming the majority
  *             # of time in most of the JSON tests.
  *             d = {}             # <<<<<<<<<<<<<<
  *             if iter.down():
  *                 while True:
  */
-      __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 83, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 69, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __pyx_v_d = ((PyObject*)__pyx_t_1);
       __pyx_t_1 = 0;
 
-      /* "pysimdjson.pyx":84
+      /* "pysimdjson.pyx":70
  *             # of time in most of the JSON tests.
  *             d = {}
  *             if iter.down():             # <<<<<<<<<<<<<<
@@ -2306,7 +2964,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       __pyx_t_2 = (__pyx_v_iter->down() != 0);
       if (__pyx_t_2) {
 
-        /* "pysimdjson.pyx":85
+        /* "pysimdjson.pyx":71
  *             d = {}
  *             if iter.down():
  *                 while True:             # <<<<<<<<<<<<<<
@@ -2315,7 +2973,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
         while (1) {
 
-          /* "pysimdjson.pyx":86
+          /* "pysimdjson.pyx":72
  *             if iter.down():
  *                 while True:
  *                     k = iter.get_string().decode('utf-8')             # <<<<<<<<<<<<<<
@@ -2323,14 +2981,14 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  *                     v = self._to_obj(iter)
  */
           __pyx_t_4 = __pyx_v_iter->get_string();
-          __pyx_t_1 = __Pyx_decode_c_string(__pyx_t_4, 0, strlen(__pyx_t_4), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 86, __pyx_L1_error)
+          __pyx_t_1 = __Pyx_decode_c_string(__pyx_t_4, 0, strlen(__pyx_t_4), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 72, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
-          if (!(likely(PyUnicode_CheckExact(__pyx_t_1))||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 86, __pyx_L1_error)
+          if (!(likely(PyUnicode_CheckExact(__pyx_t_1))||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(1, 72, __pyx_L1_error)
           __Pyx_INCREF(__pyx_t_1);
           __Pyx_XDECREF_SET(__pyx_v_k, ((PyObject*)__pyx_t_1));
           __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-          /* "pysimdjson.pyx":87
+          /* "pysimdjson.pyx":73
  *                 while True:
  *                     k = iter.get_string().decode('utf-8')
  *                     iter.next()             # <<<<<<<<<<<<<<
@@ -2339,28 +2997,28 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
           (void)(__pyx_v_iter->next());
 
-          /* "pysimdjson.pyx":88
+          /* "pysimdjson.pyx":74
  *                     k = iter.get_string().decode('utf-8')
  *                     iter.next()
  *                     v = self._to_obj(iter)             # <<<<<<<<<<<<<<
  *                     PyDict_SetItem(d, k, v)
  * 
  */
-          __pyx_t_1 = ((struct __pyx_vtabstruct_10pysimdjson_ParsedJson *)__pyx_v_self->__pyx_vtab)->_to_obj(__pyx_v_self, __pyx_v_iter); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 88, __pyx_L1_error)
+          __pyx_t_1 = ((struct __pyx_vtabstruct_10pysimdjson_Iterator *)__pyx_v_self->__pyx_vtab)->_to_obj(__pyx_v_self, __pyx_v_iter); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 74, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_1);
           __Pyx_XDECREF_SET(__pyx_v_v, __pyx_t_1);
           __pyx_t_1 = 0;
 
-          /* "pysimdjson.pyx":89
+          /* "pysimdjson.pyx":75
  *                     iter.next()
  *                     v = self._to_obj(iter)
  *                     PyDict_SetItem(d, k, v)             # <<<<<<<<<<<<<<
  * 
  *                     if not iter.next():
  */
-          __pyx_t_5 = PyDict_SetItem(__pyx_v_d, __pyx_v_k, __pyx_v_v); if (unlikely(__pyx_t_5 == ((int)-1))) __PYX_ERR(0, 89, __pyx_L1_error)
+          __pyx_t_5 = PyDict_SetItem(__pyx_v_d, __pyx_v_k, __pyx_v_v); if (unlikely(__pyx_t_5 == ((int)-1))) __PYX_ERR(1, 75, __pyx_L1_error)
 
-          /* "pysimdjson.pyx":91
+          /* "pysimdjson.pyx":77
  *                     PyDict_SetItem(d, k, v)
  * 
  *                     if not iter.next():             # <<<<<<<<<<<<<<
@@ -2370,7 +3028,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
           __pyx_t_2 = ((!(__pyx_v_iter->next() != 0)) != 0);
           if (__pyx_t_2) {
 
-            /* "pysimdjson.pyx":92
+            /* "pysimdjson.pyx":78
  * 
  *                     if not iter.next():
  *                         break             # <<<<<<<<<<<<<<
@@ -2379,7 +3037,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
             goto __pyx_L9_break;
 
-            /* "pysimdjson.pyx":91
+            /* "pysimdjson.pyx":77
  *                     PyDict_SetItem(d, k, v)
  * 
  *                     if not iter.next():             # <<<<<<<<<<<<<<
@@ -2390,7 +3048,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
         }
         __pyx_L9_break:;
 
-        /* "pysimdjson.pyx":93
+        /* "pysimdjson.pyx":79
  *                     if not iter.next():
  *                         break
  *                 iter.up()             # <<<<<<<<<<<<<<
@@ -2399,7 +3057,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
         (void)(__pyx_v_iter->up());
 
-        /* "pysimdjson.pyx":84
+        /* "pysimdjson.pyx":70
  *             # of time in most of the JSON tests.
  *             d = {}
  *             if iter.down():             # <<<<<<<<<<<<<<
@@ -2408,7 +3066,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
       }
 
-      /* "pysimdjson.pyx":94
+      /* "pysimdjson.pyx":80
  *                         break
  *                 iter.up()
  *             return d             # <<<<<<<<<<<<<<
@@ -2420,7 +3078,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       __pyx_r = __pyx_v_d;
       goto __pyx_L0;
 
-      /* "pysimdjson.pyx":80
+      /* "pysimdjson.pyx":66
  *                 iter.up()
  *             return l
  *         elif t == '{':             # <<<<<<<<<<<<<<
@@ -2430,7 +3088,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       break;
       case 'd':
 
-      /* "pysimdjson.pyx":96
+      /* "pysimdjson.pyx":82
  *             return d
  *         elif t == 'd':
  *             return iter.get_double()             # <<<<<<<<<<<<<<
@@ -2438,13 +3096,13 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  *             return iter.get_integer()
  */
       __Pyx_XDECREF(__pyx_r);
-      __pyx_t_1 = PyFloat_FromDouble(__pyx_v_iter->get_double()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 96, __pyx_L1_error)
+      __pyx_t_1 = PyFloat_FromDouble(__pyx_v_iter->get_double()); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 82, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __pyx_r = __pyx_t_1;
       __pyx_t_1 = 0;
       goto __pyx_L0;
 
-      /* "pysimdjson.pyx":95
+      /* "pysimdjson.pyx":81
  *                 iter.up()
  *             return d
  *         elif t == 'd':             # <<<<<<<<<<<<<<
@@ -2454,7 +3112,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       break;
       case 'l':
 
-      /* "pysimdjson.pyx":98
+      /* "pysimdjson.pyx":84
  *             return iter.get_double()
  *         elif t == 'l':
  *             return iter.get_integer()             # <<<<<<<<<<<<<<
@@ -2462,13 +3120,13 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  *             k = iter.get_string().decode('utf-8')
  */
       __Pyx_XDECREF(__pyx_r);
-      __pyx_t_1 = __Pyx_PyInt_From_int64_t(__pyx_v_iter->get_integer()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 98, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_From_int64_t(__pyx_v_iter->get_integer()); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 84, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __pyx_r = __pyx_t_1;
       __pyx_t_1 = 0;
       goto __pyx_L0;
 
-      /* "pysimdjson.pyx":97
+      /* "pysimdjson.pyx":83
  *         elif t == 'd':
  *             return iter.get_double()
  *         elif t == 'l':             # <<<<<<<<<<<<<<
@@ -2478,7 +3136,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       break;
       case '"':
 
-      /* "pysimdjson.pyx":100
+      /* "pysimdjson.pyx":86
  *             return iter.get_integer()
  *         elif t == '"':
  *             k = iter.get_string().decode('utf-8')             # <<<<<<<<<<<<<<
@@ -2486,14 +3144,14 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  *         elif t == 't':
  */
       __pyx_t_4 = __pyx_v_iter->get_string();
-      __pyx_t_1 = __Pyx_decode_c_string(__pyx_t_4, 0, strlen(__pyx_t_4), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 100, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_decode_c_string(__pyx_t_4, 0, strlen(__pyx_t_4), NULL, NULL, PyUnicode_DecodeUTF8); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 86, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      if (!(likely(PyUnicode_CheckExact(__pyx_t_1))||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(0, 100, __pyx_L1_error)
+      if (!(likely(PyUnicode_CheckExact(__pyx_t_1))||(PyErr_Format(PyExc_TypeError, "Expected %.16s, got %.200s", "unicode", Py_TYPE(__pyx_t_1)->tp_name), 0))) __PYX_ERR(1, 86, __pyx_L1_error)
       __Pyx_INCREF(__pyx_t_1);
       __pyx_v_k = ((PyObject*)__pyx_t_1);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "pysimdjson.pyx":101
+      /* "pysimdjson.pyx":87
  *         elif t == '"':
  *             k = iter.get_string().decode('utf-8')
  *             return k             # <<<<<<<<<<<<<<
@@ -2505,7 +3163,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       __pyx_r = __pyx_v_k;
       goto __pyx_L0;
 
-      /* "pysimdjson.pyx":99
+      /* "pysimdjson.pyx":85
  *         elif t == 'l':
  *             return iter.get_integer()
  *         elif t == '"':             # <<<<<<<<<<<<<<
@@ -2515,7 +3173,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       break;
       case 't':
 
-      /* "pysimdjson.pyx":103
+      /* "pysimdjson.pyx":89
  *             return k
  *         elif t == 't':
  *             return True             # <<<<<<<<<<<<<<
@@ -2527,7 +3185,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       __pyx_r = Py_True;
       goto __pyx_L0;
 
-      /* "pysimdjson.pyx":102
+      /* "pysimdjson.pyx":88
  *             k = iter.get_string().decode('utf-8')
  *             return k
  *         elif t == 't':             # <<<<<<<<<<<<<<
@@ -2537,7 +3195,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       break;
       case 'f':
 
-      /* "pysimdjson.pyx":105
+      /* "pysimdjson.pyx":91
  *             return True
  *         elif t == 'f':
  *             return False             # <<<<<<<<<<<<<<
@@ -2549,7 +3207,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       __pyx_r = Py_False;
       goto __pyx_L0;
 
-      /* "pysimdjson.pyx":104
+      /* "pysimdjson.pyx":90
  *         elif t == 't':
  *             return True
  *         elif t == 'f':             # <<<<<<<<<<<<<<
@@ -2559,18 +3217,18 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       break;
       case 'n':
 
-      /* "pysimdjson.pyx":107
+      /* "pysimdjson.pyx":93
  *             return False
  *         elif t == 'n':
  *             return None             # <<<<<<<<<<<<<<
  * 
- *     def items(self, prefix):
+ * 
  */
       __Pyx_XDECREF(__pyx_r);
       __pyx_r = Py_None; __Pyx_INCREF(Py_None);
       goto __pyx_L0;
 
-      /* "pysimdjson.pyx":106
+      /* "pysimdjson.pyx":92
  *         elif t == 'f':
  *             return False
  *         elif t == 'n':             # <<<<<<<<<<<<<<
@@ -2581,10 +3239,10 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       default: break;
     }
 
-    /* "pysimdjson.pyx":60
- *             del iter
+    /* "pysimdjson.pyx":46
+ *         return self._to_obj(self.iter)
  * 
- *     cdef object _to_obj(self, CParsedJson.iterator *iter):             # <<<<<<<<<<<<<<
+ *     cdef object _to_obj(self, CParsedJson.iterator* iter):             # <<<<<<<<<<<<<<
  *         # This is going to be by far the slowest part of this, as the cost of
  *         # creating python objects is quite high.
  */
@@ -2594,7 +3252,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     goto __pyx_L0;
     __pyx_L1_error:;
     __Pyx_XDECREF(__pyx_t_1);
-    __Pyx_AddTraceback("pysimdjson.ParsedJson._to_obj", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    __Pyx_AddTraceback("pysimdjson.Iterator._to_obj", __pyx_clineno, __pyx_lineno, __pyx_filename);
     __pyx_r = 0;
     __pyx_L0:;
     __Pyx_XDECREF(__pyx_v_k);
@@ -2606,8 +3264,725 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     return __pyx_r;
   }
 
-  /* "pysimdjson.pyx":109
- *             return None
+  /* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ */
+
+  /* Python wrapper */
+  static PyObject *__pyx_pw_10pysimdjson_8Iterator_23__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+  static PyObject *__pyx_pw_10pysimdjson_8Iterator_23__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+    PyObject *__pyx_r = 0;
+    __Pyx_RefNannyDeclarations
+    __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
+    __pyx_r = __pyx_pf_10pysimdjson_8Iterator_22__reduce_cython__(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self));
+
+    /* function exit code */
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  static PyObject *__pyx_pf_10pysimdjson_8Iterator_22__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self) {
+    PyObject *__pyx_r = NULL;
+    __Pyx_RefNannyDeclarations
+    PyObject *__pyx_t_1 = NULL;
+    __Pyx_RefNannySetupContext("__reduce_cython__", 0);
+
+    /* "(tree fragment)":2
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple_, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(0, 2, __pyx_L1_error)
+
+    /* "(tree fragment)":1
+ * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ */
+
+    /* function exit code */
+    __pyx_L1_error:;
+    __Pyx_XDECREF(__pyx_t_1);
+    __Pyx_AddTraceback("pysimdjson.Iterator.__reduce_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    __pyx_r = NULL;
+    __Pyx_XGIVEREF(__pyx_r);
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  /* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+
+  /* Python wrapper */
+  static PyObject *__pyx_pw_10pysimdjson_8Iterator_25__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+  static PyObject *__pyx_pw_10pysimdjson_8Iterator_25__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+    PyObject *__pyx_r = 0;
+    __Pyx_RefNannyDeclarations
+    __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
+    __pyx_r = __pyx_pf_10pysimdjson_8Iterator_24__setstate_cython__(((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+
+    /* function exit code */
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  static PyObject *__pyx_pf_10pysimdjson_8Iterator_24__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+    PyObject *__pyx_r = NULL;
+    __Pyx_RefNannyDeclarations
+    PyObject *__pyx_t_1 = NULL;
+    __Pyx_RefNannySetupContext("__setstate_cython__", 0);
+
+    /* "(tree fragment)":4
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ */
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__2, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __PYX_ERR(0, 4, __pyx_L1_error)
+
+    /* "(tree fragment)":3
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):             # <<<<<<<<<<<<<<
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ */
+
+    /* function exit code */
+    __pyx_L1_error:;
+    __Pyx_XDECREF(__pyx_t_1);
+    __Pyx_AddTraceback("pysimdjson.Iterator.__setstate_cython__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    __pyx_r = NULL;
+    __Pyx_XGIVEREF(__pyx_r);
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  /* "pysimdjson.pyx":100
+ *     cdef CParsedJson pj
+ * 
+ *     def __init__(self, source=None):             # <<<<<<<<<<<<<<
+ *         if source:
+ *             if not self.allocate_capacity(len(source)):
+ */
+
+  /* Python wrapper */
+  static int __pyx_pw_10pysimdjson_10ParsedJson_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+  static int __pyx_pw_10pysimdjson_10ParsedJson_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+    PyObject *__pyx_v_source = 0;
+    int __pyx_r;
+    __Pyx_RefNannyDeclarations
+    __Pyx_RefNannySetupContext("__init__ (wrapper)", 0);
+    {
+      static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_source,0};
+      PyObject* values[1] = {0};
+      values[0] = ((PyObject *)Py_None);
+      if (unlikely(__pyx_kwds)) {
+        Py_ssize_t kw_args;
+        const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+        switch (pos_args) {
+          case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+          CYTHON_FALLTHROUGH;
+          case  0: break;
+          default: goto __pyx_L5_argtuple_error;
+        }
+        kw_args = PyDict_Size(__pyx_kwds);
+        switch (pos_args) {
+          case  0:
+          if (kw_args > 0) {
+            PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_source);
+            if (value) { values[0] = value; kw_args--; }
+          }
+        }
+        if (unlikely(kw_args > 0)) {
+          if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(1, 100, __pyx_L3_error)
+        }
+      } else {
+        switch (PyTuple_GET_SIZE(__pyx_args)) {
+          case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+          CYTHON_FALLTHROUGH;
+          case  0: break;
+          default: goto __pyx_L5_argtuple_error;
+        }
+      }
+      __pyx_v_source = values[0];
+    }
+    goto __pyx_L4_argument_unpacking_done;
+    __pyx_L5_argtuple_error:;
+    __Pyx_RaiseArgtupleInvalid("__init__", 0, 0, 1, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 100, __pyx_L3_error)
+    __pyx_L3_error:;
+    __Pyx_AddTraceback("pysimdjson.ParsedJson.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    __Pyx_RefNannyFinishContext();
+    return -1;
+    __pyx_L4_argument_unpacking_done:;
+    __pyx_r = __pyx_pf_10pysimdjson_10ParsedJson___init__(((struct __pyx_obj_10pysimdjson_ParsedJson *)__pyx_v_self), __pyx_v_source);
+
+    /* function exit code */
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  static int __pyx_pf_10pysimdjson_10ParsedJson___init__(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, PyObject *__pyx_v_source) {
+    int __pyx_r;
+    __Pyx_RefNannyDeclarations
+    int __pyx_t_1;
+    PyObject *__pyx_t_2 = NULL;
+    PyObject *__pyx_t_3 = NULL;
+    Py_ssize_t __pyx_t_4;
+    PyObject *__pyx_t_5 = NULL;
+    PyObject *__pyx_t_6 = NULL;
+    int __pyx_t_7;
+    PyObject *__pyx_t_8 = NULL;
+    int __pyx_t_9;
+    __Pyx_RefNannySetupContext("__init__", 0);
+
+    /* "pysimdjson.pyx":101
+ * 
+ *     def __init__(self, source=None):
+ *         if source:             # <<<<<<<<<<<<<<
+ *             if not self.allocate_capacity(len(source)):
+ *                 raise MemoryError
+ */
+    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_v_source); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(1, 101, __pyx_L1_error)
+    if (__pyx_t_1) {
+
+      /* "pysimdjson.pyx":102
+ *     def __init__(self, source=None):
+ *         if source:
+ *             if not self.allocate_capacity(len(source)):             # <<<<<<<<<<<<<<
+ *                 raise MemoryError
+ * 
+ */
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_allocate_capacity); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 102, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __pyx_t_4 = PyObject_Length(__pyx_v_source); if (unlikely(__pyx_t_4 == ((Py_ssize_t)-1))) __PYX_ERR(1, 102, __pyx_L1_error)
+      __pyx_t_5 = PyInt_FromSsize_t(__pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 102, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_6 = NULL;
+      if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
+        __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_3);
+        if (likely(__pyx_t_6)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+          __Pyx_INCREF(__pyx_t_6);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_3, function);
+        }
+      }
+      __pyx_t_2 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_6, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_5);
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 102, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(1, 102, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_7 = ((!__pyx_t_1) != 0);
+      if (unlikely(__pyx_t_7)) {
+
+        /* "pysimdjson.pyx":103
+ *         if source:
+ *             if not self.allocate_capacity(len(source)):
+ *                 raise MemoryError             # <<<<<<<<<<<<<<
+ * 
+ *             if not self.parse(source):
+ */
+        PyErr_NoMemory(); __PYX_ERR(1, 103, __pyx_L1_error)
+
+        /* "pysimdjson.pyx":102
+ *     def __init__(self, source=None):
+ *         if source:
+ *             if not self.allocate_capacity(len(source)):             # <<<<<<<<<<<<<<
+ *                 raise MemoryError
+ * 
+ */
+      }
+
+      /* "pysimdjson.pyx":105
+ *                 raise MemoryError
+ * 
+ *             if not self.parse(source):             # <<<<<<<<<<<<<<
+ *                 # We have no idea what really went wrong, simdjson oddly just
+ *                 # writes to cerr instead of setting any kind of error codes.
+ */
+      __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_parse); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 105, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __pyx_t_5 = NULL;
+      if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
+        __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_3);
+        if (likely(__pyx_t_5)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+          __Pyx_INCREF(__pyx_t_5);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_3, function);
+        }
+      }
+      __pyx_t_2 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_5, __pyx_v_source) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_source);
+      __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 105, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __pyx_t_7 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(1, 105, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __pyx_t_1 = ((!__pyx_t_7) != 0);
+      if (unlikely(__pyx_t_1)) {
+
+        /* "pysimdjson.pyx":108
+ *                 # We have no idea what really went wrong, simdjson oddly just
+ *                 # writes to cerr instead of setting any kind of error codes.
+ *                 raise JSONDecodeError(             # <<<<<<<<<<<<<<
+ *                     'Error parsing document',
+ *                     source.decode('utf-8'),
+ */
+        __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_JSONDecodeError); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 108, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_3);
+
+        /* "pysimdjson.pyx":110
+ *                 raise JSONDecodeError(
+ *                     'Error parsing document',
+ *                     source.decode('utf-8'),             # <<<<<<<<<<<<<<
+ *                     0
+ *                 )
+ */
+        __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_source, __pyx_n_s_decode); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 110, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_6);
+        __pyx_t_8 = NULL;
+        if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_6))) {
+          __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_6);
+          if (likely(__pyx_t_8)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_6);
+            __Pyx_INCREF(__pyx_t_8);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_6, function);
+          }
+        }
+        __pyx_t_5 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_8, __pyx_kp_s_utf_8) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_kp_s_utf_8);
+        __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+        if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 110, __pyx_L1_error)
+        __Pyx_GOTREF(__pyx_t_5);
+        __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
+        __pyx_t_6 = NULL;
+        __pyx_t_9 = 0;
+        if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_3))) {
+          __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_3);
+          if (likely(__pyx_t_6)) {
+            PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
+            __Pyx_INCREF(__pyx_t_6);
+            __Pyx_INCREF(function);
+            __Pyx_DECREF_SET(__pyx_t_3, function);
+            __pyx_t_9 = 1;
+          }
+        }
+        #if CYTHON_FAST_PYCALL
+        if (PyFunction_Check(__pyx_t_3)) {
+          PyObject *__pyx_temp[4] = {__pyx_t_6, __pyx_kp_s_Error_parsing_document, __pyx_t_5, __pyx_int_0};
+          __pyx_t_2 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_9, 3+__pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 108, __pyx_L1_error)
+          __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        } else
+        #endif
+        #if CYTHON_FAST_PYCCALL
+        if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
+          PyObject *__pyx_temp[4] = {__pyx_t_6, __pyx_kp_s_Error_parsing_document, __pyx_t_5, __pyx_int_0};
+          __pyx_t_2 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_9, 3+__pyx_t_9); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 108, __pyx_L1_error)
+          __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+        } else
+        #endif
+        {
+          __pyx_t_8 = PyTuple_New(3+__pyx_t_9); if (unlikely(!__pyx_t_8)) __PYX_ERR(1, 108, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_8);
+          if (__pyx_t_6) {
+            __Pyx_GIVEREF(__pyx_t_6); PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_6); __pyx_t_6 = NULL;
+          }
+          __Pyx_INCREF(__pyx_kp_s_Error_parsing_document);
+          __Pyx_GIVEREF(__pyx_kp_s_Error_parsing_document);
+          PyTuple_SET_ITEM(__pyx_t_8, 0+__pyx_t_9, __pyx_kp_s_Error_parsing_document);
+          __Pyx_GIVEREF(__pyx_t_5);
+          PyTuple_SET_ITEM(__pyx_t_8, 1+__pyx_t_9, __pyx_t_5);
+          __Pyx_INCREF(__pyx_int_0);
+          __Pyx_GIVEREF(__pyx_int_0);
+          PyTuple_SET_ITEM(__pyx_t_8, 2+__pyx_t_9, __pyx_int_0);
+          __pyx_t_5 = 0;
+          __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_8, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 108, __pyx_L1_error)
+          __Pyx_GOTREF(__pyx_t_2);
+          __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+        }
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        __Pyx_Raise(__pyx_t_2, 0, 0, 0);
+        __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+        __PYX_ERR(1, 108, __pyx_L1_error)
+
+        /* "pysimdjson.pyx":105
+ *                 raise MemoryError
+ * 
+ *             if not self.parse(source):             # <<<<<<<<<<<<<<
+ *                 # We have no idea what really went wrong, simdjson oddly just
+ *                 # writes to cerr instead of setting any kind of error codes.
+ */
+      }
+
+      /* "pysimdjson.pyx":101
+ * 
+ *     def __init__(self, source=None):
+ *         if source:             # <<<<<<<<<<<<<<
+ *             if not self.allocate_capacity(len(source)):
+ *                 raise MemoryError
+ */
+    }
+
+    /* "pysimdjson.pyx":100
+ *     cdef CParsedJson pj
+ * 
+ *     def __init__(self, source=None):             # <<<<<<<<<<<<<<
+ *         if source:
+ *             if not self.allocate_capacity(len(source)):
+ */
+
+    /* function exit code */
+    __pyx_r = 0;
+    goto __pyx_L0;
+    __pyx_L1_error:;
+    __Pyx_XDECREF(__pyx_t_2);
+    __Pyx_XDECREF(__pyx_t_3);
+    __Pyx_XDECREF(__pyx_t_5);
+    __Pyx_XDECREF(__pyx_t_6);
+    __Pyx_XDECREF(__pyx_t_8);
+    __Pyx_AddTraceback("pysimdjson.ParsedJson.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    __pyx_r = -1;
+    __pyx_L0:;
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  /* "pysimdjson.pyx":114
+ *                 )
+ * 
+ *     def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):             # <<<<<<<<<<<<<<
+ *         """Resize the document buffer to `size` bytes."""
+ *         return self.pj.allocateCapacity(size, max_depth)
+ */
+
+  /* Python wrapper */
+  static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_3allocate_capacity(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+  static char __pyx_doc_10pysimdjson_10ParsedJson_2allocate_capacity[] = "Resize the document buffer to `size` bytes.";
+  static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_3allocate_capacity(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+    PyObject *__pyx_v_size = 0;
+    PyObject *__pyx_v_max_depth = 0;
+    PyObject *__pyx_r = 0;
+    __Pyx_RefNannyDeclarations
+    __Pyx_RefNannySetupContext("allocate_capacity (wrapper)", 0);
+    {
+      static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_size,&__pyx_n_s_max_depth,0};
+      PyObject* values[2] = {0,0};
+      values[1] = __pyx_k__3;
+      if (unlikely(__pyx_kwds)) {
+        Py_ssize_t kw_args;
+        const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
+        switch (pos_args) {
+          case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+          CYTHON_FALLTHROUGH;
+          case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+          CYTHON_FALLTHROUGH;
+          case  0: break;
+          default: goto __pyx_L5_argtuple_error;
+        }
+        kw_args = PyDict_Size(__pyx_kwds);
+        switch (pos_args) {
+          case  0:
+          if (likely((values[0] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_size)) != 0)) kw_args--;
+          else goto __pyx_L5_argtuple_error;
+          CYTHON_FALLTHROUGH;
+          case  1:
+          if (kw_args > 0) {
+            PyObject* value = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_max_depth);
+            if (value) { values[1] = value; kw_args--; }
+          }
+        }
+        if (unlikely(kw_args > 0)) {
+          if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "allocate_capacity") < 0)) __PYX_ERR(1, 114, __pyx_L3_error)
+        }
+      } else {
+        switch (PyTuple_GET_SIZE(__pyx_args)) {
+          case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
+          CYTHON_FALLTHROUGH;
+          case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
+          break;
+          default: goto __pyx_L5_argtuple_error;
+        }
+      }
+      __pyx_v_size = values[0];
+      __pyx_v_max_depth = values[1];
+    }
+    goto __pyx_L4_argument_unpacking_done;
+    __pyx_L5_argtuple_error:;
+    __Pyx_RaiseArgtupleInvalid("allocate_capacity", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(1, 114, __pyx_L3_error)
+    __pyx_L3_error:;
+    __Pyx_AddTraceback("pysimdjson.ParsedJson.allocate_capacity", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    __Pyx_RefNannyFinishContext();
+    return NULL;
+    __pyx_L4_argument_unpacking_done:;
+    __pyx_r = __pyx_pf_10pysimdjson_10ParsedJson_2allocate_capacity(((struct __pyx_obj_10pysimdjson_ParsedJson *)__pyx_v_self), __pyx_v_size, __pyx_v_max_depth);
+
+    /* function exit code */
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_2allocate_capacity(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, PyObject *__pyx_v_size, PyObject *__pyx_v_max_depth) {
+    PyObject *__pyx_r = NULL;
+    __Pyx_RefNannyDeclarations
+    size_t __pyx_t_1;
+    size_t __pyx_t_2;
+    PyObject *__pyx_t_3 = NULL;
+    __Pyx_RefNannySetupContext("allocate_capacity", 0);
+
+    /* "pysimdjson.pyx":116
+ *     def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):
+ *         """Resize the document buffer to `size` bytes."""
+ *         return self.pj.allocateCapacity(size, max_depth)             # <<<<<<<<<<<<<<
+ * 
+ *     def parse(self, source):
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_1 = __Pyx_PyInt_As_size_t(__pyx_v_size); if (unlikely((__pyx_t_1 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(1, 116, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_As_size_t(__pyx_v_max_depth); if (unlikely((__pyx_t_2 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(1, 116, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyBool_FromLong(__pyx_v_self->pj.allocateCapacity(__pyx_t_1, __pyx_t_2)); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 116, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_r = __pyx_t_3;
+    __pyx_t_3 = 0;
+    goto __pyx_L0;
+
+    /* "pysimdjson.pyx":114
+ *                 )
+ * 
+ *     def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):             # <<<<<<<<<<<<<<
+ *         """Resize the document buffer to `size` bytes."""
+ *         return self.pj.allocateCapacity(size, max_depth)
+ */
+
+    /* function exit code */
+    __pyx_L1_error:;
+    __Pyx_XDECREF(__pyx_t_3);
+    __Pyx_AddTraceback("pysimdjson.ParsedJson.allocate_capacity", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    __pyx_r = NULL;
+    __pyx_L0:;
+    __Pyx_XGIVEREF(__pyx_r);
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  /* "pysimdjson.pyx":118
+ *         return self.pj.allocateCapacity(size, max_depth)
+ * 
+ *     def parse(self, source):             # <<<<<<<<<<<<<<
+ *         """Parse the given document (as bytes).
+ * 
+ */
+
+  /* Python wrapper */
+  static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_5parse(PyObject *__pyx_v_self, PyObject *__pyx_v_source); /*proto*/
+  static char __pyx_doc_10pysimdjson_10ParsedJson_4parse[] = "Parse the given document (as bytes).\n\n            .. note::\n\n                It's up to the caller to ensure that allocate_capacity has been\n                called with a sufficiently large size before this method is\n                called.\n\n        :param source: The document to be parsed.\n        :ptype source: bytes\n        :returns: True on success, else False.\n        ";
+  static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_5parse(PyObject *__pyx_v_self, PyObject *__pyx_v_source) {
+    PyObject *__pyx_r = 0;
+    __Pyx_RefNannyDeclarations
+    __Pyx_RefNannySetupContext("parse (wrapper)", 0);
+    __pyx_r = __pyx_pf_10pysimdjson_10ParsedJson_4parse(((struct __pyx_obj_10pysimdjson_ParsedJson *)__pyx_v_self), ((PyObject *)__pyx_v_source));
+
+    /* function exit code */
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_4parse(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, PyObject *__pyx_v_source) {
+    PyObject *__pyx_r = NULL;
+    __Pyx_RefNannyDeclarations
+    char const *__pyx_t_1;
+    Py_ssize_t __pyx_t_2;
+    PyObject *__pyx_t_3 = NULL;
+    __Pyx_RefNannySetupContext("parse", 0);
+
+    /* "pysimdjson.pyx":131
+ *         :returns: True on success, else False.
+ *         """
+ *         return json_parse(source, len(source), self.pj, True)             # <<<<<<<<<<<<<<
+ * 
+ *     def to_obj(self):
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_1 = __Pyx_PyObject_AsString(__pyx_v_source); if (unlikely((!__pyx_t_1) && PyErr_Occurred())) __PYX_ERR(1, 131, __pyx_L1_error)
+    __pyx_t_2 = PyObject_Length(__pyx_v_source); if (unlikely(__pyx_t_2 == ((Py_ssize_t)-1))) __PYX_ERR(1, 131, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyBool_FromLong(json_parse(__pyx_t_1, __pyx_t_2, __pyx_v_self->pj, 1)); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 131, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __pyx_r = __pyx_t_3;
+    __pyx_t_3 = 0;
+    goto __pyx_L0;
+
+    /* "pysimdjson.pyx":118
+ *         return self.pj.allocateCapacity(size, max_depth)
+ * 
+ *     def parse(self, source):             # <<<<<<<<<<<<<<
+ *         """Parse the given document (as bytes).
+ * 
+ */
+
+    /* function exit code */
+    __pyx_L1_error:;
+    __Pyx_XDECREF(__pyx_t_3);
+    __Pyx_AddTraceback("pysimdjson.ParsedJson.parse", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    __pyx_r = NULL;
+    __pyx_L0:;
+    __Pyx_XGIVEREF(__pyx_r);
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  /* "pysimdjson.pyx":133
+ *         return json_parse(source, len(source), self.pj, True)
+ * 
+ *     def to_obj(self):             # <<<<<<<<<<<<<<
+ *         """Recursively convert a parsed json document to a Python object and
+ *         return it.
+ */
+
+  /* Python wrapper */
+  static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_7to_obj(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+  static char __pyx_doc_10pysimdjson_10ParsedJson_6to_obj[] = "Recursively convert a parsed json document to a Python object and\n        return it.\n        ";
+  static PyObject *__pyx_pw_10pysimdjson_10ParsedJson_7to_obj(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+    PyObject *__pyx_r = 0;
+    __Pyx_RefNannyDeclarations
+    __Pyx_RefNannySetupContext("to_obj (wrapper)", 0);
+    __pyx_r = __pyx_pf_10pysimdjson_10ParsedJson_6to_obj(((struct __pyx_obj_10pysimdjson_ParsedJson *)__pyx_v_self));
+
+    /* function exit code */
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_6to_obj(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self) {
+    struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_iter = NULL;
+    PyObject *__pyx_r = NULL;
+    __Pyx_RefNannyDeclarations
+    PyObject *__pyx_t_1 = NULL;
+    int __pyx_t_2;
+    PyObject *__pyx_t_3 = NULL;
+    PyObject *__pyx_t_4 = NULL;
+    __Pyx_RefNannySetupContext("to_obj", 0);
+
+    /* "pysimdjson.pyx":137
+ *         return it.
+ *         """
+ *         iter = Iterator(self)             # <<<<<<<<<<<<<<
+ *         if not iter.isOk():
+ *             # Prooooably not the right exception
+ */
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_ptype_10pysimdjson_Iterator), ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 137, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_v_iter = ((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_t_1);
+    __pyx_t_1 = 0;
+
+    /* "pysimdjson.pyx":138
+ *         """
+ *         iter = Iterator(self)
+ *         if not iter.isOk():             # <<<<<<<<<<<<<<
+ *             # Prooooably not the right exception
+ *             raise JSONDecodeError('Error iterating over document', '', 0)
+ */
+    __pyx_t_2 = ((!(((struct __pyx_vtabstruct_10pysimdjson_Iterator *)__pyx_v_iter->__pyx_vtab)->isOk(__pyx_v_iter, 0) != 0)) != 0);
+    if (unlikely(__pyx_t_2)) {
+
+      /* "pysimdjson.pyx":140
+ *         if not iter.isOk():
+ *             # Prooooably not the right exception
+ *             raise JSONDecodeError('Error iterating over document', '', 0)             # <<<<<<<<<<<<<<
+ *         return iter.to_obj()
+ * 
+ */
+      __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_JSONDecodeError); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 140, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 140, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_3);
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_Raise(__pyx_t_3, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __PYX_ERR(1, 140, __pyx_L1_error)
+
+      /* "pysimdjson.pyx":138
+ *         """
+ *         iter = Iterator(self)
+ *         if not iter.isOk():             # <<<<<<<<<<<<<<
+ *             # Prooooably not the right exception
+ *             raise JSONDecodeError('Error iterating over document', '', 0)
+ */
+    }
+
+    /* "pysimdjson.pyx":141
+ *             # Prooooably not the right exception
+ *             raise JSONDecodeError('Error iterating over document', '', 0)
+ *         return iter.to_obj()             # <<<<<<<<<<<<<<
+ * 
+ *     def items(self, prefix):
+ */
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_iter), __pyx_n_s_to_obj); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 141, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_4 = NULL;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_1))) {
+      __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_1);
+      if (likely(__pyx_t_4)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+        __Pyx_INCREF(__pyx_t_4);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_1, function);
+      }
+    }
+    __pyx_t_3 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_1);
+    __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 141, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_r = __pyx_t_3;
+    __pyx_t_3 = 0;
+    goto __pyx_L0;
+
+    /* "pysimdjson.pyx":133
+ *         return json_parse(source, len(source), self.pj, True)
+ * 
+ *     def to_obj(self):             # <<<<<<<<<<<<<<
+ *         """Recursively convert a parsed json document to a Python object and
+ *         return it.
+ */
+
+    /* function exit code */
+    __pyx_L1_error:;
+    __Pyx_XDECREF(__pyx_t_1);
+    __Pyx_XDECREF(__pyx_t_3);
+    __Pyx_XDECREF(__pyx_t_4);
+    __Pyx_AddTraceback("pysimdjson.ParsedJson.to_obj", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    __pyx_r = NULL;
+    __pyx_L0:;
+    __Pyx_XDECREF((PyObject *)__pyx_v_iter);
+    __Pyx_XGIVEREF(__pyx_r);
+    __Pyx_RefNannyFinishContext();
+    return __pyx_r;
+  }
+
+  /* "pysimdjson.pyx":143
+ *         return iter.to_obj()
  * 
  *     def items(self, prefix):             # <<<<<<<<<<<<<<
  *         """Similar to the ijson.items() interface, this method allows you to
@@ -2630,7 +4005,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
 
   static PyObject *__pyx_pf_10pysimdjson_10ParsedJson_8items(struct __pyx_obj_10pysimdjson_ParsedJson *__pyx_v_self, PyObject *__pyx_v_prefix) {
     PyObject *__pyx_v_parsed_prefix = 0;
-    ParsedJson::iterator *__pyx_v_iter;
+    struct __pyx_obj_10pysimdjson_Iterator *__pyx_v_iter = NULL;
     PyObject *__pyx_v_key = NULL;
     PyObject *__pyx_r = NULL;
     __Pyx_RefNannyDeclarations
@@ -2638,216 +4013,184 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     int __pyx_t_2;
     PyObject *__pyx_t_3 = NULL;
     Py_ssize_t __pyx_t_4;
-    char const *__pyx_t_5;
-    int __pyx_t_6;
+    PyObject *__pyx_t_5 = NULL;
+    PyObject *__pyx_t_6 = NULL;
     int __pyx_t_7;
-    char const *__pyx_t_8;
-    PyObject *__pyx_t_9 = NULL;
-    PyObject *__pyx_t_10 = NULL;
-    PyObject *__pyx_t_11 = NULL;
-    PyObject *__pyx_t_12 = NULL;
-    PyObject *__pyx_t_13 = NULL;
-    PyObject *__pyx_t_14 = NULL;
     __Pyx_RefNannySetupContext("items", 0);
 
-    /* "pysimdjson.pyx":114
+    /* "pysimdjson.pyx":148
  *         Python objects, which is very expensive.
  *         """
  *         cdef list parsed_prefix = parse_prefix(prefix)             # <<<<<<<<<<<<<<
- *         iter = new CParsedJson.iterator(self.pj)
- *         try:
+ * 
+ *         iter = Iterator(self)
  */
-    __pyx_t_1 = __pyx_f_10pysimdjson_parse_prefix(__pyx_v_prefix, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 114, __pyx_L1_error)
+    __pyx_t_1 = __pyx_f_10pysimdjson_parse_prefix(__pyx_v_prefix, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 148, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_v_parsed_prefix = ((PyObject*)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "pysimdjson.pyx":115
- *         """
+    /* "pysimdjson.pyx":150
  *         cdef list parsed_prefix = parse_prefix(prefix)
- *         iter = new CParsedJson.iterator(self.pj)             # <<<<<<<<<<<<<<
- *         try:
- *             if not iter.isOk():
+ * 
+ *         iter = Iterator(self)             # <<<<<<<<<<<<<<
+ *         if not iter.isOk():
+ *             raise JSONDecodeError('Error iterating over document', '', 0)
  */
-    __pyx_v_iter = new ParsedJson::iterator(__pyx_v_self->pj);
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_ptype_10pysimdjson_Iterator), ((PyObject *)__pyx_v_self)); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 150, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_v_iter = ((struct __pyx_obj_10pysimdjson_Iterator *)__pyx_t_1);
+    __pyx_t_1 = 0;
 
-    /* "pysimdjson.pyx":116
- *         cdef list parsed_prefix = parse_prefix(prefix)
- *         iter = new CParsedJson.iterator(self.pj)
- *         try:             # <<<<<<<<<<<<<<
- *             if not iter.isOk():
- *                 raise JSONDecodeError('Error iterating over document', '', 0)
+    /* "pysimdjson.pyx":151
+ * 
+ *         iter = Iterator(self)
+ *         if not iter.isOk():             # <<<<<<<<<<<<<<
+ *             raise JSONDecodeError('Error iterating over document', '', 0)
+ * 
  */
-    /*try:*/ {
+    __pyx_t_2 = ((!(((struct __pyx_vtabstruct_10pysimdjson_Iterator *)__pyx_v_iter->__pyx_vtab)->isOk(__pyx_v_iter, 0) != 0)) != 0);
+    if (unlikely(__pyx_t_2)) {
 
-      /* "pysimdjson.pyx":117
- *         iter = new CParsedJson.iterator(self.pj)
- *         try:
- *             if not iter.isOk():             # <<<<<<<<<<<<<<
- *                 raise JSONDecodeError('Error iterating over document', '', 0)
+      /* "pysimdjson.pyx":152
+ *         iter = Iterator(self)
+ *         if not iter.isOk():
+ *             raise JSONDecodeError('Error iterating over document', '', 0)             # <<<<<<<<<<<<<<
  * 
+ *         for key in parsed_prefix:
  */
-      __pyx_t_2 = ((!(__pyx_v_iter->isOk() != 0)) != 0);
-      if (unlikely(__pyx_t_2)) {
-
-        /* "pysimdjson.pyx":118
- *         try:
- *             if not iter.isOk():
- *                 raise JSONDecodeError('Error iterating over document', '', 0)             # <<<<<<<<<<<<<<
- * 
- *             for key in parsed_prefix:
- */
-        __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_JSONDecodeError); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 118, __pyx_L4_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 118, __pyx_L4_error)
-        __Pyx_GOTREF(__pyx_t_3);
-        __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __Pyx_Raise(__pyx_t_3, 0, 0, 0);
-        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __PYX_ERR(0, 118, __pyx_L4_error)
-
-        /* "pysimdjson.pyx":117
- *         iter = new CParsedJson.iterator(self.pj)
- *         try:
- *             if not iter.isOk():             # <<<<<<<<<<<<<<
- *                 raise JSONDecodeError('Error iterating over document', '', 0)
- * 
- */
-      }
-
-      /* "pysimdjson.pyx":120
- *                 raise JSONDecodeError('Error iterating over document', '', 0)
- * 
- *             for key in parsed_prefix:             # <<<<<<<<<<<<<<
- *                 if not iter.move_to_key(key):
- *                     return None
- */
-      if (unlikely(__pyx_v_parsed_prefix == Py_None)) {
-        PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
-        __PYX_ERR(0, 120, __pyx_L4_error)
-      }
-      __pyx_t_3 = __pyx_v_parsed_prefix; __Pyx_INCREF(__pyx_t_3); __pyx_t_4 = 0;
-      for (;;) {
-        if (__pyx_t_4 >= PyList_GET_SIZE(__pyx_t_3)) break;
-        #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-        __pyx_t_1 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) __PYX_ERR(0, 120, __pyx_L4_error)
-        #else
-        __pyx_t_1 = PySequence_ITEM(__pyx_t_3, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 120, __pyx_L4_error)
-        __Pyx_GOTREF(__pyx_t_1);
-        #endif
-        __Pyx_XDECREF_SET(__pyx_v_key, __pyx_t_1);
-        __pyx_t_1 = 0;
-
-        /* "pysimdjson.pyx":121
- * 
- *             for key in parsed_prefix:
- *                 if not iter.move_to_key(key):             # <<<<<<<<<<<<<<
- *                     return None
- * 
- */
-        __pyx_t_5 = __Pyx_PyObject_AsString(__pyx_v_key); if (unlikely((!__pyx_t_5) && PyErr_Occurred())) __PYX_ERR(0, 121, __pyx_L4_error)
-        __pyx_t_2 = ((!(__pyx_v_iter->move_to_key(__pyx_t_5) != 0)) != 0);
-        if (__pyx_t_2) {
-
-          /* "pysimdjson.pyx":122
- *             for key in parsed_prefix:
- *                 if not iter.move_to_key(key):
- *                     return None             # <<<<<<<<<<<<<<
- * 
- *             return self._to_obj(iter)
- */
-          __Pyx_XDECREF(__pyx_r);
-          __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-          __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-          goto __pyx_L3_return;
-
-          /* "pysimdjson.pyx":121
- * 
- *             for key in parsed_prefix:
- *                 if not iter.move_to_key(key):             # <<<<<<<<<<<<<<
- *                     return None
- * 
- */
-        }
-
-        /* "pysimdjson.pyx":120
- *                 raise JSONDecodeError('Error iterating over document', '', 0)
- * 
- *             for key in parsed_prefix:             # <<<<<<<<<<<<<<
- *                 if not iter.move_to_key(key):
- *                     return None
- */
-      }
-      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-
-      /* "pysimdjson.pyx":124
- *                     return None
- * 
- *             return self._to_obj(iter)             # <<<<<<<<<<<<<<
- *         finally:
- *             del iter
- */
-      __Pyx_XDECREF(__pyx_r);
-      __pyx_t_3 = ((struct __pyx_vtabstruct_10pysimdjson_ParsedJson *)__pyx_v_self->__pyx_vtab)->_to_obj(__pyx_v_self, __pyx_v_iter); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 124, __pyx_L4_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_JSONDecodeError); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 152, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 152, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_r = __pyx_t_3;
-      __pyx_t_3 = 0;
-      goto __pyx_L3_return;
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __Pyx_Raise(__pyx_t_3, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+      __PYX_ERR(1, 152, __pyx_L1_error)
+
+      /* "pysimdjson.pyx":151
+ * 
+ *         iter = Iterator(self)
+ *         if not iter.isOk():             # <<<<<<<<<<<<<<
+ *             raise JSONDecodeError('Error iterating over document', '', 0)
+ * 
+ */
     }
 
-    /* "pysimdjson.pyx":126
- *             return self._to_obj(iter)
- *         finally:
- *             del iter             # <<<<<<<<<<<<<<
+    /* "pysimdjson.pyx":154
+ *             raise JSONDecodeError('Error iterating over document', '', 0)
+ * 
+ *         for key in parsed_prefix:             # <<<<<<<<<<<<<<
+ *             if not iter.move_to_key(key):
+ *                 return None
+ */
+    if (unlikely(__pyx_v_parsed_prefix == Py_None)) {
+      PyErr_SetString(PyExc_TypeError, "'NoneType' object is not iterable");
+      __PYX_ERR(1, 154, __pyx_L1_error)
+    }
+    __pyx_t_3 = __pyx_v_parsed_prefix; __Pyx_INCREF(__pyx_t_3); __pyx_t_4 = 0;
+    for (;;) {
+      if (__pyx_t_4 >= PyList_GET_SIZE(__pyx_t_3)) break;
+      #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+      __pyx_t_1 = PyList_GET_ITEM(__pyx_t_3, __pyx_t_4); __Pyx_INCREF(__pyx_t_1); __pyx_t_4++; if (unlikely(0 < 0)) __PYX_ERR(1, 154, __pyx_L1_error)
+      #else
+      __pyx_t_1 = PySequence_ITEM(__pyx_t_3, __pyx_t_4); __pyx_t_4++; if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 154, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      #endif
+      __Pyx_XDECREF_SET(__pyx_v_key, __pyx_t_1);
+      __pyx_t_1 = 0;
+
+      /* "pysimdjson.pyx":155
+ * 
+ *         for key in parsed_prefix:
+ *             if not iter.move_to_key(key):             # <<<<<<<<<<<<<<
+ *                 return None
+ * 
+ */
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_iter), __pyx_n_s_move_to_key); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 155, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_5);
+      __pyx_t_6 = NULL;
+      if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_5))) {
+        __pyx_t_6 = PyMethod_GET_SELF(__pyx_t_5);
+        if (likely(__pyx_t_6)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_5);
+          __Pyx_INCREF(__pyx_t_6);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_5, function);
+        }
+      }
+      __pyx_t_1 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_6, __pyx_v_key) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_v_key);
+      __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 155, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_1);
+      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
+      __pyx_t_2 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_2 < 0)) __PYX_ERR(1, 155, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+      __pyx_t_7 = ((!__pyx_t_2) != 0);
+      if (__pyx_t_7) {
+
+        /* "pysimdjson.pyx":156
+ *         for key in parsed_prefix:
+ *             if not iter.move_to_key(key):
+ *                 return None             # <<<<<<<<<<<<<<
+ * 
+ *         return iter.to_obj()
+ */
+        __Pyx_XDECREF(__pyx_r);
+        __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+        __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+        goto __pyx_L0;
+
+        /* "pysimdjson.pyx":155
+ * 
+ *         for key in parsed_prefix:
+ *             if not iter.move_to_key(key):             # <<<<<<<<<<<<<<
+ *                 return None
+ * 
+ */
+      }
+
+      /* "pysimdjson.pyx":154
+ *             raise JSONDecodeError('Error iterating over document', '', 0)
+ * 
+ *         for key in parsed_prefix:             # <<<<<<<<<<<<<<
+ *             if not iter.move_to_key(key):
+ *                 return None
+ */
+    }
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+
+    /* "pysimdjson.pyx":158
+ *                 return None
+ * 
+ *         return iter.to_obj()             # <<<<<<<<<<<<<<
  * 
  * 
  */
-    /*finally:*/ {
-      __pyx_L4_error:;
-      /*exception exit:*/{
-        __Pyx_PyThreadState_declare
-        __Pyx_PyThreadState_assign
-        __pyx_t_9 = 0; __pyx_t_10 = 0; __pyx_t_11 = 0; __pyx_t_12 = 0; __pyx_t_13 = 0; __pyx_t_14 = 0;
-        __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-        if (PY_MAJOR_VERSION >= 3) __Pyx_ExceptionSwap(&__pyx_t_12, &__pyx_t_13, &__pyx_t_14);
-        if ((PY_MAJOR_VERSION < 3) || unlikely(__Pyx_GetException(&__pyx_t_9, &__pyx_t_10, &__pyx_t_11) < 0)) __Pyx_ErrFetch(&__pyx_t_9, &__pyx_t_10, &__pyx_t_11);
-        __Pyx_XGOTREF(__pyx_t_9);
-        __Pyx_XGOTREF(__pyx_t_10);
-        __Pyx_XGOTREF(__pyx_t_11);
-        __Pyx_XGOTREF(__pyx_t_12);
-        __Pyx_XGOTREF(__pyx_t_13);
-        __Pyx_XGOTREF(__pyx_t_14);
-        __pyx_t_6 = __pyx_lineno; __pyx_t_7 = __pyx_clineno; __pyx_t_8 = __pyx_filename;
-        {
-          delete __pyx_v_iter;
-        }
-        if (PY_MAJOR_VERSION >= 3) {
-          __Pyx_XGIVEREF(__pyx_t_12);
-          __Pyx_XGIVEREF(__pyx_t_13);
-          __Pyx_XGIVEREF(__pyx_t_14);
-          __Pyx_ExceptionReset(__pyx_t_12, __pyx_t_13, __pyx_t_14);
-        }
-        __Pyx_XGIVEREF(__pyx_t_9);
-        __Pyx_XGIVEREF(__pyx_t_10);
-        __Pyx_XGIVEREF(__pyx_t_11);
-        __Pyx_ErrRestore(__pyx_t_9, __pyx_t_10, __pyx_t_11);
-        __pyx_t_9 = 0; __pyx_t_10 = 0; __pyx_t_11 = 0; __pyx_t_12 = 0; __pyx_t_13 = 0; __pyx_t_14 = 0;
-        __pyx_lineno = __pyx_t_6; __pyx_clineno = __pyx_t_7; __pyx_filename = __pyx_t_8;
-        goto __pyx_L1_error;
-      }
-      __pyx_L3_return: {
-        __pyx_t_14 = __pyx_r;
-        __pyx_r = 0;
-        delete __pyx_v_iter;
-        __pyx_r = __pyx_t_14;
-        __pyx_t_14 = 0;
-        goto __pyx_L0;
+    __Pyx_XDECREF(__pyx_r);
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_iter), __pyx_n_s_to_obj); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 158, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_1);
+    __pyx_t_5 = NULL;
+    if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_1))) {
+      __pyx_t_5 = PyMethod_GET_SELF(__pyx_t_1);
+      if (likely(__pyx_t_5)) {
+        PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_1);
+        __Pyx_INCREF(__pyx_t_5);
+        __Pyx_INCREF(function);
+        __Pyx_DECREF_SET(__pyx_t_1, function);
       }
     }
+    __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_5) : __Pyx_PyObject_CallNoArg(__pyx_t_1);
+    __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 158, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+    __pyx_r = __pyx_t_3;
+    __pyx_t_3 = 0;
+    goto __pyx_L0;
 
-    /* "pysimdjson.pyx":109
- *             return None
+    /* "pysimdjson.pyx":143
+ *         return iter.to_obj()
  * 
  *     def items(self, prefix):             # <<<<<<<<<<<<<<
  *         """Similar to the ijson.items() interface, this method allows you to
@@ -2858,10 +4201,13 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     __pyx_L1_error:;
     __Pyx_XDECREF(__pyx_t_1);
     __Pyx_XDECREF(__pyx_t_3);
+    __Pyx_XDECREF(__pyx_t_5);
+    __Pyx_XDECREF(__pyx_t_6);
     __Pyx_AddTraceback("pysimdjson.ParsedJson.items", __pyx_clineno, __pyx_lineno, __pyx_filename);
     __pyx_r = NULL;
     __pyx_L0:;
     __Pyx_XDECREF(__pyx_v_parsed_prefix);
+    __Pyx_XDECREF((PyObject *)__pyx_v_iter);
     __Pyx_XDECREF(__pyx_v_key);
     __Pyx_XGIVEREF(__pyx_r);
     __Pyx_RefNannyFinishContext();
@@ -2899,11 +4245,11 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("self.pj cannot be converted to a Python object for pickling")
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__4, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__6, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(1, 2, __pyx_L1_error)
+    __PYX_ERR(0, 2, __pyx_L1_error)
 
     /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
@@ -2952,11 +4298,11 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("self.pj cannot be converted to a Python object for pickling")             # <<<<<<<<<<<<<<
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 4, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(1, 4, __pyx_L1_error)
+    __PYX_ERR(0, 4, __pyx_L1_error)
 
     /* "(tree fragment)":3
  * def __reduce_cython__(self):
@@ -2975,7 +4321,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     return __pyx_r;
   }
 
-  /* "pysimdjson.pyx":129
+  /* "pysimdjson.pyx":161
  * 
  * 
  * def loads(s):             # <<<<<<<<<<<<<<
@@ -3005,7 +4351,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     PyObject *__pyx_t_3 = NULL;
     __Pyx_RefNannySetupContext("loads", 0);
 
-    /* "pysimdjson.pyx":130
+    /* "pysimdjson.pyx":162
  * 
  * def loads(s):
  *     return ParsedJson(s).to_obj()             # <<<<<<<<<<<<<<
@@ -3013,9 +4359,9 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  * 
  */
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_ptype_10pysimdjson_ParsedJson), __pyx_v_s); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 130, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(((PyObject *)__pyx_ptype_10pysimdjson_ParsedJson), __pyx_v_s); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 162, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_to_obj); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 130, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_to_obj); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 162, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_2 = NULL;
@@ -3030,14 +4376,14 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     }
     __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
     __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-    if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 130, __pyx_L1_error)
+    if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 162, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __pyx_r = __pyx_t_1;
     __pyx_t_1 = 0;
     goto __pyx_L0;
 
-    /* "pysimdjson.pyx":129
+    /* "pysimdjson.pyx":161
  * 
  * 
  * def loads(s):             # <<<<<<<<<<<<<<
@@ -3058,7 +4404,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     return __pyx_r;
   }
 
-  /* "pysimdjson.pyx":140
+  /* "pysimdjson.pyx":172
  * 
  * 
  * cpdef list parse_prefix(prefix):             # <<<<<<<<<<<<<<
@@ -3085,7 +4431,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     int __pyx_t_9;
     __Pyx_RefNannySetupContext("parse_prefix", 0);
 
-    /* "pysimdjson.pyx":141
+    /* "pysimdjson.pyx":173
  * 
  * cpdef list parse_prefix(prefix):
  *     cdef int current_state = Q_UNQUOTED             # <<<<<<<<<<<<<<
@@ -3094,31 +4440,31 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
     __pyx_v_current_state = __pyx_e_10pysimdjson_Q_UNQUOTED;
 
-    /* "pysimdjson.pyx":142
+    /* "pysimdjson.pyx":174
  * cpdef list parse_prefix(prefix):
  *     cdef int current_state = Q_UNQUOTED
  *     cdef list result = []             # <<<<<<<<<<<<<<
  *     cdef list buff = []
  * 
  */
-    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 142, __pyx_L1_error)
+    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 174, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_v_result = ((PyObject*)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "pysimdjson.pyx":143
+    /* "pysimdjson.pyx":175
  *     cdef int current_state = Q_UNQUOTED
  *     cdef list result = []
  *     cdef list buff = []             # <<<<<<<<<<<<<<
  * 
  *     for c in prefix:
  */
-    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 143, __pyx_L1_error)
+    __pyx_t_1 = PyList_New(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 175, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_v_buff = ((PyObject*)__pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "pysimdjson.pyx":145
+    /* "pysimdjson.pyx":177
  *     cdef list buff = []
  * 
  *     for c in prefix:             # <<<<<<<<<<<<<<
@@ -3129,26 +4475,26 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       __pyx_t_1 = __pyx_v_prefix; __Pyx_INCREF(__pyx_t_1); __pyx_t_2 = 0;
       __pyx_t_3 = NULL;
     } else {
-      __pyx_t_2 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_prefix); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 145, __pyx_L1_error)
+      __pyx_t_2 = -1; __pyx_t_1 = PyObject_GetIter(__pyx_v_prefix); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 177, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_3 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 145, __pyx_L1_error)
+      __pyx_t_3 = Py_TYPE(__pyx_t_1)->tp_iternext; if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 177, __pyx_L1_error)
     }
     for (;;) {
       if (likely(!__pyx_t_3)) {
         if (likely(PyList_CheckExact(__pyx_t_1))) {
           if (__pyx_t_2 >= PyList_GET_SIZE(__pyx_t_1)) break;
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 145, __pyx_L1_error)
+          __pyx_t_4 = PyList_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(1, 177, __pyx_L1_error)
           #else
-          __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 145, __pyx_L1_error)
+          __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 177, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           #endif
         } else {
           if (__pyx_t_2 >= PyTuple_GET_SIZE(__pyx_t_1)) break;
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(0, 145, __pyx_L1_error)
+          __pyx_t_4 = PyTuple_GET_ITEM(__pyx_t_1, __pyx_t_2); __Pyx_INCREF(__pyx_t_4); __pyx_t_2++; if (unlikely(0 < 0)) __PYX_ERR(1, 177, __pyx_L1_error)
           #else
-          __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 145, __pyx_L1_error)
+          __pyx_t_4 = PySequence_ITEM(__pyx_t_1, __pyx_t_2); __pyx_t_2++; if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 177, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           #endif
         }
@@ -3158,7 +4504,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
             if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 145, __pyx_L1_error)
+            else __PYX_ERR(1, 177, __pyx_L1_error)
           }
           break;
         }
@@ -3167,7 +4513,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       __Pyx_XDECREF_SET(__pyx_v_c, __pyx_t_4);
       __pyx_t_4 = 0;
 
-      /* "pysimdjson.pyx":146
+      /* "pysimdjson.pyx":178
  * 
  *     for c in prefix:
  *         if current_state == Q_UNQUOTED:             # <<<<<<<<<<<<<<
@@ -3177,17 +4523,17 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       switch (__pyx_v_current_state) {
         case __pyx_e_10pysimdjson_Q_UNQUOTED:
 
-        /* "pysimdjson.pyx":148
+        /* "pysimdjson.pyx":180
  *         if current_state == Q_UNQUOTED:
  *             # Unquoted string
  *             if c == '"':             # <<<<<<<<<<<<<<
  *                 current_state = Q_QUOTED
  *             elif c == '.':
  */
-        __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_c, __pyx_kp_s__6, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 148, __pyx_L1_error)
+        __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_c, __pyx_kp_s__8, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(1, 180, __pyx_L1_error)
         if (__pyx_t_5) {
 
-          /* "pysimdjson.pyx":149
+          /* "pysimdjson.pyx":181
  *             # Unquoted string
  *             if c == '"':
  *                 current_state = Q_QUOTED             # <<<<<<<<<<<<<<
@@ -3196,7 +4542,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
           __pyx_v_current_state = __pyx_e_10pysimdjson_Q_QUOTED;
 
-          /* "pysimdjson.pyx":148
+          /* "pysimdjson.pyx":180
  *         if current_state == Q_UNQUOTED:
  *             # Unquoted string
  *             if c == '"':             # <<<<<<<<<<<<<<
@@ -3206,17 +4552,17 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
           goto __pyx_L5;
         }
 
-        /* "pysimdjson.pyx":150
+        /* "pysimdjson.pyx":182
  *             if c == '"':
  *                 current_state = Q_QUOTED
  *             elif c == '.':             # <<<<<<<<<<<<<<
  *                 if buff:
  *                     result.append(''.join(buff).encode('utf-8'))
  */
-        __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_c, __pyx_kp_s__7, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 150, __pyx_L1_error)
+        __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_c, __pyx_kp_s__9, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(1, 182, __pyx_L1_error)
         if (__pyx_t_5) {
 
-          /* "pysimdjson.pyx":151
+          /* "pysimdjson.pyx":183
  *                 current_state = Q_QUOTED
  *             elif c == '.':
  *                 if buff:             # <<<<<<<<<<<<<<
@@ -3226,16 +4572,16 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
           __pyx_t_5 = (PyList_GET_SIZE(__pyx_v_buff) != 0);
           if (__pyx_t_5) {
 
-            /* "pysimdjson.pyx":152
+            /* "pysimdjson.pyx":184
  *             elif c == '.':
  *                 if buff:
  *                     result.append(''.join(buff).encode('utf-8'))             # <<<<<<<<<<<<<<
  *                     del buff[:]
  *             else:
  */
-            __pyx_t_6 = __Pyx_PyString_Join(__pyx_kp_s__2, __pyx_v_buff); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 152, __pyx_L1_error)
+            __pyx_t_6 = __Pyx_PyString_Join(__pyx_kp_s__4, __pyx_v_buff); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 184, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_6);
-            __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_encode); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 152, __pyx_L1_error)
+            __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_encode); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 184, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_7);
             __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
             __pyx_t_6 = NULL;
@@ -3250,22 +4596,22 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
             }
             __pyx_t_4 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_6, __pyx_kp_s_utf_8) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_kp_s_utf_8);
             __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-            if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 152, __pyx_L1_error)
+            if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 184, __pyx_L1_error)
             __Pyx_GOTREF(__pyx_t_4);
             __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-            __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_result, __pyx_t_4); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 152, __pyx_L1_error)
+            __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_result, __pyx_t_4); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(1, 184, __pyx_L1_error)
             __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-            /* "pysimdjson.pyx":153
+            /* "pysimdjson.pyx":185
  *                 if buff:
  *                     result.append(''.join(buff).encode('utf-8'))
  *                     del buff[:]             # <<<<<<<<<<<<<<
  *             else:
  *                 buff.append(c)
  */
-            if (__Pyx_PyObject_DelSlice(__pyx_v_buff, 0, 0, NULL, NULL, NULL, 0, 0, 1) < 0) __PYX_ERR(0, 153, __pyx_L1_error)
+            if (__Pyx_PyObject_DelSlice(__pyx_v_buff, 0, 0, NULL, NULL, NULL, 0, 0, 1) < 0) __PYX_ERR(1, 185, __pyx_L1_error)
 
-            /* "pysimdjson.pyx":151
+            /* "pysimdjson.pyx":183
  *                 current_state = Q_QUOTED
  *             elif c == '.':
  *                 if buff:             # <<<<<<<<<<<<<<
@@ -3274,7 +4620,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
           }
 
-          /* "pysimdjson.pyx":150
+          /* "pysimdjson.pyx":182
  *             if c == '"':
  *                 current_state = Q_QUOTED
  *             elif c == '.':             # <<<<<<<<<<<<<<
@@ -3284,7 +4630,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
           goto __pyx_L5;
         }
 
-        /* "pysimdjson.pyx":155
+        /* "pysimdjson.pyx":187
  *                     del buff[:]
  *             else:
  *                 buff.append(c)             # <<<<<<<<<<<<<<
@@ -3292,11 +4638,11 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  *             # Quoted string
  */
         /*else*/ {
-          __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_buff, __pyx_v_c); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 155, __pyx_L1_error)
+          __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_buff, __pyx_v_c); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(1, 187, __pyx_L1_error)
         }
         __pyx_L5:;
 
-        /* "pysimdjson.pyx":146
+        /* "pysimdjson.pyx":178
  * 
  *     for c in prefix:
  *         if current_state == Q_UNQUOTED:             # <<<<<<<<<<<<<<
@@ -3306,17 +4652,17 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
         break;
         case __pyx_e_10pysimdjson_Q_QUOTED:
 
-        /* "pysimdjson.pyx":158
+        /* "pysimdjson.pyx":190
  *         elif current_state == Q_QUOTED:
  *             # Quoted string
  *             if c == '\\':             # <<<<<<<<<<<<<<
  *                 current_state = Q_ESCAPE
  *             elif c == '"':
  */
-        __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_c, __pyx_kp_s__8, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 158, __pyx_L1_error)
+        __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_c, __pyx_kp_s__10, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(1, 190, __pyx_L1_error)
         if (__pyx_t_5) {
 
-          /* "pysimdjson.pyx":159
+          /* "pysimdjson.pyx":191
  *             # Quoted string
  *             if c == '\\':
  *                 current_state = Q_ESCAPE             # <<<<<<<<<<<<<<
@@ -3325,7 +4671,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
           __pyx_v_current_state = __pyx_e_10pysimdjson_Q_ESCAPE;
 
-          /* "pysimdjson.pyx":158
+          /* "pysimdjson.pyx":190
  *         elif current_state == Q_QUOTED:
  *             # Quoted string
  *             if c == '\\':             # <<<<<<<<<<<<<<
@@ -3335,17 +4681,17 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
           goto __pyx_L7;
         }
 
-        /* "pysimdjson.pyx":160
+        /* "pysimdjson.pyx":192
  *             if c == '\\':
  *                 current_state = Q_ESCAPE
  *             elif c == '"':             # <<<<<<<<<<<<<<
  *                 current_state = Q_UNQUOTED
  *                 result.append(''.join(buff).encode('utf-8'))
  */
-        __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_c, __pyx_kp_s__6, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 160, __pyx_L1_error)
+        __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_c, __pyx_kp_s__8, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(1, 192, __pyx_L1_error)
         if (__pyx_t_5) {
 
-          /* "pysimdjson.pyx":161
+          /* "pysimdjson.pyx":193
  *                 current_state = Q_ESCAPE
  *             elif c == '"':
  *                 current_state = Q_UNQUOTED             # <<<<<<<<<<<<<<
@@ -3354,16 +4700,16 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
           __pyx_v_current_state = __pyx_e_10pysimdjson_Q_UNQUOTED;
 
-          /* "pysimdjson.pyx":162
+          /* "pysimdjson.pyx":194
  *             elif c == '"':
  *                 current_state = Q_UNQUOTED
  *                 result.append(''.join(buff).encode('utf-8'))             # <<<<<<<<<<<<<<
  *                 del buff[:]
  *             else:
  */
-          __pyx_t_7 = __Pyx_PyString_Join(__pyx_kp_s__2, __pyx_v_buff); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 162, __pyx_L1_error)
+          __pyx_t_7 = __Pyx_PyString_Join(__pyx_kp_s__4, __pyx_v_buff); if (unlikely(!__pyx_t_7)) __PYX_ERR(1, 194, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_7);
-          __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_encode); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 162, __pyx_L1_error)
+          __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_encode); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 194, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_6);
           __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
           __pyx_t_7 = NULL;
@@ -3378,22 +4724,22 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
           }
           __pyx_t_4 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_7, __pyx_kp_s_utf_8) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_kp_s_utf_8);
           __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
-          if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 162, __pyx_L1_error)
+          if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 194, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-          __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_result, __pyx_t_4); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 162, __pyx_L1_error)
+          __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_result, __pyx_t_4); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(1, 194, __pyx_L1_error)
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
 
-          /* "pysimdjson.pyx":163
+          /* "pysimdjson.pyx":195
  *                 current_state = Q_UNQUOTED
  *                 result.append(''.join(buff).encode('utf-8'))
  *                 del buff[:]             # <<<<<<<<<<<<<<
  *             else:
  *                 buff.append(c)
  */
-          if (__Pyx_PyObject_DelSlice(__pyx_v_buff, 0, 0, NULL, NULL, NULL, 0, 0, 1) < 0) __PYX_ERR(0, 163, __pyx_L1_error)
+          if (__Pyx_PyObject_DelSlice(__pyx_v_buff, 0, 0, NULL, NULL, NULL, 0, 0, 1) < 0) __PYX_ERR(1, 195, __pyx_L1_error)
 
-          /* "pysimdjson.pyx":160
+          /* "pysimdjson.pyx":192
  *             if c == '\\':
  *                 current_state = Q_ESCAPE
  *             elif c == '"':             # <<<<<<<<<<<<<<
@@ -3403,7 +4749,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
           goto __pyx_L7;
         }
 
-        /* "pysimdjson.pyx":165
+        /* "pysimdjson.pyx":197
  *                 del buff[:]
  *             else:
  *                 buff.append(c)             # <<<<<<<<<<<<<<
@@ -3411,11 +4757,11 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  *             # Escape within a quoted string
  */
         /*else*/ {
-          __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_buff, __pyx_v_c); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 165, __pyx_L1_error)
+          __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_buff, __pyx_v_c); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(1, 197, __pyx_L1_error)
         }
         __pyx_L7:;
 
-        /* "pysimdjson.pyx":156
+        /* "pysimdjson.pyx":188
  *             else:
  *                 buff.append(c)
  *         elif current_state == Q_QUOTED:             # <<<<<<<<<<<<<<
@@ -3425,23 +4771,23 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
         break;
         case __pyx_e_10pysimdjson_Q_ESCAPE:
 
-        /* "pysimdjson.pyx":168
+        /* "pysimdjson.pyx":200
  *         elif current_state == Q_ESCAPE:
  *             # Escape within a quoted string
  *             buff.append(c)             # <<<<<<<<<<<<<<
  *             current_state = Q_ESCAPE if c == '\\' else Q_QUOTED
  * 
  */
-        __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_buff, __pyx_v_c); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 168, __pyx_L1_error)
+        __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_buff, __pyx_v_c); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(1, 200, __pyx_L1_error)
 
-        /* "pysimdjson.pyx":169
+        /* "pysimdjson.pyx":201
  *             # Escape within a quoted string
  *             buff.append(c)
  *             current_state = Q_ESCAPE if c == '\\' else Q_QUOTED             # <<<<<<<<<<<<<<
  * 
  *     if current_state == Q_QUOTED:
  */
-        __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_c, __pyx_kp_s__8, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 169, __pyx_L1_error)
+        __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_c, __pyx_kp_s__10, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(1, 201, __pyx_L1_error)
         if (__pyx_t_5) {
           __pyx_t_9 = __pyx_e_10pysimdjson_Q_ESCAPE;
         } else {
@@ -3449,7 +4795,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
         }
         __pyx_v_current_state = __pyx_t_9;
 
-        /* "pysimdjson.pyx":166
+        /* "pysimdjson.pyx":198
  *             else:
  *                 buff.append(c)
  *         elif current_state == Q_ESCAPE:             # <<<<<<<<<<<<<<
@@ -3460,7 +4806,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
         default: break;
       }
 
-      /* "pysimdjson.pyx":145
+      /* "pysimdjson.pyx":177
  *     cdef list buff = []
  * 
  *     for c in prefix:             # <<<<<<<<<<<<<<
@@ -3470,7 +4816,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     }
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "pysimdjson.pyx":171
+    /* "pysimdjson.pyx":203
  *             current_state = Q_ESCAPE if c == '\\' else Q_QUOTED
  * 
  *     if current_state == Q_QUOTED:             # <<<<<<<<<<<<<<
@@ -3480,20 +4826,20 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     __pyx_t_5 = ((__pyx_v_current_state == __pyx_e_10pysimdjson_Q_QUOTED) != 0);
     if (unlikely(__pyx_t_5)) {
 
-      /* "pysimdjson.pyx":172
+      /* "pysimdjson.pyx":204
  * 
  *     if current_state == Q_QUOTED:
  *         raise ValueError('Incomplete quoted string')             # <<<<<<<<<<<<<<
  * 
  *     if current_state == Q_ESCAPE:
  */
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 172, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 204, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_Raise(__pyx_t_1, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __PYX_ERR(0, 172, __pyx_L1_error)
+      __PYX_ERR(1, 204, __pyx_L1_error)
 
-      /* "pysimdjson.pyx":171
+      /* "pysimdjson.pyx":203
  *             current_state = Q_ESCAPE if c == '\\' else Q_QUOTED
  * 
  *     if current_state == Q_QUOTED:             # <<<<<<<<<<<<<<
@@ -3502,7 +4848,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
     }
 
-    /* "pysimdjson.pyx":174
+    /* "pysimdjson.pyx":206
  *         raise ValueError('Incomplete quoted string')
  * 
  *     if current_state == Q_ESCAPE:             # <<<<<<<<<<<<<<
@@ -3512,20 +4858,20 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     __pyx_t_5 = ((__pyx_v_current_state == __pyx_e_10pysimdjson_Q_ESCAPE) != 0);
     if (unlikely(__pyx_t_5)) {
 
-      /* "pysimdjson.pyx":175
+      /* "pysimdjson.pyx":207
  * 
  *     if current_state == Q_ESCAPE:
  *         raise ValueError('Incomplete escape sequence')             # <<<<<<<<<<<<<<
  * 
  *     if buff:
  */
-      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 175, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 207, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_Raise(__pyx_t_1, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __PYX_ERR(0, 175, __pyx_L1_error)
+      __PYX_ERR(1, 207, __pyx_L1_error)
 
-      /* "pysimdjson.pyx":174
+      /* "pysimdjson.pyx":206
  *         raise ValueError('Incomplete quoted string')
  * 
  *     if current_state == Q_ESCAPE:             # <<<<<<<<<<<<<<
@@ -3534,7 +4880,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
     }
 
-    /* "pysimdjson.pyx":177
+    /* "pysimdjson.pyx":209
  *         raise ValueError('Incomplete escape sequence')
  * 
  *     if buff:             # <<<<<<<<<<<<<<
@@ -3544,16 +4890,16 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     __pyx_t_5 = (PyList_GET_SIZE(__pyx_v_buff) != 0);
     if (__pyx_t_5) {
 
-      /* "pysimdjson.pyx":178
+      /* "pysimdjson.pyx":210
  * 
  *     if buff:
  *         result.append(''.join(buff).encode('utf-8'))             # <<<<<<<<<<<<<<
  * 
  *     return result
  */
-      __pyx_t_4 = __Pyx_PyString_Join(__pyx_kp_s__2, __pyx_v_buff); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 178, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyString_Join(__pyx_kp_s__4, __pyx_v_buff); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 210, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_encode); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 178, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_encode); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 210, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_t_4 = NULL;
@@ -3568,13 +4914,13 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
       }
       __pyx_t_1 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_4, __pyx_kp_s_utf_8) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_kp_s_utf_8);
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 178, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 210, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_result, __pyx_t_1); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(0, 178, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyList_Append(__pyx_v_result, __pyx_t_1); if (unlikely(__pyx_t_8 == ((int)-1))) __PYX_ERR(1, 210, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "pysimdjson.pyx":177
+      /* "pysimdjson.pyx":209
  *         raise ValueError('Incomplete escape sequence')
  * 
  *     if buff:             # <<<<<<<<<<<<<<
@@ -3583,7 +4929,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
  */
     }
 
-    /* "pysimdjson.pyx":180
+    /* "pysimdjson.pyx":212
  *         result.append(''.join(buff).encode('utf-8'))
  * 
  *     return result             # <<<<<<<<<<<<<<
@@ -3593,7 +4939,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     __pyx_r = __pyx_v_result;
     goto __pyx_L0;
 
-    /* "pysimdjson.pyx":140
+    /* "pysimdjson.pyx":172
  * 
  * 
  * cpdef list parse_prefix(prefix):             # <<<<<<<<<<<<<<
@@ -3637,7 +4983,7 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     PyObject *__pyx_t_1 = NULL;
     __Pyx_RefNannySetupContext("parse_prefix", 0);
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_1 = __pyx_f_10pysimdjson_parse_prefix(__pyx_v_prefix, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 140, __pyx_L1_error)
+    __pyx_t_1 = __pyx_f_10pysimdjson_parse_prefix(__pyx_v_prefix, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 172, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_r = __pyx_t_1;
     __pyx_t_1 = 0;
@@ -3653,7 +4999,115 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     __Pyx_RefNannyFinishContext();
     return __pyx_r;
   }
-  static struct __pyx_vtabstruct_10pysimdjson_ParsedJson __pyx_vtable_10pysimdjson_ParsedJson;
+  static struct __pyx_vtabstruct_10pysimdjson_Iterator __pyx_vtable_10pysimdjson_Iterator;
+
+  static PyObject *__pyx_tp_new_10pysimdjson_Iterator(PyTypeObject *t, PyObject *a, PyObject *k) {
+    struct __pyx_obj_10pysimdjson_Iterator *p;
+    PyObject *o;
+    if (likely((t->tp_flags & Py_TPFLAGS_IS_ABSTRACT) == 0)) {
+      o = (*t->tp_alloc)(t, 0);
+    } else {
+      o = (PyObject *) PyBaseObject_Type.tp_new(t, __pyx_empty_tuple, 0);
+    }
+    if (unlikely(!o)) return 0;
+    p = ((struct __pyx_obj_10pysimdjson_Iterator *)o);
+    p->__pyx_vtab = __pyx_vtabptr_10pysimdjson_Iterator;
+    if (unlikely(__pyx_pw_10pysimdjson_8Iterator_1__cinit__(o, a, k) < 0)) goto bad;
+    return o;
+    bad:
+    Py_DECREF(o); o = 0;
+    return NULL;
+  }
+
+  static void __pyx_tp_dealloc_10pysimdjson_Iterator(PyObject *o) {
+    #if CYTHON_USE_TP_FINALIZE
+    if (unlikely(PyType_HasFeature(Py_TYPE(o), Py_TPFLAGS_HAVE_FINALIZE) && Py_TYPE(o)->tp_finalize) && (!PyType_IS_GC(Py_TYPE(o)) || !_PyGC_FINALIZED(o))) {
+      if (PyObject_CallFinalizerFromDealloc(o)) return;
+    }
+    #endif
+    {
+      PyObject *etype, *eval, *etb;
+      PyErr_Fetch(&etype, &eval, &etb);
+      ++Py_REFCNT(o);
+      __pyx_pw_10pysimdjson_8Iterator_3__dealloc__(o);
+      --Py_REFCNT(o);
+      PyErr_Restore(etype, eval, etb);
+    }
+    (*Py_TYPE(o)->tp_free)(o);
+  }
+
+  static PyMethodDef __pyx_methods_10pysimdjson_Iterator[] = {
+    {"get_type", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_5get_type, METH_NOARGS, 0},
+    {"isOk", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_7isOk, METH_NOARGS, 0},
+    {"next", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_9next, METH_NOARGS, 0},
+    {"down", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_11down, METH_NOARGS, 0},
+    {"up", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_13up, METH_NOARGS, 0},
+    {"get_double", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_15get_double, METH_NOARGS, 0},
+    {"get_integer", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_17get_integer, METH_NOARGS, 0},
+    {"get_string", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_19get_string, METH_NOARGS, 0},
+    {"to_obj", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_21to_obj, METH_NOARGS, 0},
+    {"__reduce_cython__", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_23__reduce_cython__, METH_NOARGS, 0},
+    {"__setstate_cython__", (PyCFunction)__pyx_pw_10pysimdjson_8Iterator_25__setstate_cython__, METH_O, 0},
+    {0, 0, 0, 0}
+  };
+
+  static PyTypeObject __pyx_type_10pysimdjson_Iterator = {
+    PyVarObject_HEAD_INIT(0, 0)
+    "pysimdjson.Iterator", /*tp_name*/
+    sizeof(struct __pyx_obj_10pysimdjson_Iterator), /*tp_basicsize*/
+    0, /*tp_itemsize*/
+    __pyx_tp_dealloc_10pysimdjson_Iterator, /*tp_dealloc*/
+    0, /*tp_print*/
+    0, /*tp_getattr*/
+    0, /*tp_setattr*/
+    #if PY_MAJOR_VERSION < 3
+    0, /*tp_compare*/
+    #endif
+    #if PY_MAJOR_VERSION >= 3
+    0, /*tp_as_async*/
+    #endif
+    0, /*tp_repr*/
+    0, /*tp_as_number*/
+    0, /*tp_as_sequence*/
+    0, /*tp_as_mapping*/
+    0, /*tp_hash*/
+    0, /*tp_call*/
+    0, /*tp_str*/
+    0, /*tp_getattro*/
+    0, /*tp_setattro*/
+    0, /*tp_as_buffer*/
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_VERSION_TAG|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    0, /*tp_doc*/
+    0, /*tp_traverse*/
+    0, /*tp_clear*/
+    0, /*tp_richcompare*/
+    0, /*tp_weaklistoffset*/
+    0, /*tp_iter*/
+    0, /*tp_iternext*/
+    __pyx_methods_10pysimdjson_Iterator, /*tp_methods*/
+    0, /*tp_members*/
+    0, /*tp_getset*/
+    0, /*tp_base*/
+    0, /*tp_dict*/
+    0, /*tp_descr_get*/
+    0, /*tp_descr_set*/
+    0, /*tp_dictoffset*/
+    0, /*tp_init*/
+    0, /*tp_alloc*/
+    __pyx_tp_new_10pysimdjson_Iterator, /*tp_new*/
+    0, /*tp_free*/
+    0, /*tp_is_gc*/
+    0, /*tp_bases*/
+    0, /*tp_mro*/
+    0, /*tp_cache*/
+    0, /*tp_subclasses*/
+    0, /*tp_weaklist*/
+    0, /*tp_del*/
+    0, /*tp_version_tag*/
+    #if PY_VERSION_HEX >= 0x030400a1
+    0, /*tp_finalize*/
+    #endif
+  };
 
   static PyObject *__pyx_tp_new_10pysimdjson_ParsedJson(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
     struct __pyx_obj_10pysimdjson_ParsedJson *p;
@@ -3665,7 +5119,6 @@ static PyObject *__pyx_f_10pysimdjson_10ParsedJson__to_obj(struct __pyx_obj_10py
     }
     if (unlikely(!o)) return 0;
     p = ((struct __pyx_obj_10pysimdjson_ParsedJson *)o);
-    p->__pyx_vtab = __pyx_vtabptr_10pysimdjson_ParsedJson;
     new((void*)&(p->pj)) ParsedJson();
     return o;
   }
@@ -3800,28 +5253,39 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Error_parsing_document, __pyx_k_Error_parsing_document, sizeof(__pyx_k_Error_parsing_document), 0, 0, 1, 0},
   {&__pyx_kp_s_Incomplete_escape_sequence, __pyx_k_Incomplete_escape_sequence, sizeof(__pyx_k_Incomplete_escape_sequence), 0, 0, 1, 0},
   {&__pyx_kp_s_Incomplete_quoted_string, __pyx_k_Incomplete_quoted_string, sizeof(__pyx_k_Incomplete_quoted_string), 0, 0, 1, 0},
+  {&__pyx_n_s_Iterator, __pyx_k_Iterator, sizeof(__pyx_k_Iterator), 0, 0, 1, 1},
   {&__pyx_n_s_JSONDecodeError, __pyx_k_JSONDecodeError, sizeof(__pyx_k_JSONDecodeError), 0, 0, 1, 1},
   {&__pyx_n_s_MemoryError, __pyx_k_MemoryError, sizeof(__pyx_k_MemoryError), 0, 0, 1, 1},
   {&__pyx_n_s_ParsedJson, __pyx_k_ParsedJson, sizeof(__pyx_k_ParsedJson), 0, 0, 1, 1},
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
-  {&__pyx_kp_s__2, __pyx_k__2, sizeof(__pyx_k__2), 0, 0, 1, 0},
-  {&__pyx_kp_s__6, __pyx_k__6, sizeof(__pyx_k__6), 0, 0, 1, 0},
-  {&__pyx_kp_s__7, __pyx_k__7, sizeof(__pyx_k__7), 0, 0, 1, 0},
+  {&__pyx_kp_s__10, __pyx_k__10, sizeof(__pyx_k__10), 0, 0, 1, 0},
+  {&__pyx_kp_s__4, __pyx_k__4, sizeof(__pyx_k__4), 0, 0, 1, 0},
   {&__pyx_kp_s__8, __pyx_k__8, sizeof(__pyx_k__8), 0, 0, 1, 0},
+  {&__pyx_kp_s__9, __pyx_k__9, sizeof(__pyx_k__9), 0, 0, 1, 0},
   {&__pyx_n_s_allocate_capacity, __pyx_k_allocate_capacity, sizeof(__pyx_k_allocate_capacity), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_decode, __pyx_k_decode, sizeof(__pyx_k_decode), 0, 0, 1, 1},
+  {&__pyx_n_s_down, __pyx_k_down, sizeof(__pyx_k_down), 0, 0, 1, 1},
   {&__pyx_n_s_encode, __pyx_k_encode, sizeof(__pyx_k_encode), 0, 0, 1, 1},
+  {&__pyx_n_s_get_double, __pyx_k_get_double, sizeof(__pyx_k_get_double), 0, 0, 1, 1},
+  {&__pyx_n_s_get_integer, __pyx_k_get_integer, sizeof(__pyx_k_get_integer), 0, 0, 1, 1},
+  {&__pyx_n_s_get_string, __pyx_k_get_string, sizeof(__pyx_k_get_string), 0, 0, 1, 1},
+  {&__pyx_n_s_get_type, __pyx_k_get_type, sizeof(__pyx_k_get_type), 0, 0, 1, 1},
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
+  {&__pyx_n_s_isOk, __pyx_k_isOk, sizeof(__pyx_k_isOk), 0, 0, 1, 1},
   {&__pyx_n_s_join, __pyx_k_join, sizeof(__pyx_k_join), 0, 0, 1, 1},
   {&__pyx_n_s_json, __pyx_k_json, sizeof(__pyx_k_json), 0, 0, 1, 1},
   {&__pyx_n_s_loads, __pyx_k_loads, sizeof(__pyx_k_loads), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_max_depth, __pyx_k_max_depth, sizeof(__pyx_k_max_depth), 0, 0, 1, 1},
+  {&__pyx_n_s_move_to_key, __pyx_k_move_to_key, sizeof(__pyx_k_move_to_key), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
+  {&__pyx_n_s_next, __pyx_k_next, sizeof(__pyx_k_next), 0, 0, 1, 1},
+  {&__pyx_kp_s_no_default___reduce___due_to_non, __pyx_k_no_default___reduce___due_to_non, sizeof(__pyx_k_no_default___reduce___due_to_non), 0, 0, 1, 0},
   {&__pyx_n_s_parse, __pyx_k_parse, sizeof(__pyx_k_parse), 0, 0, 1, 1},
+  {&__pyx_n_s_pj, __pyx_k_pj, sizeof(__pyx_k_pj), 0, 0, 1, 1},
   {&__pyx_n_s_pysimdjson, __pyx_k_pysimdjson, sizeof(__pyx_k_pysimdjson), 0, 0, 1, 1},
   {&__pyx_kp_s_pysimdjson_pyx, __pyx_k_pysimdjson_pyx, sizeof(__pyx_k_pysimdjson_pyx), 0, 0, 1, 0},
   {&__pyx_n_s_pyx_vtable, __pyx_k_pyx_vtable, sizeof(__pyx_k_pyx_vtable), 0, 0, 1, 1},
@@ -3836,13 +5300,14 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_source, __pyx_k_source, sizeof(__pyx_k_source), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_to_obj, __pyx_k_to_obj, sizeof(__pyx_k_to_obj), 0, 0, 1, 1},
+  {&__pyx_n_s_up, __pyx_k_up, sizeof(__pyx_k_up), 0, 0, 1, 1},
   {&__pyx_kp_s_utf_8, __pyx_k_utf_8, sizeof(__pyx_k_utf_8), 0, 0, 1, 0},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(0, 17, __pyx_L1_error)
-  __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 2, __pyx_L1_error)
-  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 172, __pyx_L1_error)
+  __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(0, 2, __pyx_L1_error)
+  __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(1, 103, __pyx_L1_error)
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(1, 204, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -3852,16 +5317,35 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "pysimdjson.pyx":55
- *             if not iter.isOk():
- *                 # Prooooably not the right exception
- *                 raise JSONDecodeError('Error iterating over document', '', 0)             # <<<<<<<<<<<<<<
- *             return self._to_obj(iter)
- *         finally:
+  /* "(tree fragment)":2
+ * def __reduce_cython__(self):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__3 = PyTuple_Pack(3, __pyx_kp_s_Error_iterating_over_document, __pyx_kp_s__2, __pyx_int_0); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 55, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__3);
-  __Pyx_GIVEREF(__pyx_tuple__3);
+  __pyx_tuple_ = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple_);
+  __Pyx_GIVEREF(__pyx_tuple_);
+
+  /* "(tree fragment)":4
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
+ * def __setstate_cython__(self, __pyx_state):
+ *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
+ */
+  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__2);
+  __Pyx_GIVEREF(__pyx_tuple__2);
+
+  /* "pysimdjson.pyx":140
+ *         if not iter.isOk():
+ *             # Prooooably not the right exception
+ *             raise JSONDecodeError('Error iterating over document', '', 0)             # <<<<<<<<<<<<<<
+ *         return iter.to_obj()
+ * 
+ */
+  __pyx_tuple__5 = PyTuple_Pack(3, __pyx_kp_s_Error_iterating_over_document, __pyx_kp_s__4, __pyx_int_0); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(1, 140, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__5);
+  __Pyx_GIVEREF(__pyx_tuple__5);
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -3869,52 +5353,52 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("self.pj cannot be converted to a Python object for pickling")
  */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_kp_s_self_pj_cannot_be_converted_to_a); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__4);
-  __Pyx_GIVEREF(__pyx_tuple__4);
+  __pyx_tuple__6 = PyTuple_Pack(1, __pyx_kp_s_self_pj_cannot_be_converted_to_a); if (unlikely(!__pyx_tuple__6)) __PYX_ERR(0, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__6);
+  __Pyx_GIVEREF(__pyx_tuple__6);
 
   /* "(tree fragment)":4
  *     raise TypeError("self.pj cannot be converted to a Python object for pickling")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("self.pj cannot be converted to a Python object for pickling")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_self_pj_cannot_be_converted_to_a); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__5);
-  __Pyx_GIVEREF(__pyx_tuple__5);
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_self_pj_cannot_be_converted_to_a); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
 
-  /* "pysimdjson.pyx":172
+  /* "pysimdjson.pyx":204
  * 
  *     if current_state == Q_QUOTED:
  *         raise ValueError('Incomplete quoted string')             # <<<<<<<<<<<<<<
  * 
  *     if current_state == Q_ESCAPE:
  */
-  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_s_Incomplete_quoted_string); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(0, 172, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__9);
-  __Pyx_GIVEREF(__pyx_tuple__9);
+  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_s_Incomplete_quoted_string); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(1, 204, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__11);
+  __Pyx_GIVEREF(__pyx_tuple__11);
 
-  /* "pysimdjson.pyx":175
+  /* "pysimdjson.pyx":207
  * 
  *     if current_state == Q_ESCAPE:
  *         raise ValueError('Incomplete escape sequence')             # <<<<<<<<<<<<<<
  * 
  *     if buff:
  */
-  __pyx_tuple__10 = PyTuple_Pack(1, __pyx_kp_s_Incomplete_escape_sequence); if (unlikely(!__pyx_tuple__10)) __PYX_ERR(0, 175, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__10);
-  __Pyx_GIVEREF(__pyx_tuple__10);
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_s_Incomplete_escape_sequence); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(1, 207, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__12);
+  __Pyx_GIVEREF(__pyx_tuple__12);
 
-  /* "pysimdjson.pyx":129
+  /* "pysimdjson.pyx":161
  * 
  * 
  * def loads(s):             # <<<<<<<<<<<<<<
  *     return ParsedJson(s).to_obj()
  * 
  */
-  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_n_s_s); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 129, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__11);
-  __Pyx_GIVEREF(__pyx_tuple__11);
-  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pysimdjson_pyx, __pyx_n_s_loads, 129, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_n_s_s); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(1, 161, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__13);
+  __Pyx_GIVEREF(__pyx_tuple__13);
+  __pyx_codeobj__14 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__13, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pysimdjson_pyx, __pyx_n_s_loads, 161, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__14)) __PYX_ERR(1, 161, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -3923,8 +5407,8 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
 }
 
 static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
-  if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
-  __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_InitStrings(__pyx_string_tab) < 0) __PYX_ERR(1, 1, __pyx_L1_error);
+  __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) __PYX_ERR(1, 1, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -3966,16 +5450,32 @@ static int __Pyx_modinit_type_init_code(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
-  __pyx_vtabptr_10pysimdjson_ParsedJson = &__pyx_vtable_10pysimdjson_ParsedJson;
-  __pyx_vtable_10pysimdjson_ParsedJson._to_obj = (PyObject *(*)(struct __pyx_obj_10pysimdjson_ParsedJson *, ParsedJson::iterator *))__pyx_f_10pysimdjson_10ParsedJson__to_obj;
-  if (PyType_Ready(&__pyx_type_10pysimdjson_ParsedJson) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_vtabptr_10pysimdjson_Iterator = &__pyx_vtable_10pysimdjson_Iterator;
+  __pyx_vtable_10pysimdjson_Iterator.get_type = (uint8_t (*)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch))__pyx_f_10pysimdjson_8Iterator_get_type;
+  __pyx_vtable_10pysimdjson_Iterator.isOk = (bool (*)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch))__pyx_f_10pysimdjson_8Iterator_isOk;
+  __pyx_vtable_10pysimdjson_Iterator.next = (bool (*)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch))__pyx_f_10pysimdjson_8Iterator_next;
+  __pyx_vtable_10pysimdjson_Iterator.down = (bool (*)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch))__pyx_f_10pysimdjson_8Iterator_down;
+  __pyx_vtable_10pysimdjson_Iterator.up = (bool (*)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch))__pyx_f_10pysimdjson_8Iterator_up;
+  __pyx_vtable_10pysimdjson_Iterator.get_double = (double (*)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch))__pyx_f_10pysimdjson_8Iterator_get_double;
+  __pyx_vtable_10pysimdjson_Iterator.get_integer = (int64_t (*)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch))__pyx_f_10pysimdjson_8Iterator_get_integer;
+  __pyx_vtable_10pysimdjson_Iterator.get_string = (char const *(*)(struct __pyx_obj_10pysimdjson_Iterator *, int __pyx_skip_dispatch))__pyx_f_10pysimdjson_8Iterator_get_string;
+  __pyx_vtable_10pysimdjson_Iterator._to_obj = (PyObject *(*)(struct __pyx_obj_10pysimdjson_Iterator *, ParsedJson::iterator *))__pyx_f_10pysimdjson_8Iterator__to_obj;
+  if (PyType_Ready(&__pyx_type_10pysimdjson_Iterator) < 0) __PYX_ERR(1, 10, __pyx_L1_error)
+  __pyx_type_10pysimdjson_Iterator.tp_print = 0;
+  if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_10pysimdjson_Iterator.tp_dictoffset && __pyx_type_10pysimdjson_Iterator.tp_getattro == PyObject_GenericGetAttr)) {
+    __pyx_type_10pysimdjson_Iterator.tp_getattro = __Pyx_PyObject_GenericGetAttr;
+  }
+  if (__Pyx_SetVtable(__pyx_type_10pysimdjson_Iterator.tp_dict, __pyx_vtabptr_10pysimdjson_Iterator) < 0) __PYX_ERR(1, 10, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_Iterator, (PyObject *)&__pyx_type_10pysimdjson_Iterator) < 0) __PYX_ERR(1, 10, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_10pysimdjson_Iterator) < 0) __PYX_ERR(1, 10, __pyx_L1_error)
+  __pyx_ptype_10pysimdjson_Iterator = &__pyx_type_10pysimdjson_Iterator;
+  if (PyType_Ready(&__pyx_type_10pysimdjson_ParsedJson) < 0) __PYX_ERR(1, 96, __pyx_L1_error)
   __pyx_type_10pysimdjson_ParsedJson.tp_print = 0;
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_10pysimdjson_ParsedJson.tp_dictoffset && __pyx_type_10pysimdjson_ParsedJson.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_10pysimdjson_ParsedJson.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (__Pyx_SetVtable(__pyx_type_10pysimdjson_ParsedJson.tp_dict, __pyx_vtabptr_10pysimdjson_ParsedJson) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ParsedJson, (PyObject *)&__pyx_type_10pysimdjson_ParsedJson) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_10pysimdjson_ParsedJson) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_ParsedJson, (PyObject *)&__pyx_type_10pysimdjson_ParsedJson) < 0) __PYX_ERR(1, 96, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_10pysimdjson_ParsedJson) < 0) __PYX_ERR(1, 96, __pyx_L1_error)
   __pyx_ptype_10pysimdjson_ParsedJson = &__pyx_type_10pysimdjson_ParsedJson;
   __Pyx_RefNannyFinishContext();
   return 0;
@@ -4138,30 +5638,30 @@ if (!__Pyx_RefNanny) {
 }
 #endif
   __Pyx_RefNannySetupContext("__Pyx_PyMODINIT_FUNC PyInit_pysimdjson(void)", 0);
-  if (__Pyx_check_binary_version() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_check_binary_version() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #ifdef __Pxy_PyFrame_Initialize_Offsets
   __Pxy_PyFrame_Initialize_Offsets();
   #endif
-  __pyx_empty_tuple = PyTuple_New(0); if (unlikely(!__pyx_empty_tuple)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_empty_bytes = PyBytes_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_bytes)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_empty_unicode = PyUnicode_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_unicode)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_empty_tuple = PyTuple_New(0); if (unlikely(!__pyx_empty_tuple)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_empty_bytes = PyBytes_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_bytes)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_empty_unicode = PyUnicode_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_unicode)) __PYX_ERR(1, 1, __pyx_L1_error)
   #ifdef __Pyx_CyFunction_USED
-  if (__pyx_CyFunction_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__pyx_CyFunction_init() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
   #ifdef __Pyx_FusedFunction_USED
-  if (__pyx_FusedFunction_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__pyx_FusedFunction_init() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
   #ifdef __Pyx_Coroutine_USED
-  if (__pyx_Coroutine_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__pyx_Coroutine_init() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
   #ifdef __Pyx_Generator_USED
-  if (__pyx_Generator_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__pyx_Generator_init() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
   #ifdef __Pyx_AsyncGen_USED
-  if (__pyx_AsyncGen_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__pyx_AsyncGen_init() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
   #ifdef __Pyx_StopAsyncIteration_USED
-  if (__pyx_StopAsyncIteration_init() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__pyx_StopAsyncIteration_init() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
   /*--- Library function declarations ---*/
   /*--- Threads initialization code ---*/
@@ -4180,36 +5680,36 @@ if (!__Pyx_RefNanny) {
   #else
   __pyx_m = PyModule_Create(&__pyx_moduledef);
   #endif
-  if (unlikely(!__pyx_m)) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (unlikely(!__pyx_m)) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
-  __pyx_d = PyModule_GetDict(__pyx_m); if (unlikely(!__pyx_d)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_d = PyModule_GetDict(__pyx_m); if (unlikely(!__pyx_d)) __PYX_ERR(1, 1, __pyx_L1_error)
   Py_INCREF(__pyx_d);
-  __pyx_b = PyImport_AddModule(__Pyx_BUILTIN_MODULE_NAME); if (unlikely(!__pyx_b)) __PYX_ERR(0, 1, __pyx_L1_error)
-  __pyx_cython_runtime = PyImport_AddModule((char *) "cython_runtime"); if (unlikely(!__pyx_cython_runtime)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_b = PyImport_AddModule(__Pyx_BUILTIN_MODULE_NAME); if (unlikely(!__pyx_b)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_cython_runtime = PyImport_AddModule((char *) "cython_runtime"); if (unlikely(!__pyx_cython_runtime)) __PYX_ERR(1, 1, __pyx_L1_error)
   #if CYTHON_COMPILING_IN_PYPY
   Py_INCREF(__pyx_b);
   #endif
-  if (PyObject_SetAttrString(__pyx_m, "__builtins__", __pyx_b) < 0) __PYX_ERR(0, 1, __pyx_L1_error);
+  if (PyObject_SetAttrString(__pyx_m, "__builtins__", __pyx_b) < 0) __PYX_ERR(1, 1, __pyx_L1_error);
   /*--- Initialize various global constants etc. ---*/
-  if (__Pyx_InitGlobals() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_InitGlobals() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #if PY_MAJOR_VERSION < 3 && (__PYX_DEFAULT_STRING_ENCODING_IS_ASCII || __PYX_DEFAULT_STRING_ENCODING_IS_DEFAULT)
-  if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_init_sys_getdefaultencoding_params() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
   if (__pyx_module_is_main_pysimdjson) {
-    if (PyObject_SetAttr(__pyx_m, __pyx_n_s_name, __pyx_n_s_main) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+    if (PyObject_SetAttr(__pyx_m, __pyx_n_s_name, __pyx_n_s_main) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   }
   #if PY_MAJOR_VERSION >= 3
   {
-    PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(0, 1, __pyx_L1_error)
+    PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) __PYX_ERR(1, 1, __pyx_L1_error)
     if (!PyDict_GetItemString(modules, "pysimdjson")) {
-      if (unlikely(PyDict_SetItemString(modules, "pysimdjson", __pyx_m) < 0)) __PYX_ERR(0, 1, __pyx_L1_error)
+      if (unlikely(PyDict_SetItemString(modules, "pysimdjson", __pyx_m) < 0)) __PYX_ERR(1, 1, __pyx_L1_error)
     }
   }
   #endif
   /*--- Builtin init code ---*/
-  if (__Pyx_InitCachedBuiltins() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_InitCachedBuiltins() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   /*--- Constants init code ---*/
-  if (__Pyx_InitCachedConstants() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_InitCachedConstants() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   /*--- Global type/function init code ---*/
   (void)__Pyx_modinit_global_init_code();
   (void)__Pyx_modinit_variable_export_code();
@@ -4220,7 +5720,7 @@ if (!__Pyx_RefNanny) {
   (void)__Pyx_modinit_function_import_code();
   /*--- Execution code ---*/
   #if defined(__Pyx_Generator_USED) || defined(__Pyx_Coroutine_USED)
-  if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (__Pyx_patch_abc() < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   #endif
 
   /* "pysimdjson.pyx":2
@@ -4229,17 +5729,17 @@ if (!__Pyx_RefNanny) {
  * from pysimdjson cimport CParsedJson, json_parse
  * from cpython.dict cimport PyDict_SetItem
  */
-  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_n_s_JSONDecodeError);
   __Pyx_GIVEREF(__pyx_n_s_JSONDecodeError);
   PyList_SET_ITEM(__pyx_t_1, 0, __pyx_n_s_JSONDecodeError);
-  __pyx_t_2 = __Pyx_Import(__pyx_n_s_json, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 2, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Import(__pyx_n_s_json, __pyx_t_1, -1); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_JSONDecodeError); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_ImportFrom(__pyx_t_2, __pyx_n_s_JSONDecodeError); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_JSONDecodeError, __pyx_t_1) < 0) __PYX_ERR(0, 2, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_JSONDecodeError, __pyx_t_1) < 0) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
@@ -4252,29 +5752,29 @@ if (!__Pyx_RefNanny) {
  */
   __pyx_v_10pysimdjson_DEFAULT_MAX_DEPTH = 0x400;
 
-  /* "pysimdjson.pyx":28
+  /* "pysimdjson.pyx":114
  *                 )
  * 
  *     def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):             # <<<<<<<<<<<<<<
  *         """Resize the document buffer to `size` bytes."""
  *         return self.pj.allocateCapacity(size, max_depth)
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_10pysimdjson_DEFAULT_MAX_DEPTH); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 28, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_10pysimdjson_DEFAULT_MAX_DEPTH); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 114, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_k_ = __pyx_t_2;
+  __pyx_k__3 = __pyx_t_2;
   __Pyx_GIVEREF(__pyx_t_2);
   __pyx_t_2 = 0;
 
-  /* "pysimdjson.pyx":129
+  /* "pysimdjson.pyx":161
  * 
  * 
  * def loads(s):             # <<<<<<<<<<<<<<
  *     return ParsedJson(s).to_obj()
  * 
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_10pysimdjson_1loads, NULL, __pyx_n_s_pysimdjson); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 129, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_10pysimdjson_1loads, NULL, __pyx_n_s_pysimdjson); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 161, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_loads, __pyx_t_2) < 0) __PYX_ERR(0, 129, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_loads, __pyx_t_2) < 0) __PYX_ERR(1, 161, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "pysimdjson.pyx":1
@@ -4282,9 +5782,9 @@ if (!__Pyx_RefNanny) {
  * from json import JSONDecodeError
  * from pysimdjson cimport CParsedJson, json_parse
  */
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_2) < 0) __PYX_ERR(0, 1, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_test, __pyx_t_2) < 0) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /*--- Wrapped vars code ---*/
@@ -4500,26 +6000,46 @@ static void __Pyx_RaiseArgtupleInvalid(
                  (num_expected == 1) ? "" : "s", num_found);
 }
 
-/* PyCFunctionFastCall */
-#if CYTHON_FAST_PYCCALL
-static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, PyObject **args, Py_ssize_t nargs) {
-    PyCFunctionObject *func = (PyCFunctionObject*)func_obj;
-    PyCFunction meth = PyCFunction_GET_FUNCTION(func);
-    PyObject *self = PyCFunction_GET_SELF(func);
-    int flags = PyCFunction_GET_FLAGS(func);
-    assert(PyCFunction_Check(func));
-    assert(METH_FASTCALL == (flags & ~(METH_CLASS | METH_STATIC | METH_COEXIST | METH_KEYWORDS | METH_STACKLESS)));
-    assert(nargs >= 0);
-    assert(nargs == 0 || args != NULL);
-    /* _PyCFunction_FastCallDict() must not be called with an exception set,
-       because it may clear it (directly or indirectly) and so the
-       caller loses its exception */
-    assert(!PyErr_Occurred());
-    if ((PY_VERSION_HEX < 0x030700A0) || unlikely(flags & METH_KEYWORDS)) {
-        return (*((__Pyx_PyCFunctionFastWithKeywords)(void*)meth)) (self, args, nargs, NULL);
-    } else {
-        return (*((__Pyx_PyCFunctionFast)(void*)meth)) (self, args, nargs);
+/* ArgTypeTest */
+static int __Pyx__ArgTypeTest(PyObject *obj, PyTypeObject *type, const char *name, int exact)
+{
+    if (unlikely(!type)) {
+        PyErr_SetString(PyExc_SystemError, "Missing type object");
+        return 0;
     }
+    else if (exact) {
+        #if PY_MAJOR_VERSION == 2
+        if ((type == &PyBaseString_Type) && likely(__Pyx_PyBaseString_CheckExact(obj))) return 1;
+        #endif
+    }
+    else {
+        if (likely(__Pyx_TypeCheck(obj, type))) return 1;
+    }
+    PyErr_Format(PyExc_TypeError,
+        "Argument '%.200s' has incorrect type (expected %.200s, got %.200s)",
+        name, type->tp_name, Py_TYPE(obj)->tp_name);
+    return 0;
+}
+
+/* PyDictVersioning */
+#if CYTHON_USE_DICT_VERSIONS
+static CYTHON_INLINE PY_UINT64_T __Pyx_get_tp_dict_version(PyObject *obj) {
+    PyObject *dict = Py_TYPE(obj)->tp_dict;
+    return dict ? __PYX_GET_DICT_VERSION(dict) : 0;
+}
+static CYTHON_INLINE PY_UINT64_T __Pyx_get_object_dict_version(PyObject *obj) {
+    PyObject **dictptr = NULL;
+    Py_ssize_t offset = Py_TYPE(obj)->tp_dictoffset;
+    if (offset) {
+        dictptr = (offset > 0) ? (PyObject **) ((char *)obj + offset) : _PyObject_GetDictPtr(obj);
+    }
+    return (dictptr && *dictptr) ? __PYX_GET_DICT_VERSION(*dictptr) : 0;
+}
+static CYTHON_INLINE int __Pyx_object_dict_version_matches(PyObject* obj, PY_UINT64_T tp_dict_version, PY_UINT64_T obj_dict_version) {
+    PyObject *dict = Py_TYPE(obj)->tp_dict;
+    if (!dict || tp_dict_version != __PYX_GET_DICT_VERSION(dict))
+        return 0;
+    return obj_dict_version == __Pyx_get_object_dict_version(obj);
 }
 #endif
 
@@ -4662,35 +6182,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_Call(PyObject *func, PyObject *arg
 }
 #endif
 
-/* PyObjectCall2Args */
-static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2) {
-    PyObject *args, *result = NULL;
-    #if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(function)) {
-        PyObject *args[2] = {arg1, arg2};
-        return __Pyx_PyFunction_FastCall(function, args, 2);
-    }
-    #endif
-    #if CYTHON_FAST_PYCCALL
-    if (__Pyx_PyFastCFunction_Check(function)) {
-        PyObject *args[2] = {arg1, arg2};
-        return __Pyx_PyCFunction_FastCall(function, args, 2);
-    }
-    #endif
-    args = PyTuple_New(2);
-    if (unlikely(!args)) goto done;
-    Py_INCREF(arg1);
-    PyTuple_SET_ITEM(args, 0, arg1);
-    Py_INCREF(arg2);
-    PyTuple_SET_ITEM(args, 1, arg2);
-    Py_INCREF(function);
-    result = __Pyx_PyObject_Call(function, args, NULL);
-    Py_DECREF(args);
-    Py_DECREF(function);
-done:
-    return result;
-}
-
 /* PyObjectCallMethO */
 #if CYTHON_COMPILING_IN_CPYTHON
 static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject *arg) {
@@ -4708,6 +6199,51 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallMethO(PyObject *func, PyObject
             "NULL result without error in PyObject_Call");
     }
     return result;
+}
+#endif
+
+/* PyObjectCallNoArg */
+#if CYTHON_COMPILING_IN_CPYTHON
+static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
+#if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(func)) {
+        return __Pyx_PyFunction_FastCall(func, NULL, 0);
+    }
+#endif
+#ifdef __Pyx_CyFunction_USED
+    if (likely(PyCFunction_Check(func) || __Pyx_CyFunction_Check(func)))
+#else
+    if (likely(PyCFunction_Check(func)))
+#endif
+    {
+        if (likely(PyCFunction_GET_FLAGS(func) & METH_NOARGS)) {
+            return __Pyx_PyObject_CallMethO(func, NULL);
+        }
+    }
+    return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
+}
+#endif
+
+/* PyCFunctionFastCall */
+#if CYTHON_FAST_PYCCALL
+static CYTHON_INLINE PyObject * __Pyx_PyCFunction_FastCall(PyObject *func_obj, PyObject **args, Py_ssize_t nargs) {
+    PyCFunctionObject *func = (PyCFunctionObject*)func_obj;
+    PyCFunction meth = PyCFunction_GET_FUNCTION(func);
+    PyObject *self = PyCFunction_GET_SELF(func);
+    int flags = PyCFunction_GET_FLAGS(func);
+    assert(PyCFunction_Check(func));
+    assert(METH_FASTCALL == (flags & ~(METH_CLASS | METH_STATIC | METH_COEXIST | METH_KEYWORDS | METH_STACKLESS)));
+    assert(nargs >= 0);
+    assert(nargs == 0 || args != NULL);
+    /* _PyCFunction_FastCallDict() must not be called with an exception set,
+       because it may clear it (directly or indirectly) and so the
+       caller loses its exception */
+    assert(!PyErr_Occurred());
+    if ((PY_VERSION_HEX < 0x030700A0) || unlikely(flags & METH_KEYWORDS)) {
+        return (*((__Pyx_PyCFunctionFastWithKeywords)(void*)meth)) (self, args, nargs, NULL);
+    } else {
+        return (*((__Pyx_PyCFunctionFast)(void*)meth)) (self, args, nargs);
+    }
 }
 #endif
 
@@ -4751,63 +6287,6 @@ static CYTHON_INLINE PyObject* __Pyx_PyObject_CallOneArg(PyObject *func, PyObjec
 }
 #endif
 
-/* PyDictVersioning */
-#if CYTHON_USE_DICT_VERSIONS
-static CYTHON_INLINE PY_UINT64_T __Pyx_get_tp_dict_version(PyObject *obj) {
-    PyObject *dict = Py_TYPE(obj)->tp_dict;
-    return dict ? __PYX_GET_DICT_VERSION(dict) : 0;
-}
-static CYTHON_INLINE PY_UINT64_T __Pyx_get_object_dict_version(PyObject *obj) {
-    PyObject **dictptr = NULL;
-    Py_ssize_t offset = Py_TYPE(obj)->tp_dictoffset;
-    if (offset) {
-        dictptr = (offset > 0) ? (PyObject **) ((char *)obj + offset) : _PyObject_GetDictPtr(obj);
-    }
-    return (dictptr && *dictptr) ? __PYX_GET_DICT_VERSION(*dictptr) : 0;
-}
-static CYTHON_INLINE int __Pyx_object_dict_version_matches(PyObject* obj, PY_UINT64_T tp_dict_version, PY_UINT64_T obj_dict_version) {
-    PyObject *dict = Py_TYPE(obj)->tp_dict;
-    if (!dict || tp_dict_version != __PYX_GET_DICT_VERSION(dict))
-        return 0;
-    return obj_dict_version == __Pyx_get_object_dict_version(obj);
-}
-#endif
-
-/* GetModuleGlobalName */
-#if CYTHON_USE_DICT_VERSIONS
-static PyObject *__Pyx__GetModuleGlobalName(PyObject *name, PY_UINT64_T *dict_version, PyObject **dict_cached_value)
-#else
-static CYTHON_INLINE PyObject *__Pyx__GetModuleGlobalName(PyObject *name)
-#endif
-{
-    PyObject *result;
-#if !CYTHON_AVOID_BORROWED_REFS
-#if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030500A1
-    result = _PyDict_GetItem_KnownHash(__pyx_d, name, ((PyASCIIObject *) name)->hash);
-    __PYX_UPDATE_DICT_CACHE(__pyx_d, result, *dict_cached_value, *dict_version)
-    if (likely(result)) {
-        return __Pyx_NewRef(result);
-    } else if (unlikely(PyErr_Occurred())) {
-        return NULL;
-    }
-#else
-    result = PyDict_GetItem(__pyx_d, name);
-    __PYX_UPDATE_DICT_CACHE(__pyx_d, result, *dict_cached_value, *dict_version)
-    if (likely(result)) {
-        return __Pyx_NewRef(result);
-    }
-#endif
-#else
-    result = PyObject_GetItem(__pyx_d, name);
-    __PYX_UPDATE_DICT_CACHE(__pyx_d, result, *dict_cached_value, *dict_version)
-    if (likely(result)) {
-        return __Pyx_NewRef(result);
-    }
-    PyErr_Clear();
-#endif
-    return __Pyx_GetBuiltinName(name);
-}
-
 /* PyErrFetchRestore */
 #if CYTHON_FAST_THREAD_STATE
 static CYTHON_INLINE void __Pyx_ErrRestoreInState(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
@@ -4831,6 +6310,81 @@ static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject 
     tstate->curexc_traceback = 0;
 }
 #endif
+
+/* WriteUnraisableException */
+static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
+                                  CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename,
+                                  int full_traceback, CYTHON_UNUSED int nogil) {
+    PyObject *old_exc, *old_val, *old_tb;
+    PyObject *ctx;
+    __Pyx_PyThreadState_declare
+#ifdef WITH_THREAD
+    PyGILState_STATE state;
+    if (nogil)
+        state = PyGILState_Ensure();
+#ifdef _MSC_VER
+    else state = (PyGILState_STATE)-1;
+#endif
+#endif
+    __Pyx_PyThreadState_assign
+    __Pyx_ErrFetch(&old_exc, &old_val, &old_tb);
+    if (full_traceback) {
+        Py_XINCREF(old_exc);
+        Py_XINCREF(old_val);
+        Py_XINCREF(old_tb);
+        __Pyx_ErrRestore(old_exc, old_val, old_tb);
+        PyErr_PrintEx(1);
+    }
+    #if PY_MAJOR_VERSION < 3
+    ctx = PyString_FromString(name);
+    #else
+    ctx = PyUnicode_FromString(name);
+    #endif
+    __Pyx_ErrRestore(old_exc, old_val, old_tb);
+    if (!ctx) {
+        PyErr_WriteUnraisable(Py_None);
+    } else {
+        PyErr_WriteUnraisable(ctx);
+        Py_DECREF(ctx);
+    }
+#ifdef WITH_THREAD
+    if (nogil)
+        PyGILState_Release(state);
+#endif
+}
+
+/* decode_c_string */
+static CYTHON_INLINE PyObject* __Pyx_decode_c_string(
+         const char* cstring, Py_ssize_t start, Py_ssize_t stop,
+         const char* encoding, const char* errors,
+         PyObject* (*decode_func)(const char *s, Py_ssize_t size, const char *errors)) {
+    Py_ssize_t length;
+    if (unlikely((start < 0) | (stop < 0))) {
+        size_t slen = strlen(cstring);
+        if (unlikely(slen > (size_t) PY_SSIZE_T_MAX)) {
+            PyErr_SetString(PyExc_OverflowError,
+                            "c-string too long to convert to Python");
+            return NULL;
+        }
+        length = (Py_ssize_t) slen;
+        if (start < 0) {
+            start += length;
+            if (start < 0)
+                start = 0;
+        }
+        if (stop < 0)
+            stop += length;
+    }
+    length = stop - start;
+    if (unlikely(length <= 0))
+        return PyUnicode_FromUnicode(NULL, 0);
+    cstring += start;
+    if (decode_func) {
+        return decode_func(cstring, length, errors);
+    } else {
+        return PyUnicode_Decode(cstring, length, encoding, errors);
+    }
+}
 
 /* RaiseException */
 #if PY_MAJOR_VERSION < 3
@@ -4991,225 +6545,69 @@ bad:
 }
 #endif
 
-/* GetException */
-#if CYTHON_FAST_THREAD_STATE
-static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb)
+/* PyObjectCall2Args */
+static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2) {
+    PyObject *args, *result = NULL;
+    #if CYTHON_FAST_PYCALL
+    if (PyFunction_Check(function)) {
+        PyObject *args[2] = {arg1, arg2};
+        return __Pyx_PyFunction_FastCall(function, args, 2);
+    }
+    #endif
+    #if CYTHON_FAST_PYCCALL
+    if (__Pyx_PyFastCFunction_Check(function)) {
+        PyObject *args[2] = {arg1, arg2};
+        return __Pyx_PyCFunction_FastCall(function, args, 2);
+    }
+    #endif
+    args = PyTuple_New(2);
+    if (unlikely(!args)) goto done;
+    Py_INCREF(arg1);
+    PyTuple_SET_ITEM(args, 0, arg1);
+    Py_INCREF(arg2);
+    PyTuple_SET_ITEM(args, 1, arg2);
+    Py_INCREF(function);
+    result = __Pyx_PyObject_Call(function, args, NULL);
+    Py_DECREF(args);
+    Py_DECREF(function);
+done:
+    return result;
+}
+
+/* GetModuleGlobalName */
+#if CYTHON_USE_DICT_VERSIONS
+static PyObject *__Pyx__GetModuleGlobalName(PyObject *name, PY_UINT64_T *dict_version, PyObject **dict_cached_value)
 #else
-static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb)
+static CYTHON_INLINE PyObject *__Pyx__GetModuleGlobalName(PyObject *name)
 #endif
 {
-    PyObject *local_type, *local_value, *local_tb;
-#if CYTHON_FAST_THREAD_STATE
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    local_type = tstate->curexc_type;
-    local_value = tstate->curexc_value;
-    local_tb = tstate->curexc_traceback;
-    tstate->curexc_type = 0;
-    tstate->curexc_value = 0;
-    tstate->curexc_traceback = 0;
+    PyObject *result;
+#if !CYTHON_AVOID_BORROWED_REFS
+#if CYTHON_COMPILING_IN_CPYTHON && PY_VERSION_HEX >= 0x030500A1
+    result = _PyDict_GetItem_KnownHash(__pyx_d, name, ((PyASCIIObject *) name)->hash);
+    __PYX_UPDATE_DICT_CACHE(__pyx_d, result, *dict_cached_value, *dict_version)
+    if (likely(result)) {
+        return __Pyx_NewRef(result);
+    } else if (unlikely(PyErr_Occurred())) {
+        return NULL;
+    }
 #else
-    PyErr_Fetch(&local_type, &local_value, &local_tb);
+    result = PyDict_GetItem(__pyx_d, name);
+    __PYX_UPDATE_DICT_CACHE(__pyx_d, result, *dict_cached_value, *dict_version)
+    if (likely(result)) {
+        return __Pyx_NewRef(result);
+    }
 #endif
-    PyErr_NormalizeException(&local_type, &local_value, &local_tb);
-#if CYTHON_FAST_THREAD_STATE
-    if (unlikely(tstate->curexc_type))
 #else
-    if (unlikely(PyErr_Occurred()))
-#endif
-        goto bad;
-    #if PY_MAJOR_VERSION >= 3
-    if (local_tb) {
-        if (unlikely(PyException_SetTraceback(local_value, local_tb) < 0))
-            goto bad;
+    result = PyObject_GetItem(__pyx_d, name);
+    __PYX_UPDATE_DICT_CACHE(__pyx_d, result, *dict_cached_value, *dict_version)
+    if (likely(result)) {
+        return __Pyx_NewRef(result);
     }
-    #endif
-    Py_XINCREF(local_tb);
-    Py_XINCREF(local_type);
-    Py_XINCREF(local_value);
-    *type = local_type;
-    *value = local_value;
-    *tb = local_tb;
-#if CYTHON_FAST_THREAD_STATE
-    #if CYTHON_USE_EXC_INFO_STACK
-    {
-        _PyErr_StackItem *exc_info = tstate->exc_info;
-        tmp_type = exc_info->exc_type;
-        tmp_value = exc_info->exc_value;
-        tmp_tb = exc_info->exc_traceback;
-        exc_info->exc_type = local_type;
-        exc_info->exc_value = local_value;
-        exc_info->exc_traceback = local_tb;
-    }
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = local_type;
-    tstate->exc_value = local_value;
-    tstate->exc_traceback = local_tb;
-    #endif
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-#else
-    PyErr_SetExcInfo(local_type, local_value, local_tb);
+    PyErr_Clear();
 #endif
-    return 0;
-bad:
-    *type = 0;
-    *value = 0;
-    *tb = 0;
-    Py_XDECREF(local_type);
-    Py_XDECREF(local_value);
-    Py_XDECREF(local_tb);
-    return -1;
+    return __Pyx_GetBuiltinName(name);
 }
-
-/* SwapException */
-#if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx__ExceptionSwap(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    tmp_type = exc_info->exc_type;
-    tmp_value = exc_info->exc_value;
-    tmp_tb = exc_info->exc_traceback;
-    exc_info->exc_type = *type;
-    exc_info->exc_value = *value;
-    exc_info->exc_traceback = *tb;
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = *type;
-    tstate->exc_value = *value;
-    tstate->exc_traceback = *tb;
-    #endif
-    *type = tmp_type;
-    *value = tmp_value;
-    *tb = tmp_tb;
-}
-#else
-static CYTHON_INLINE void __Pyx_ExceptionSwap(PyObject **type, PyObject **value, PyObject **tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    PyErr_GetExcInfo(&tmp_type, &tmp_value, &tmp_tb);
-    PyErr_SetExcInfo(*type, *value, *tb);
-    *type = tmp_type;
-    *value = tmp_value;
-    *tb = tmp_tb;
-}
-#endif
-
-/* GetTopmostException */
-#if CYTHON_USE_EXC_INFO_STACK
-static _PyErr_StackItem *
-__Pyx_PyErr_GetTopmostException(PyThreadState *tstate)
-{
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    while ((exc_info->exc_type == NULL || exc_info->exc_type == Py_None) &&
-           exc_info->previous_item != NULL)
-    {
-        exc_info = exc_info->previous_item;
-    }
-    return exc_info;
-}
-#endif
-
-/* SaveResetException */
-#if CYTHON_FAST_THREAD_STATE
-static CYTHON_INLINE void __Pyx__ExceptionSave(PyThreadState *tstate, PyObject **type, PyObject **value, PyObject **tb) {
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = __Pyx_PyErr_GetTopmostException(tstate);
-    *type = exc_info->exc_type;
-    *value = exc_info->exc_value;
-    *tb = exc_info->exc_traceback;
-    #else
-    *type = tstate->exc_type;
-    *value = tstate->exc_value;
-    *tb = tstate->exc_traceback;
-    #endif
-    Py_XINCREF(*type);
-    Py_XINCREF(*value);
-    Py_XINCREF(*tb);
-}
-static CYTHON_INLINE void __Pyx__ExceptionReset(PyThreadState *tstate, PyObject *type, PyObject *value, PyObject *tb) {
-    PyObject *tmp_type, *tmp_value, *tmp_tb;
-    #if CYTHON_USE_EXC_INFO_STACK
-    _PyErr_StackItem *exc_info = tstate->exc_info;
-    tmp_type = exc_info->exc_type;
-    tmp_value = exc_info->exc_value;
-    tmp_tb = exc_info->exc_traceback;
-    exc_info->exc_type = type;
-    exc_info->exc_value = value;
-    exc_info->exc_traceback = tb;
-    #else
-    tmp_type = tstate->exc_type;
-    tmp_value = tstate->exc_value;
-    tmp_tb = tstate->exc_traceback;
-    tstate->exc_type = type;
-    tstate->exc_value = value;
-    tstate->exc_traceback = tb;
-    #endif
-    Py_XDECREF(tmp_type);
-    Py_XDECREF(tmp_value);
-    Py_XDECREF(tmp_tb);
-}
-#endif
-
-/* decode_c_string */
-static CYTHON_INLINE PyObject* __Pyx_decode_c_string(
-         const char* cstring, Py_ssize_t start, Py_ssize_t stop,
-         const char* encoding, const char* errors,
-         PyObject* (*decode_func)(const char *s, Py_ssize_t size, const char *errors)) {
-    Py_ssize_t length;
-    if (unlikely((start < 0) | (stop < 0))) {
-        size_t slen = strlen(cstring);
-        if (unlikely(slen > (size_t) PY_SSIZE_T_MAX)) {
-            PyErr_SetString(PyExc_OverflowError,
-                            "c-string too long to convert to Python");
-            return NULL;
-        }
-        length = (Py_ssize_t) slen;
-        if (start < 0) {
-            start += length;
-            if (start < 0)
-                start = 0;
-        }
-        if (stop < 0)
-            stop += length;
-    }
-    length = stop - start;
-    if (unlikely(length <= 0))
-        return PyUnicode_FromUnicode(NULL, 0);
-    cstring += start;
-    if (decode_func) {
-        return decode_func(cstring, length, errors);
-    } else {
-        return PyUnicode_Decode(cstring, length, encoding, errors);
-    }
-}
-
-/* PyObjectCallNoArg */
-#if CYTHON_COMPILING_IN_CPYTHON
-static CYTHON_INLINE PyObject* __Pyx_PyObject_CallNoArg(PyObject *func) {
-#if CYTHON_FAST_PYCALL
-    if (PyFunction_Check(func)) {
-        return __Pyx_PyFunction_FastCall(func, NULL, 0);
-    }
-#endif
-#ifdef __Pyx_CyFunction_USED
-    if (likely(PyCFunction_Check(func) || __Pyx_CyFunction_Check(func)))
-#else
-    if (likely(PyCFunction_Check(func)))
-#endif
-    {
-        if (likely(PyCFunction_GET_FLAGS(func) & METH_NOARGS)) {
-            return __Pyx_PyObject_CallMethO(func, NULL);
-        }
-    }
-    return __Pyx_PyObject_Call(func, __pyx_empty_tuple, NULL);
-}
-#endif
 
 /* BytesEquals */
 static CYTHON_INLINE int __Pyx_PyBytes_Equals(PyObject* s1, PyObject* s2, int equals) {
@@ -6010,6 +7408,37 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
     }
 
 /* CIntToPy */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_uint8_t(uint8_t value) {
+    const uint8_t neg_one = (uint8_t) ((uint8_t) 0 - (uint8_t) 1), const_zero = (uint8_t) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(uint8_t) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(uint8_t) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(uint8_t) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(uint8_t) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(uint8_t) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(uint8_t),
+                                     little, !is_unsigned);
+    }
+}
+
+/* CIntToPy */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int64_t(int64_t value) {
     const int64_t neg_one = (int64_t) ((int64_t) 0 - (int64_t) 1), const_zero = (int64_t) 0;
     const int is_unsigned = neg_one > const_zero;
@@ -6038,6 +7467,384 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int64_t(int64_t value) {
         return _PyLong_FromByteArray(bytes, sizeof(int64_t),
                                      little, !is_unsigned);
     }
+}
+
+/* CIntFromPy */
+static CYTHON_INLINE uint8_t __Pyx_PyInt_As_uint8_t(PyObject *x) {
+    const uint8_t neg_one = (uint8_t) ((uint8_t) 0 - (uint8_t) 1), const_zero = (uint8_t) 0;
+    const int is_unsigned = neg_one > const_zero;
+#if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_Check(x))) {
+        if (sizeof(uint8_t) < sizeof(long)) {
+            __PYX_VERIFY_RETURN_INT(uint8_t, long, PyInt_AS_LONG(x))
+        } else {
+            long val = PyInt_AS_LONG(x);
+            if (is_unsigned && unlikely(val < 0)) {
+                goto raise_neg_overflow;
+            }
+            return (uint8_t) val;
+        }
+    } else
+#endif
+    if (likely(PyLong_Check(x))) {
+        if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (uint8_t) 0;
+                case  1: __PYX_VERIFY_RETURN_INT(uint8_t, digit, digits[0])
+                case 2:
+                    if (8 * sizeof(uint8_t) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint8_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint8_t) >= 2 * PyLong_SHIFT) {
+                            return (uint8_t) (((((uint8_t)digits[1]) << PyLong_SHIFT) | (uint8_t)digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(uint8_t) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint8_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint8_t) >= 3 * PyLong_SHIFT) {
+                            return (uint8_t) (((((((uint8_t)digits[2]) << PyLong_SHIFT) | (uint8_t)digits[1]) << PyLong_SHIFT) | (uint8_t)digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(uint8_t) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint8_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint8_t) >= 4 * PyLong_SHIFT) {
+                            return (uint8_t) (((((((((uint8_t)digits[3]) << PyLong_SHIFT) | (uint8_t)digits[2]) << PyLong_SHIFT) | (uint8_t)digits[1]) << PyLong_SHIFT) | (uint8_t)digits[0]));
+                        }
+                    }
+                    break;
+            }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON
+            if (unlikely(Py_SIZE(x) < 0)) {
+                goto raise_neg_overflow;
+            }
+#else
+            {
+                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+                if (unlikely(result < 0))
+                    return (uint8_t) -1;
+                if (unlikely(result == 1))
+                    goto raise_neg_overflow;
+            }
+#endif
+            if (sizeof(uint8_t) <= sizeof(unsigned long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(uint8_t, unsigned long, PyLong_AsUnsignedLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(uint8_t) <= sizeof(unsigned PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(uint8_t, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+#endif
+            }
+        } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (uint8_t) 0;
+                case -1: __PYX_VERIFY_RETURN_INT(uint8_t, sdigit, (sdigit) (-(sdigit)digits[0]))
+                case  1: __PYX_VERIFY_RETURN_INT(uint8_t,  digit, +digits[0])
+                case -2:
+                    if (8 * sizeof(uint8_t) - 1 > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint8_t, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint8_t) - 1 > 2 * PyLong_SHIFT) {
+                            return (uint8_t) (((uint8_t)-1)*(((((uint8_t)digits[1]) << PyLong_SHIFT) | (uint8_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (8 * sizeof(uint8_t) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint8_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint8_t) - 1 > 2 * PyLong_SHIFT) {
+                            return (uint8_t) ((((((uint8_t)digits[1]) << PyLong_SHIFT) | (uint8_t)digits[0])));
+                        }
+                    }
+                    break;
+                case -3:
+                    if (8 * sizeof(uint8_t) - 1 > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint8_t, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint8_t) - 1 > 3 * PyLong_SHIFT) {
+                            return (uint8_t) (((uint8_t)-1)*(((((((uint8_t)digits[2]) << PyLong_SHIFT) | (uint8_t)digits[1]) << PyLong_SHIFT) | (uint8_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(uint8_t) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint8_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint8_t) - 1 > 3 * PyLong_SHIFT) {
+                            return (uint8_t) ((((((((uint8_t)digits[2]) << PyLong_SHIFT) | (uint8_t)digits[1]) << PyLong_SHIFT) | (uint8_t)digits[0])));
+                        }
+                    }
+                    break;
+                case -4:
+                    if (8 * sizeof(uint8_t) - 1 > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint8_t, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint8_t) - 1 > 4 * PyLong_SHIFT) {
+                            return (uint8_t) (((uint8_t)-1)*(((((((((uint8_t)digits[3]) << PyLong_SHIFT) | (uint8_t)digits[2]) << PyLong_SHIFT) | (uint8_t)digits[1]) << PyLong_SHIFT) | (uint8_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(uint8_t) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(uint8_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(uint8_t) - 1 > 4 * PyLong_SHIFT) {
+                            return (uint8_t) ((((((((((uint8_t)digits[3]) << PyLong_SHIFT) | (uint8_t)digits[2]) << PyLong_SHIFT) | (uint8_t)digits[1]) << PyLong_SHIFT) | (uint8_t)digits[0])));
+                        }
+                    }
+                    break;
+            }
+#endif
+            if (sizeof(uint8_t) <= sizeof(long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(uint8_t, long, PyLong_AsLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(uint8_t) <= sizeof(PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(uint8_t, PY_LONG_LONG, PyLong_AsLongLong(x))
+#endif
+            }
+        }
+        {
+#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
+            PyErr_SetString(PyExc_RuntimeError,
+                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
+#else
+            uint8_t val;
+            PyObject *v = __Pyx_PyNumber_IntOrLong(x);
+ #if PY_MAJOR_VERSION < 3
+            if (likely(v) && !PyLong_Check(v)) {
+                PyObject *tmp = v;
+                v = PyNumber_Long(tmp);
+                Py_DECREF(tmp);
+            }
+ #endif
+            if (likely(v)) {
+                int one = 1; int is_little = (int)*(unsigned char *)&one;
+                unsigned char *bytes = (unsigned char *)&val;
+                int ret = _PyLong_AsByteArray((PyLongObject *)v,
+                                              bytes, sizeof(val),
+                                              is_little, !is_unsigned);
+                Py_DECREF(v);
+                if (likely(!ret))
+                    return val;
+            }
+#endif
+            return (uint8_t) -1;
+        }
+    } else {
+        uint8_t val;
+        PyObject *tmp = __Pyx_PyNumber_IntOrLong(x);
+        if (!tmp) return (uint8_t) -1;
+        val = __Pyx_PyInt_As_uint8_t(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to uint8_t");
+    return (uint8_t) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to uint8_t");
+    return (uint8_t) -1;
+}
+
+/* CIntFromPy */
+static CYTHON_INLINE int64_t __Pyx_PyInt_As_int64_t(PyObject *x) {
+    const int64_t neg_one = (int64_t) ((int64_t) 0 - (int64_t) 1), const_zero = (int64_t) 0;
+    const int is_unsigned = neg_one > const_zero;
+#if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_Check(x))) {
+        if (sizeof(int64_t) < sizeof(long)) {
+            __PYX_VERIFY_RETURN_INT(int64_t, long, PyInt_AS_LONG(x))
+        } else {
+            long val = PyInt_AS_LONG(x);
+            if (is_unsigned && unlikely(val < 0)) {
+                goto raise_neg_overflow;
+            }
+            return (int64_t) val;
+        }
+    } else
+#endif
+    if (likely(PyLong_Check(x))) {
+        if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (int64_t) 0;
+                case  1: __PYX_VERIFY_RETURN_INT(int64_t, digit, digits[0])
+                case 2:
+                    if (8 * sizeof(int64_t) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int64_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(int64_t) >= 2 * PyLong_SHIFT) {
+                            return (int64_t) (((((int64_t)digits[1]) << PyLong_SHIFT) | (int64_t)digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(int64_t) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int64_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(int64_t) >= 3 * PyLong_SHIFT) {
+                            return (int64_t) (((((((int64_t)digits[2]) << PyLong_SHIFT) | (int64_t)digits[1]) << PyLong_SHIFT) | (int64_t)digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(int64_t) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int64_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(int64_t) >= 4 * PyLong_SHIFT) {
+                            return (int64_t) (((((((((int64_t)digits[3]) << PyLong_SHIFT) | (int64_t)digits[2]) << PyLong_SHIFT) | (int64_t)digits[1]) << PyLong_SHIFT) | (int64_t)digits[0]));
+                        }
+                    }
+                    break;
+            }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON
+            if (unlikely(Py_SIZE(x) < 0)) {
+                goto raise_neg_overflow;
+            }
+#else
+            {
+                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+                if (unlikely(result < 0))
+                    return (int64_t) -1;
+                if (unlikely(result == 1))
+                    goto raise_neg_overflow;
+            }
+#endif
+            if (sizeof(int64_t) <= sizeof(unsigned long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(int64_t, unsigned long, PyLong_AsUnsignedLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(int64_t) <= sizeof(unsigned PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(int64_t, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+#endif
+            }
+        } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (int64_t) 0;
+                case -1: __PYX_VERIFY_RETURN_INT(int64_t, sdigit, (sdigit) (-(sdigit)digits[0]))
+                case  1: __PYX_VERIFY_RETURN_INT(int64_t,  digit, +digits[0])
+                case -2:
+                    if (8 * sizeof(int64_t) - 1 > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int64_t, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(int64_t) - 1 > 2 * PyLong_SHIFT) {
+                            return (int64_t) (((int64_t)-1)*(((((int64_t)digits[1]) << PyLong_SHIFT) | (int64_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (8 * sizeof(int64_t) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int64_t, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(int64_t) - 1 > 2 * PyLong_SHIFT) {
+                            return (int64_t) ((((((int64_t)digits[1]) << PyLong_SHIFT) | (int64_t)digits[0])));
+                        }
+                    }
+                    break;
+                case -3:
+                    if (8 * sizeof(int64_t) - 1 > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int64_t, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(int64_t) - 1 > 3 * PyLong_SHIFT) {
+                            return (int64_t) (((int64_t)-1)*(((((((int64_t)digits[2]) << PyLong_SHIFT) | (int64_t)digits[1]) << PyLong_SHIFT) | (int64_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(int64_t) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int64_t, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(int64_t) - 1 > 3 * PyLong_SHIFT) {
+                            return (int64_t) ((((((((int64_t)digits[2]) << PyLong_SHIFT) | (int64_t)digits[1]) << PyLong_SHIFT) | (int64_t)digits[0])));
+                        }
+                    }
+                    break;
+                case -4:
+                    if (8 * sizeof(int64_t) - 1 > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int64_t, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(int64_t) - 1 > 4 * PyLong_SHIFT) {
+                            return (int64_t) (((int64_t)-1)*(((((((((int64_t)digits[3]) << PyLong_SHIFT) | (int64_t)digits[2]) << PyLong_SHIFT) | (int64_t)digits[1]) << PyLong_SHIFT) | (int64_t)digits[0])));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(int64_t) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(int64_t, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(int64_t) - 1 > 4 * PyLong_SHIFT) {
+                            return (int64_t) ((((((((((int64_t)digits[3]) << PyLong_SHIFT) | (int64_t)digits[2]) << PyLong_SHIFT) | (int64_t)digits[1]) << PyLong_SHIFT) | (int64_t)digits[0])));
+                        }
+                    }
+                    break;
+            }
+#endif
+            if (sizeof(int64_t) <= sizeof(long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(int64_t, long, PyLong_AsLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(int64_t) <= sizeof(PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(int64_t, PY_LONG_LONG, PyLong_AsLongLong(x))
+#endif
+            }
+        }
+        {
+#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
+            PyErr_SetString(PyExc_RuntimeError,
+                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
+#else
+            int64_t val;
+            PyObject *v = __Pyx_PyNumber_IntOrLong(x);
+ #if PY_MAJOR_VERSION < 3
+            if (likely(v) && !PyLong_Check(v)) {
+                PyObject *tmp = v;
+                v = PyNumber_Long(tmp);
+                Py_DECREF(tmp);
+            }
+ #endif
+            if (likely(v)) {
+                int one = 1; int is_little = (int)*(unsigned char *)&one;
+                unsigned char *bytes = (unsigned char *)&val;
+                int ret = _PyLong_AsByteArray((PyLongObject *)v,
+                                              bytes, sizeof(val),
+                                              is_little, !is_unsigned);
+                Py_DECREF(v);
+                if (likely(!ret))
+                    return val;
+            }
+#endif
+            return (int64_t) -1;
+        }
+    } else {
+        int64_t val;
+        PyObject *tmp = __Pyx_PyNumber_IntOrLong(x);
+        if (!tmp) return (int64_t) -1;
+        val = __Pyx_PyInt_As_int64_t(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to int64_t");
+    return (int64_t) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to int64_t");
+    return (int64_t) -1;
 }
 
 /* CIntFromPy */

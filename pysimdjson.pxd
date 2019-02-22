@@ -2,14 +2,6 @@
 from libc.stdint cimport uint8_t, int64_t
 from libcpp cimport bool
 
-cdef extern from '<iostream>' namespace 'std' nogil:
-    cdef cppclass string_view:
-        pass
-
-    cdef cppclass ostream:
-        pass
-
-
 cdef extern from 'simdjson.h':
     cdef cppclass CParsedJson 'ParsedJson':
         ParsedJson() except +
@@ -36,9 +28,7 @@ cdef extern from 'simdjson.h':
             inline const char * get_string()
 
         bool allocateCapacity(size_t, size_t)
-        bool printjson(ostream&)
 
-    string_view get_corpus(const char *)
     bool json_parse(
         const char *,
         size_t len,

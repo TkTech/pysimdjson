@@ -7,57 +7,43 @@ from cpython.dict cimport PyDict_SetItem
 cdef int DEFAULT_MAX_DEPTH = 1024
 
 
-cdef class ParsedJson:
-    """Low-level wrapper for simdjson."""
-    cdef CParsedJson pj
+cdef class Iterator:
+    cdef CParsedJson.iterator* iter
 
-    def __init__(self, source=None):
-        if source:
-            if not self.allocate_capacity(len(source)):
-                raise MemoryError
+    def __cinit__(self, ParsedJson pj):
+        self.iter = new CParsedJson.iterator(pj.pj)
 
-            if not self.parse(source):
-                # We have no idea what really went wrong, simdjson oddly just
-                # writes to cerr instead of setting any kind of error codes.
-                raise JSONDecodeError(
-                    'Error parsing document', 
-                    source.decode('utf-8'),
-                    0
-                )
+    def __dealloc__(self):
+        del self.iter
 
-    def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):
-        """Resize the document buffer to `size` bytes."""
-        return self.pj.allocateCapacity(size, max_depth)
+    cpdef uint8_t get_type(self):
+        return self.iter.get_type()
 
-    def parse(self, source):
-        """Parse the given document (as bytes).
+    cpdef bool isOk(self):
+        return self.iter.isOk()
 
-            .. note::
+    cpdef bool next(self):
+        return self.iter.next()
 
-                It's up to the caller to ensure that allocate_capacity has been
-                called with a sufficiently large size before this method is
-                called.
+    cpdef bool down(self):
+        return self.iter.down()
 
-        :param source: The document to be parsed.
-        :ptype source: bytes
-        :returns: True on success, else False.
-        """
-        return json_parse(source, len(source), self.pj, True)
+    cpdef bool up(self):
+        return self.iter.up()
+
+    cpdef double get_double(self):
+        return self.iter.get_double()
+
+    cpdef int64_t get_integer(self):
+        return self.iter.get_integer()
+
+    cpdef const char * get_string(self):
+        return self.iter.get_string()
 
     def to_obj(self):
-        """Recursively convert a parsed json document to a Python object and
-        return it.
-        """
-        iter = new CParsedJson.iterator(self.pj)
-        try:
-            if not iter.isOk():
-                # Prooooably not the right exception
-                raise JSONDecodeError('Error iterating over document', '', 0)
-            return self._to_obj(iter)
-        finally:
-            del iter
+        return self._to_obj(self.iter)
 
-    cdef object _to_obj(self, CParsedJson.iterator *iter):
+    cdef object _to_obj(self, CParsedJson.iterator* iter):
         # This is going to be by far the slowest part of this, as the cost of
         # creating python objects is quite high.
         cdef char t = <char>iter.get_type()
@@ -106,24 +92,70 @@ cdef class ParsedJson:
         elif t == 'n':
             return None
 
+
+cdef class ParsedJson:
+    """Low-level wrapper for simdjson."""
+    cdef CParsedJson pj
+
+    def __init__(self, source=None):
+        if source:
+            if not self.allocate_capacity(len(source)):
+                raise MemoryError
+
+            if not self.parse(source):
+                # We have no idea what really went wrong, simdjson oddly just
+                # writes to cerr instead of setting any kind of error codes.
+                raise JSONDecodeError(
+                    'Error parsing document',
+                    source.decode('utf-8'),
+                    0
+                )
+
+    def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):
+        """Resize the document buffer to `size` bytes."""
+        return self.pj.allocateCapacity(size, max_depth)
+
+    def parse(self, source):
+        """Parse the given document (as bytes).
+
+            .. note::
+
+                It's up to the caller to ensure that allocate_capacity has been
+                called with a sufficiently large size before this method is
+                called.
+
+        :param source: The document to be parsed.
+        :ptype source: bytes
+        :returns: True on success, else False.
+        """
+        return json_parse(source, len(source), self.pj, True)
+
+    def to_obj(self):
+        """Recursively convert a parsed json document to a Python object and
+        return it.
+        """
+        iter = Iterator(self)
+        if not iter.isOk():
+            # Prooooably not the right exception
+            raise JSONDecodeError('Error iterating over document', '', 0)
+        return iter.to_obj()
+
     def items(self, prefix):
         """Similar to the ijson.items() interface, this method allows you to
         extract part of a document without converting the entire document to
         Python objects, which is very expensive.
         """
         cdef list parsed_prefix = parse_prefix(prefix)
-        iter = new CParsedJson.iterator(self.pj)
-        try:
-            if not iter.isOk():
-                raise JSONDecodeError('Error iterating over document', '', 0)
 
-            for key in parsed_prefix:
-                if not iter.move_to_key(key):
-                    return None
+        iter = Iterator(self)
+        if not iter.isOk():
+            raise JSONDecodeError('Error iterating over document', '', 0)
 
-            return self._to_obj(iter)
-        finally:
-            del iter
+        for key in parsed_prefix:
+            if not iter.move_to_key(key):
+                return None
+
+        return iter.to_obj()
 
 
 def loads(s):
