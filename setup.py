@@ -2,15 +2,7 @@
 import sys
 import os.path
 
-from setuptools import setup, find_packages
-from distutils.extension import Extension
-
-BUILD_FLAGS = []
-if sys.platform == 'darwin':
-    BUILD_FLAGS.extend([
-        '-std=c++11',
-        '-march=native'
-    ])
+from setuptools import setup, find_packages, Extension
 
 try:
     from Cython.Build import cythonize
@@ -21,8 +13,7 @@ except ImportError:
             sources=[
                 'simdjson.cpp'
             ],
-            language='c++',
-            extra_compile_args=BUILD_FLAGS
+            language='c++'
         )
     ]
 else:
@@ -32,8 +23,7 @@ else:
             sources=[
                 'simdjson.pyx'
             ],
-            language='c++',
-            extra_compile_args=BUILD_FLAGS
+            language='c++'
         )
     ], compiler_directives={
         'embedsignature': True

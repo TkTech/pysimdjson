@@ -1,4 +1,5 @@
 ![PyPI - License](https://img.shields.io/pypi/l/pysimdjson.svg?style=flat-square)
+![CircleCI branch](https://img.shields.io/circleci/project/github/TkTech/pysimdjson/master.svg?style=flat-square)
 
 # pysimdjson
 
