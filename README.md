@@ -10,6 +10,8 @@ interest.
 These bindings are currently only tested on OS X, but should work everywhere
 simdjson does although you'll probably have to tweak your build flags.
 
+See the latest documentation at http://pysimdjson.tkte.ch.
+
 ## Installation
 
 There are binary wheels available for OS X 10.12. On other platforms you'll need a
