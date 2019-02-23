@@ -1,7 +1,11 @@
+![PyPI - License](https://img.shields.io/pypi/l/pysimdjson.svg?style=flat-square)
+
 # pysimdjson
 
 Quick-n'dirty Python bindings for [simdjson][] just to see if going down this path
-might yield some parse time improvements in real-world applications.
+might yield some parse time improvements in real-world applications. So far,
+the results are promising, especially when only part of a document is of
+interest.
 
 These bindings are currently only tested on OS X, but should work everywhere
 simdjson does although you'll probably have to tweak your build flags.
