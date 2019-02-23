@@ -32,8 +32,26 @@ with open('sample.json', 'rb') as fin:
 
 However, this doesn't really gain you that much over, say, ujson. You're still
 loading the entire document and converting the entire thing into a series of
-Python objects which is very expensive. You can use the lower-level interface
-to select only what you need and convert only those objects to Python.
+Python objects which is very expensive. You can instead use `items()` to pull
+only part of a document into Python.
+
+Example document:
+
+```json
+{
+    "type": "search_results",
+    "count": 2,
+    "results": [
+        {"username": "bob"},
+        {"username": "tod"}
+    ],
+    "error": {
+        "message": "All good captain"
+    }
+}
+```
+
+And now lets try some queries...
 
 ```python
 import pysimdjson
@@ -45,7 +63,10 @@ with open('sample.json', 'rb') as fin:
     # a large buffer just once and keep re-using it instead.
     pj = pysimdjson.ParsedJson(fin.read())
 
-    doc = pj.items('country.name')
+    pj.items('.type') #> "search_results"
+    pj.items('.count') #> 2
+    pj.items('.results[].username) #> ["bob", "tod"]
+    pj.items('.error.message') #> "All good captain"
 ```
 
 ## AVX2
@@ -75,11 +96,6 @@ Comparing the built-in json module `loads` on py3.7 to pysimdjson `loads`.
 | `jsonexamples/twitter.json` | 0.6069602610000011 | 0.41049074900000093 |
 | `jsonexamples/twitterescaped.json` | 0.7587005720000022 | 0.41576198399999953 |
 | `jsonexamples/update-center.json` | 0.5577604210000011 | 0.4961777420000004 |
-
-Creating python objects is expensive, as is decoding a C `const char *` to a
-CPython unicode string. On examples that are mostly strings and dicts,
-pysimdjson doesn't offer much improvement when using `loads`, since the entire
-document will be converted to Python objects.
 
 
 [simdjson]: https://github.com/lemire/simdjson

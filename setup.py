@@ -45,7 +45,7 @@ with open(os.path.join(root, 'README.md'), 'rb') as readme:
 setup(
     name='pysimdjson',
     packages=find_packages(),
-    version='1.0.1',
+    version='1.1.0',
     description='simdjson bindings for python',
     long_description=long_description,
     long_description_content_type='text/markdown',

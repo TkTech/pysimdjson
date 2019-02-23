@@ -10,6 +10,7 @@ cdef extern from 'simdjson.h':
             iterator(CParsedJson&)
 
             bool isOk()
+            inline bool prev()
             inline bool next()
             inline bool down()
             inline bool up()

@@ -2,12 +2,31 @@
 from json import JSONDecodeError
 from pysimdjson cimport CParsedJson, json_parse
 from cpython.dict cimport PyDict_SetItem
+from libc.string cimport strcmp
 
 #: Maximum default depth used when allocating capacity.
 cdef int DEFAULT_MAX_DEPTH = 1024
 
+#: State machine states for parsing item() query strings.
+cdef enum:
+    # Parsing an unquoted string.
+    Q_UNQUOTED = 10
+    # Parsing a quoted string
+    Q_QUOTED = 20
+    # Parsing an escape sequence
+    Q_ESCAPE = 30
+
+    # No particular operation, default state.
+    N_NONE = 0
+    # 'GET' (the . operator)
+    N_GET = 10
+    N_ARRAY = 20
+
 
 cdef class Iterator:
+    """A very thin wrapper around the interal simdjson ParsedJson::iterator
+    object.
+    """
     cdef CParsedJson.iterator* iter
 
     def __cinit__(self, ParsedJson pj):
@@ -21,6 +40,9 @@ cdef class Iterator:
 
     cpdef bool isOk(self):
         return self.iter.isOk()
+
+    cpdef bool prev(self):
+        return self.iter.prev()
 
     cpdef bool next(self):
         return self.iter.next()
@@ -40,7 +62,12 @@ cdef class Iterator:
     cpdef const char * get_string(self):
         return self.iter.get_string()
 
+    cpdef bool move_to_key(self, const char* key):
+        return self.iter.move_to_key(key)
+
     def to_obj(self):
+        """Convert the current iterator and all of its children into Python
+        objects and return them."""
         return self._to_obj(self.iter)
 
     cdef object _to_obj(self, CParsedJson.iterator* iter):
@@ -107,7 +134,7 @@ cdef class ParsedJson:
                 # writes to cerr instead of setting any kind of error codes.
                 raise JSONDecodeError(
                     'Error parsing document',
-                    source.decode('utf-8'),
+                    source.decode('utf-7'),
                     0
                 )
 
@@ -140,73 +167,142 @@ cdef class ParsedJson:
             raise JSONDecodeError('Error iterating over document', '', 0)
         return iter.to_obj()
 
-    def items(self, prefix):
-        """Similar to the ijson.items() interface, this method allows you to
-        extract part of a document without converting the entire document to
-        Python objects, which is very expensive.
-        """
-        cdef list parsed_prefix = parse_prefix(prefix)
+    def items(self, query):
+        cdef list parsed_query = parse_query(query)
 
         iter = Iterator(self)
         if not iter.isOk():
             raise JSONDecodeError('Error iterating over document', '', 0)
 
-        for key in parsed_prefix:
-            if not iter.move_to_key(key):
-                return None
+        return self._items(iter, parsed_query)
 
-        return iter.to_obj()
+    cdef object _items(self, Iterator iter, list parsed_query):
+        # TODO: Proof-of-concept, needs an optimization pass.
+        if not parsed_query:
+            return
+
+        cdef char t = <char>iter.get_type()
+        cdef int op
+        cdef int current_index = 0
+        cdef int segments
+        cdef object obj = None
+        cdef list array_result
+
+        op, v = parsed_query[0]
+        segments = len(parsed_query)
+
+        if op == N_GET:
+            if t == '{':
+                if iter.down():
+                    while True:
+                        if v == b'' or strcmp(v, iter.get_string()) == 0:
+                            # Found a matching key, move to the value.
+                            iter.next()
+                            if segments > 1:
+                                # There are more query fragments, so we have
+                                # further filtering to do...
+                                obj = self._items(iter, parsed_query[1:])
+                            else:
+                                # ... otherwise, we want the entire result.
+                                obj = iter.to_obj()
+                            break
+                        else:
+                            # Didn't find a match, skip over the value and move
+                            # to the next key.
+                            iter.next()
+
+                        if not iter.next():
+                            break
+
+                    iter.up()
+                return obj
+        elif op == N_ARRAY:
+            array_result = []
+            if iter.down():
+                while True:
+                    if segments > 1:
+                        array_result.append(self._items(iter, parsed_query[1:]))
+                    else:
+                        array_result.append(iter.to_obj())
+
+                    if not iter.next():
+                        break
+
+                    current_index += 1
+
+                iter.up()
+            return array_result
 
 
 def loads(s):
     return ParsedJson(s).to_obj()
 
 
-#: State machine states for parsing item() query strings.
-cdef enum:
-    Q_UNQUOTED = 10
-    Q_QUOTED = 20
-    Q_ESCAPE = 30
 
-
-cpdef list parse_prefix(prefix):
+cpdef list parse_query(query):
     cdef int current_state = Q_UNQUOTED
+    cdef int current_op = N_NONE
+
     cdef list result = []
     cdef list buff = []
 
-    for c in prefix:
+    for c in query:
         if current_state == Q_UNQUOTED:
-            # Unquoted string
-            if c == '"':
-                current_state = Q_QUOTED
-            elif c == '.':
-                if buff:
-                    result.append(''.join(buff).encode('utf-8'))
+            if c == '.':
+                # Starting an object "get"
+                if current_op:
+                    result.append((
+                        current_op,
+                        ''.join(buff).encode('utf-8')
+                    ))
                     del buff[:]
+
+                current_op = N_GET
+            elif c == '[':
+                # Starting a new array subscript.
+                if current_op:
+                    result.append((
+                        current_op,
+                        ''.join(buff).encode('utf-8')
+                    ))
+                    del buff[:]
+
+                current_op = N_ARRAY
+            elif c == ']':
+                # Ending an array subscript.
+                if current_op != N_ARRAY:
+                    raise ValueError('Stray ] in query string.')
+
+                result.append((
+                    current_op,
+                    ''.join(buff).encode('utf-8')
+                ))
+                del buff[:]
+
+                current_op = N_NONE
+            elif c == '"':
+                # Start of a quoted string.
+                current_state = Q_QUOTED
             else:
+                # Regular character with no special meaning.
                 buff.append(c)
         elif current_state == Q_QUOTED:
-            # Quoted string
             if c == '\\':
+                # Found the start of an escape sequence.
                 current_state = Q_ESCAPE
             elif c == '"':
+                # Found the end of a quoted string.
                 current_state = Q_UNQUOTED
-                result.append(''.join(buff).encode('utf-8'))
-                del buff[:]
             else:
                 buff.append(c)
         elif current_state == Q_ESCAPE:
-            # Escape within a quoted string
             buff.append(c)
             current_state = Q_ESCAPE if c == '\\' else Q_QUOTED
 
-    if current_state == Q_QUOTED:
-        raise ValueError('Incomplete quoted string')
-
-    if current_state == Q_ESCAPE:
-        raise ValueError('Incomplete escape sequence')
-
-    if buff:
-        result.append(''.join(buff).encode('utf-8'))
+    if current_op:
+        result.append((
+            current_op,
+            ''.join(buff).encode('utf-8')
+        ))
 
     return result
