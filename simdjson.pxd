@@ -2,7 +2,7 @@
 from libc.stdint cimport uint8_t, int64_t
 from libcpp cimport bool
 
-cdef extern from 'simdjson.h':
+cdef extern from 'src/simdjson.h':
     cdef cppclass CParsedJson 'ParsedJson':
         ParsedJson() except +
 
@@ -37,5 +37,5 @@ cdef extern from 'simdjson.h':
         bool
     )
 
-cdef extern from 'simdjson.cpp':
+cdef extern from 'src/simdjson.cpp':
     pass

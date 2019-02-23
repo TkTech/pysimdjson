@@ -28,10 +28,10 @@ python setup.py install
 ## Example
 
 ```python
-import pysimdjson
+import simdjson
 
 with open('sample.json', 'rb') as fin:
-    doc = pysimdjson.loads(fin.read())
+    doc = simdjson.loads(fin.read())
 ```
 
 However, this doesn't really gain you that much over, say, ujson. You're still
@@ -58,14 +58,14 @@ Example document:
 And now lets try some queries...
 
 ```python
-import pysimdjson
+import simdjson
 
 with open('sample.json', 'rb') as fin:
     # Calling ParsedJson with a document is a shortcut for
     # calling pj.allocate_capacity(<size>) and pj.parse(<doc>). If you're
     # parsing many JSON documents of similar sizes, you can allocate
     # a large buffer just once and keep re-using it instead.
-    pj = pysimdjson.ParsedJson(fin.read())
+    pj = simdjson.ParsedJson(fin.read())
 
     pj.items('.type') #> "search_results"
     pj.items('.count') #> 2
@@ -84,13 +84,13 @@ simdjson requires AVX2 support to function. Check to see if your OS/processor su
 
 You can use the low-level simdjson Iterator interface directly, just be aware
 that this interface can change any time. If you depend on it you should pin to
-a specific version of pysimdjson. You may need to use this interface if you're
+a specific version of simdjson. You may need to use this interface if you're
 dealing with odd JSON, such as a document with repeated non-unique keys.
 
 ```python
 with open('sample.json', 'rb') as fin:
-    pj = pysimdjson.ParsedJson(fin.read())
-    iter = pysimdjson.Iterator(pj)
+    pj = simdjson.ParsedJson(fin.read())
+    iter = simdjson.Iterator(pj)
     if iter.is_object():
         if iter.down():
             print(iter.get_string())
@@ -98,7 +98,7 @@ with open('sample.json', 'rb') as fin:
 
 ## Early Benchmark
 
-Comparing the built-in json module `loads` on py3.7 to pysimdjson `loads`.
+Comparing the built-in json module `loads` on py3.7 to simdjson `loads`.
 
 | File | `json` time | `pysimdjson` time |
 | ---- | ----------- | ----------------- |

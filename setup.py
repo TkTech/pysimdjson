@@ -17,9 +17,9 @@ try:
 except ImportError:
     extensions = [
         Extension(
-            'pysimdjson',
+            'simdjson',
             sources=[
-                'pysimdjson.cpp'
+                'simdjson.cpp'
             ],
             language='c++',
             extra_compile_args=BUILD_FLAGS
@@ -28,9 +28,9 @@ except ImportError:
 else:
     extensions = cythonize([
         Extension(
-            'pysimdjson',
+            'simdjson',
             sources=[
-                'pysimdjson.pyx'
+                'simdjson.pyx'
             ],
             language='c++',
             extra_compile_args=BUILD_FLAGS

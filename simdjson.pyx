@@ -1,6 +1,6 @@
 # cython: language_level=2
 from json import JSONDecodeError
-from pysimdjson cimport CParsedJson, json_parse
+from simdjson cimport CParsedJson, json_parse
 from cpython.dict cimport PyDict_SetItem
 from libc.string cimport strcmp
 

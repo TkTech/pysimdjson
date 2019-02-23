@@ -1,6 +1,6 @@
 import pytest
 
-from pysimdjson import parse_query, ParsedJson
+from simdjson import parse_query, ParsedJson
 
 def test_parse_query():
     # Simple unquoted string with a delimiter.

@@ -3,7 +3,7 @@ import timeit
 
 import pytest
 
-import pysimdjson
+import simdjson
 
 
 @pytest.mark.slow
@@ -23,7 +23,7 @@ def test_speed(json_example):
     simd_time = timeit.timeit(
         'json.loads(s)',
         globals={
-            'json': pysimdjson,
+            'json': simdjson,
             's': file
         },
         number=100

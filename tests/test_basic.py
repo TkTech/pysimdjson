@@ -2,10 +2,10 @@ import json
 
 import pytest
 
-import pysimdjson
+import simdjson
 
 def test_valid_smallblock():
-    assert pysimdjson.loads(b'{"test": "value"}') == {
+    assert simdjson.loads(b'{"test": "value"}') == {
         'test': 'value'
     }
 
@@ -13,4 +13,4 @@ def test_valid_smallblock():
 def test_invalid_smallblock():
 
     with pytest.raises(json.JSONDecodeError):
-        pysimdjson.loads(b'{"test":}')
+        simdjson.loads(b'{"test":}')
