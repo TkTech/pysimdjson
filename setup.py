@@ -35,7 +35,9 @@ else:
             language='c++',
             extra_compile_args=BUILD_FLAGS
         )
-    ])
+    ], compiler_directives={
+        'embedsignature': True
+    })
 
 root = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(root, 'README.md'), 'rb') as readme:
@@ -63,7 +65,11 @@ setup(
     ],
     tests_require=[
         'pytest>=2.10',
-        'Cython'
+        'Cython',
+        'm2r',
+        'sphinx',
+        'ghp-import',
+        'bumpversion'
     ],
     ext_modules=extensions,
     package_data = {

@@ -4,10 +4,10 @@ from simdjson cimport CParsedJson, json_parse
 from cpython.dict cimport PyDict_SetItem
 from libc.string cimport strcmp
 
-#: Maximum default depth used when allocating capacity.
+# Maximum default depth used when allocating capacity.
 cdef int DEFAULT_MAX_DEPTH = 1024
 
-#: State machine states for parsing item() query strings.
+# State machine states for parsing item() query strings.
 cdef enum:
     # Parsing an unquoted string.
     Q_UNQUOTED = 10
@@ -77,8 +77,8 @@ cdef class Iterator:
     cpdef int64_t get_integer(self):
         return self.iter.get_integer()
 
-    cpdef const char * get_string(self):
-        return self.iter.get_string()
+    cpdef bytes get_string(self):
+        return <bytes>self.iter.get_string()
 
     cpdef bool move_to_key(self, const char* key):
         return self.iter.move_to_key(key)
@@ -139,7 +139,11 @@ cdef class Iterator:
 
 
 cdef class ParsedJson:
-    """Low-level wrapper for simdjson."""
+    """Low-level wrapper for simdjson.
+
+    Providing a `source` document is a shortcut for calling
+    :func:`~ParsedJson.allocate_capacity()` and :func:`~ParsedJson.parse()`.
+    """
     cdef CParsedJson pj
 
     def __init__(self, source=None):
@@ -168,10 +172,6 @@ cdef class ParsedJson:
                 It's up to the caller to ensure that allocate_capacity has been
                 called with a sufficiently large size before this method is
                 called.
-
-        :param source: The document to be parsed.
-        :ptype source: bytes
-        :returns: True on success, else False.
         """
         return json_parse(source, len(source), self.pj, True)
 
@@ -253,11 +253,21 @@ cdef class ParsedJson:
 
 
 def loads(s):
+    """
+    Deserialize and return the entire JSON object in `s` (bytes).
+
+    Note that unlike the built-in Python `json.loads`, this method only accepts
+    byte strings. simdjson internally only works with UTF-8.
+    """
     return ParsedJson(s).to_obj()
 
 
 
 cpdef list parse_query(query):
+    """Parse a query string for use with :func:`~ParsedJson.items`.
+
+    Returns a list in the form of `[(<op>, <value>), ...]`.
+    """
     cdef int current_state = Q_UNQUOTED
     cdef int current_op = N_NONE
 
