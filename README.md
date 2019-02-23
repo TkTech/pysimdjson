@@ -69,7 +69,7 @@ with open('sample.json', 'rb') as fin:
 
     pj.items('.type') #> "search_results"
     pj.items('.count') #> 2
-    pj.items('.results[].username) #> ["bob", "tod"]
+    pj.items('.results[].username') #> ["bob", "tod"]
     pj.items('.error.message') #> "All good captain"
 ```
 
