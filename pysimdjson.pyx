@@ -53,6 +53,24 @@ cdef class Iterator:
     cpdef bool up(self):
         return self.iter.up()
 
+    cpdef bool is_object_or_array(self):
+        return self.iter.is_object_or_array()
+
+    cpdef bool is_object(self):
+        return self.iter.is_object()
+
+    cpdef bool is_array(self):
+        return self.iter.is_array()
+
+    cpdef bool is_string(self):
+        return self.iter.is_string()
+
+    cpdef bool is_integer(self):
+        return self.iter.is_integer()
+
+    cpdef bool is_double(self):
+        return self.iter.is_double()
+
     cpdef double get_double(self):
         return self.iter.get_double()
 

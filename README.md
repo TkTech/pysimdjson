@@ -69,12 +69,28 @@ with open('sample.json', 'rb') as fin:
     pj.items('.error.message') #> "All good captain"
 ```
 
-## AVX2
+### AVX2
 
 simdjson requires AVX2 support to function. Check to see if your OS/processor supports it:
 
 - OS X: `sysctl -a | grep machdep.cpu.leaf7_features`
 - Linux: `grep avx2 /proc/cpuinfo`
+
+### Low-level interface
+
+You can use the low-level simdjson Iterator interface directly, just be aware
+that this interface can change any time. If you depend on it you should pin to
+a specific version of pysimdjson. You may need to use this interface if you're
+dealing with odd JSON, such as a document with repeated non-unique keys.
+
+```python
+with open('sample.json', 'rb') as fin:
+    pj = pysimdjson.ParsedJson(fin.read())
+    iter = pysimdjson.Iterator(pj)
+    if iter.is_object():
+        if iter.down():
+            print(iter.get_string())
+```
 
 ## Early Benchmark
 
