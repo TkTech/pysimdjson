@@ -1,0 +1,66 @@
+version: 2
+jobs:
+  "cython":
+    docker:
+      - image: ubuntu:18.04
+        environment:
+          CXX: clang++-6.0
+    steps:
+      - checkout
+
+      - run: apt-get update -qq
+      - run: >
+          apt-get install -y
+          build-essential
+          clang-6.0
+
+      - run:
+          name: Building (cython)
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install cython
+            python setup.py install
+
+      - run:
+          name: Running tests (cython)
+          command: |
+            . venv/bin/activate
+            pip install pytest
+            py.test
+
+  "no-cython":
+    docker:
+      - image: ubuntu:18.04
+        environment:
+          CXX: clang++-6.0
+    steps:
+      - checkout
+
+      - run: apt-get update -qq
+      - run: >
+          apt-get install -y
+          build-essential
+          clang-6.0
+
+      - run:
+          name: Building (no-cython)
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            python setup.py install
+
+      - run:
+          name: Running tests (no-cython)
+          command: |
+            . venv/bin/activate
+            pip install pytest
+            py.test
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - "cython"
+      - "no-cython"
+
