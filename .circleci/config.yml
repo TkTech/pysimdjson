@@ -13,11 +13,11 @@ jobs:
           apt-get install -y
           build-essential
           clang-6.0
-
+          python3.7
+      - run: python3.7 -m venv venv
       - run:
           name: Building (cython)
           command: |
-            python3 -m venv venv
             . venv/bin/activate
             pip install cython
             python setup.py install
@@ -42,11 +42,11 @@ jobs:
           apt-get install -y
           build-essential
           clang-6.0
-
+          python3.7
+      - run: python3.7 -m venv venv
       - run:
           name: Building (no-cython)
           command: |
-            python3 -m venv venv
             . venv/bin/activate
             python setup.py install
 
