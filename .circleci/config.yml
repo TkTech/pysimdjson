@@ -14,6 +14,7 @@ jobs:
           build-essential
           clang-6.0
           python3.7
+          python3.7-venv
       - run: python3.7 -m venv venv
       - run:
           name: Building (cython)
@@ -43,6 +44,7 @@ jobs:
           build-essential
           clang-6.0
           python3.7
+          python3.7-venv
       - run: python3.7 -m venv venv
       - run:
           name: Building (no-cython)
