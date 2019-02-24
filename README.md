@@ -1,6 +1,6 @@
 ![PyPI - License](https://img.shields.io/pypi/l/pysimdjson.svg?style=flat-square)
-![CircleCI branch](https://img.shields.io/circleci/project/github/TkTech/pysimdjson/master.svg?style=flat-square)
-![AppVeyor branch](https://img.shields.io/appveyor/ci/TkTech/pysimdjson/master.svg?style=flat-square)
+[![CircleCI branch](https://img.shields.io/circleci/project/github/TkTech/pysimdjson/master.svg?style=flat-square)](https://circleci.com/gh/TkTech/pysimdjson)
+[![AppVeyor branch](https://img.shields.io/appveyor/ci/TkTech/pysimdjson/master.svg?style=flat-square)](https://ci.appveyor.com/project/TkTech/pysimdjson)
 
 # pysimdjson
 
