@@ -53,7 +53,9 @@ jobs:
           name: Ensure package can be installed
           command: |
             . venv/bin/activate
-            pip install dist/pysimdjson-*.tar.gz
+            pip uninstall -y pysimdjson
+            python setup.py sdist
+            pip install pysimdjson --no-index --find-links file://dist --no-binary :all:
             pip uninstall -y pysimdjson
 
 workflows:
