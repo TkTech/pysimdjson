@@ -1,0 +1,22 @@
+environment:
+  matrix:
+    - python: "34"
+    - python: "34-x64"
+      distutils_use_sdk: 1
+    - python: "35"
+    - python: "35-x64"
+    - python: "36"
+    - python: "36-x64"
+    - python: "37"
+    - python: "37-x64"
+
+
+install:
+    - "SET PATH=C:\\Python%PYTHON%;C:\\Python%PYTHON%\\scripts;%PATH%"
+    - pip install wheel pytest
+
+build: off
+
+test_script:
+  - build.cmd python setup.py install
+  - pytest
