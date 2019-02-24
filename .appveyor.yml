@@ -1,8 +1,6 @@
 environment:
   matrix:
     - python: "34"
-    - python: "34-x64"
-      distutils_use_sdk: 1
     - python: "35"
     - python: "35-x64"
     - python: "36"
@@ -18,5 +16,5 @@ install:
 build: off
 
 test_script:
-  - build.cmd python setup.py install
+  - python setup.py install
   - pytest
