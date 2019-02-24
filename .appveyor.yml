@@ -1,23 +1,35 @@
+platform: x64
+build: off
+deploy: on
 image:
   - Visual Studio 2017
 
 environment:
-  matrix:
-    - python: "34"
-    - python: "35"
-    - python: "35-x64"
-    - python: "36"
-    - python: "36-x64"
-    - python: "37"
-    - python: "37-x64"
+  global:
+    CL: "/std:c++17 /arch:AVX2"
+    TWINE_USERNAME: pysimdjson_builder
+    TWINE_PASSWORD:
+      secure: HCIIaAmxHl2V3Ae+f9lkEzBV+flzNLjpTuGq9yXaL7A=
 
+  matrix:
+    - python: "36-x64"
+    - python: "37-x64"
 
 install:
     - "SET PATH=C:\\Python%PYTHON%;C:\\Python%PYTHON%\\scripts;%PATH%"
     - pip install wheel pytest
 
-build: off
-
 test_script:
   - python setup.py install
   - pytest
+
+after_test:
+  - python setup.py bdist_wheel
+
+artifacts:
+  - path: dist\*
+
+deploy_script:
+  # Check to see if the current build is for a tag push, not just a regular commit.
+  # If it is, we upload the produced wheels to pypi (only on success)
+  - ps: if ($env:APPVEYOR_REPO_TAG -eq $TRUE) { pip install twine; twine upload dist/* }
