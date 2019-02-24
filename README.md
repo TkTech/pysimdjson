@@ -122,5 +122,18 @@ Comparing the built-in json module `loads` on py3.7 to simdjson `loads`.
 | `jsonexamples/twitterescaped.json` | 0.7587005720000022 | 0.41576198399999953 |
 | `jsonexamples/update-center.json` | 0.5577604210000011 | 0.4961777420000004 |
 
+Getting subsets of the document is significantly faster. For `canada.json`
+getting `.type` using the naive approach and the `items()` appraoch, average
+over N=100.
+
+| Python | Time |
+| ------ | ---- |
+| `json.loads(canada_json)['type']` | 5.76244878 |
+| `simdjson.loads(canada_json)['type']` | 1.5984486990000004 |
+| `simdjson.ParsedJson(canada_json).items('.type')` | 0.3949587819999998 |
+
+This approach avoids creating Python objects for fields that aren't of
+interest. When you only care about a small part of the document, it will always
+be faster.
 
 [simdjson]: https://github.com/lemire/simdjson
