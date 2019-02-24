@@ -1,5 +1,6 @@
 ![PyPI - License](https://img.shields.io/pypi/l/pysimdjson.svg?style=flat-square)
 ![CircleCI branch](https://img.shields.io/circleci/project/github/TkTech/pysimdjson/master.svg?style=flat-square)
+![AppVeyor branch](https://img.shields.io/appveyor/ci/TkTech/pysimdjson/master.svg?style=flat-square)
 
 # pysimdjson
 
@@ -8,15 +9,16 @@ might yield some parse time improvements in real-world applications. So far,
 the results are promising, especially when only part of a document is of
 interest.
 
-These bindings are currently only tested on OS X, but should work everywhere
-simdjson does although you'll probably have to tweak your build flags.
+These bindings are currently only tested on OS X & Windows, but should work
+everywhere simdjson does although you'll probably have to tweak your build
+flags.
 
 See the latest documentation at http://pysimdjson.tkte.ch.
 
 ## Installation
 
-There are binary wheels available for OS X 10.12. On other platforms you'll need a
-C++11-capable compiler.
+There are binary wheels available for py3.6/py3.7 on OS X 10.12 & Windows. On
+other platforms you'll need a C++17-capable compiler.
 
 `pip install pysimdjson`
 
