@@ -9,9 +9,7 @@ might yield some parse time improvements in real-world applications. So far,
 the results are promising, especially when only part of a document is of
 interest.
 
-These bindings are currently only tested on OS X & Windows, but should work
-everywhere simdjson does although you'll probably have to tweak your build
-flags.
+Bindings are currently tested on OS X, Linux, and Windows.
 
 See the latest documentation at http://pysimdjson.tkte.ch.
 
@@ -22,7 +20,20 @@ other platforms you'll need a C++17-capable compiler.
 
 `pip install pysimdjson`
 
-or from source:
+If you're getting errors when installing from pip, there's probably no binary
+package available for your combination of platform & python version. As long as
+you have a C++17 compiler installed you can still use pip, you just need to
+provide a few extra compiler flags. The most common are:
+
+- gcc/clang: `CFLAGS="-march=native -std=c++17" pip install pysimdjson`
+- msvc (Visual Studio 2017):
+
+    ```
+    SET CL="/std:c++17 /arch:AVX2"
+    pip install pysimdjson
+    ```
+
+or from git:
 
 ```
 git clone https://github.com/TkTech/pysimdjson.git
