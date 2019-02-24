@@ -2,7 +2,7 @@ import pytest
 
 from simdjson import parse_query, ParsedJson
 
-def test_parse_query():
+def test_parse_query_get():
     # Simple unquoted string with a delimiter.
     assert parse_query('.test.string') == [
         (10, b'test'),
@@ -18,14 +18,16 @@ def test_parse_query():
         (10, b'string')
     ]
 
+
+def test_parse_query_array():
     assert parse_query('."test"[]') == [
         (10, b'test'),
-        (20, b'')
+        (20, None)
     ]
 
     assert parse_query('.[]') == [
         (10, b''),
-        (20, b'')
+        (20, None)
     ]
 
     # Closing bracket without an opening.
@@ -34,6 +36,12 @@ def test_parse_query():
 
 
 def test_items():
+    doc = b'{"simple": 1}'
+
+    pj = ParsedJson(doc)
+
+    assert pj.items('.') == {"simple": 1}
+
     doc = b'''{
         "count": 2,
         "results": [
@@ -57,3 +65,5 @@ def test_items():
         'result_b'
     ]
     assert pj.items('.error.message') == 'All good captain'
+
+    assert pj.items('.results[0]')

@@ -15,12 +15,19 @@ cdef enum:
     Q_QUOTED = 20
     # Parsing an escape sequence
     Q_ESCAPE = 30
+    # Parsing the contents of an array subscript
+    Q_ARRAY = 40
 
     # No particular operation, default state.
     N_NONE = 0
     # 'GET' (the . operator)
     N_GET = 10
+    # [] operator
     N_ARRAY = 20
+    # [<N>] operator
+    N_ARRAY_SINGLE = 30
+    # [<N>:<N>] operator
+    N_ARRAY_SLICE = 40
 
 
 cdef class Iterator:
@@ -211,9 +218,22 @@ cdef class ParsedJson:
 
         if op == N_GET:
             if t == '{':
+                # We're getting the entire object, no further filtering
+                # required.
+                if v == b'':
+                    if segments > 1:
+                        # There are more query fragments, so we have
+                        # further filtering to do...
+                        obj = self._items(iter, parsed_query[1:])
+                    else:
+                        # ... otherwise, we want the entire result.
+                        obj = iter.to_obj()
+                    return obj
+
+                # We're looking for a specific field.
                 if iter.down():
                     while True:
-                        if v == b'' or strcmp(v, iter.get_string()) == 0:
+                        if v == b'' or v == iter.get_string():
                             # Found a matching key, move to the value.
                             iter.next()
                             if segments > 1:
@@ -235,9 +255,78 @@ cdef class ParsedJson:
                     iter.up()
                 return obj
         elif op == N_ARRAY:
+            # We're fetching an entire array.
             array_result = []
+
             if iter.down():
                 while True:
+                    if segments > 1:
+                        array_result.append(
+                            self._items(
+                                iter,
+                                parsed_query[1:]
+                            )
+                        )
+                    else:
+                        array_result.append(iter.to_obj())
+
+                    if not iter.next():
+                        break
+
+                    current_index += 1
+
+                iter.up()
+            return array_result
+        elif op == N_ARRAY_SINGLE:
+            # We're fetchign a single element from an array.
+            # Returns None rather than the possibly-expected IndexError if the
+            # index requested doesn't exist in the list. This matches jq
+            # behaviour.
+            stop_index = int(v[0])
+            if iter.down():
+                while True:
+                    if not current_index == stop_index:
+                        current_index += 1
+
+                        if not iter.next():
+                            break
+
+                        continue
+
+                    if segments > 1:
+                        obj = self._items(iter, parsed_query[1:])
+                    else:
+                        obj = iter.to_obj()
+
+                    break
+
+                iter.up()
+            return obj
+        elif op == N_ARRAY_SLICE:
+            # We're fetching an arbitrary slice from an array.
+            start_index = 0 if not v[0] else int(v[0])
+            stop_index = None if not v[1] else int(v[1])
+
+            array_result = []
+
+            if iter.down():
+                # Skip ahead to the first starting element. I believe we may be
+                # able to get this up to constant time by exposing a bit more
+                # of the tape from the simdjson as long as we know the position
+                # where the current scope ends.
+                while current_index < start_index:
+                    if not iter.next():
+                        # We got to the end of the list and still didn't find
+                        # the starting point.
+                        iter.up()
+                        return array_result
+                    current_index += 1
+
+                while True:
+                    if stop_index is not None:
+                        if stop_index == current_index:
+                            break
+
                     if segments > 1:
                         array_result.append(self._items(iter, parsed_query[1:]))
                     else:
@@ -272,16 +361,23 @@ cpdef list parse_query(query):
     cdef int current_op = N_NONE
 
     cdef list result = []
-    cdef list buff = []
 
-    for c in query:
+    # A reference to the encoded string *must* be retained or we'll segfault
+    # when accessing c_query.
+    query = query.encode('utf-8')
+    cdef char* c_query = query
+    cdef char c
+    cdef bytearray buff = bytearray()
+
+    for c in c_query:
         if current_state == Q_UNQUOTED:
+            # A regular character without any particular state.
             if c == '.':
                 # Starting an object "get"
                 if current_op:
                     result.append((
                         current_op,
-                        ''.join(buff).encode('utf-8')
+                        bytes(buff)
                     ))
                     del buff[:]
 
@@ -291,7 +387,7 @@ cpdef list parse_query(query):
                 if current_op:
                     result.append((
                         current_op,
-                        ''.join(buff).encode('utf-8')
+                        bytes(buff)
                     ))
                     del buff[:]
 
@@ -301,12 +397,44 @@ cpdef list parse_query(query):
                 if current_op != N_ARRAY:
                     raise ValueError('Stray ] in query string.')
 
-                result.append((
-                    current_op,
-                    ''.join(buff).encode('utf-8')
-                ))
-                del buff[:]
+                if buff:
+                    # A bit messy, but we want to be able to [eventually]
+                    # provide better error messages on bad query strings, so we
+                    # need to actually go over everything rather than just
+                    # .split().
+                    current_op = N_ARRAY_SINGLE
+                    slice_parts = []
+                    current_slice = bytearray()
+                    for c in bytes(buff):
+                        if c >= 48 and c <= 57:
+                            # Simple nubmer
+                            current_slice.append(c)
+                        elif c == 58:
+                            # Slice delimiter [:]
+                            slice_parts.append(bytes(current_slice))
+                            current_op = N_ARRAY_SLICE
+                        else:
+                            raise ValueError(
+                                'Do not know how to handle {0!r} in '
+                                'array subscript'.format(
+                                    chr(c)
+                                )
+                            )
 
+                    if current_slice:
+                        slice_parts.append(bytes(current_slice))
+
+                    result.append((
+                        current_op,
+                        slice_parts
+                    ))
+                else:
+                    result.append((
+                        current_op,
+                        None
+                    ))
+
+                del buff[:]
                 current_op = N_NONE
             elif c == '"':
                 # Start of a quoted string.
@@ -315,6 +443,7 @@ cpdef list parse_query(query):
                 # Regular character with no special meaning.
                 buff.append(c)
         elif current_state == Q_QUOTED:
+            # Contents of a quoted string.
             if c == '\\':
                 # Found the start of an escape sequence.
                 current_state = Q_ESCAPE
@@ -324,13 +453,14 @@ cpdef list parse_query(query):
             else:
                 buff.append(c)
         elif current_state == Q_ESCAPE:
+            # Simple single-character escape sequences such as \" or \\
             buff.append(c)
             current_state = Q_ESCAPE if c == '\\' else Q_QUOTED
 
     if current_op:
         result.append((
             current_op,
-            ''.join(buff).encode('utf-8')
+            bytes(buff)
         ))
 
     return result
