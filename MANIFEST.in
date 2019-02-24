@@ -1,1 +1,4 @@
 include src/*
+include simdjson.cpp
+include simdjson.pyx
+include simdjson.pxd

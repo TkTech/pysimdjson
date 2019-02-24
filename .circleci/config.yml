@@ -50,12 +50,22 @@ jobs:
             pytest
 
       - run:
-          name: Ensure package can be installed
+          name: Ensure package can be installed (cython)
           command: |
             . venv/bin/activate
             pip uninstall -y pysimdjson
             python setup.py sdist
-            pip install pysimdjson --no-index --find-links file://dist --no-binary :all:
+            pip install pysimdjson --no-index --find-links file:dist --no-binary :all:
+            pip uninstall -y pysimdjson
+
+      - run:
+          name: Ensure package can be installed (no-cython)
+          command: |
+            . venv/bin/activate
+            pip uninstall -y cython
+            pip uninstall -y pysimdjson
+            python setup.py sdist
+            pip install pysimdjson --no-index --find-links file:dist --no-binary :all:
             pip uninstall -y pysimdjson
 
 workflows:
