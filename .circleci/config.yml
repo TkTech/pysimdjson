@@ -23,52 +23,36 @@ jobs:
       - run:
           name: Updating python dependencies
           command: |
-            python3.7 -m pip install --upgrade pip
-            python3.7 -m pip install --upgrade setuptools
-
-      - run: python3.7 -m venv venv_cython
-      - run:
-          name: Building (cython)
-          command: |
-            . venv_cython/bin/activate
-            pip install cython
-            python setup.py install
-            python setup.py sdist
-
-      - run:
-          name: Running tests (cython)
-          command: |
-            . venv_cython/bin/activate
+            python3.7 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install --upgrade setuptools
             pip install pytest
-            pytest
 
-      - run: python3.7 -m venv venv
       - run:
           name: Building (no-cython)
           command: |
             . venv/bin/activate
             python setup.py install
-            python setup.py sdist
-
-      - run:
-          name: Running tests (no-cython)
-          command: |
-            . venv/bin/activate
-            pip install pytest
-            pytest
-
-      - run: python3.7 -m venv venv_package
-      - run:
-          name: Ensure valid package (no-cython)
-          command: |
-            . venv_package/bin/activate
-            pip install dist/pysimdjson-*.tar.gz
             pip uninstall -y pysimdjson
 
       - run:
-          name: Ensure valid package (cython)
+          name: Building (cython)
           command: |
-            . venv_package/bin/activate
+            . venv/bin/activate
+            pip install cython
+            python setup.py install
+
+      - run:
+          name: Running tests
+          command: |
+            . venv/bin/activate
+            pytest
+
+      - run:
+          name: Ensure package can be installed
+          command: |
+            . venv/bin/activate
             pip install dist/pysimdjson-*.tar.gz
             pip uninstall -y pysimdjson
 
