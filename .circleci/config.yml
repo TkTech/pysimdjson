@@ -27,6 +27,7 @@ jobs:
             . venv_cython/bin/activate
             pip install cython
             python setup.py install
+            python setup.py sdist
 
       - run:
           name: Running tests (cython)
@@ -41,6 +42,7 @@ jobs:
           command: |
             . venv/bin/activate
             python setup.py install
+            python setup.py sdist
 
       - run:
           name: Running tests (no-cython)
@@ -49,6 +51,20 @@ jobs:
             pip install pytest
             pytest
 
+      - run: python3.7 -m venv venv_package
+      - run:
+          name: Ensure valid package (no-cython)
+          command: |
+            . venv_package/bin/activate
+            pip install dist/pysimdjson-*.tar.gz
+            pip uninstall -y pysimdjson
+
+      - run:
+          name: Ensure valid package (cython)
+          command: |
+            . venv_package/bin/activate
+            pip install dist/pysimdjson-*.tar.gz
+            pip uninstall -y pysimdjson
 
 workflows:
   version: 2
