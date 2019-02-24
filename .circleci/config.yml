@@ -20,6 +20,12 @@ jobs:
           python3-setuptools
           python3.7-venv
 
+      - run:
+          name: Updating python dependencies
+          command: |
+            python3.7 -m pip install --upgrade pip
+            python3.7 -m pip install --upgrade setuptools
+
       - run: python3.7 -m venv venv_cython
       - run:
           name: Building (cython)
