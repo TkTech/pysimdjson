@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  "cython":
+  "ubuntu":
     docker:
       - image: ubuntu:18.04
         environment:
@@ -20,40 +20,20 @@ jobs:
           python3-setuptools
           python3.7-venv
 
-      - run: python3.7 -m venv venv
+      - run: python3.7 -m venv venv_cython
       - run:
           name: Building (cython)
           command: |
-            . venv/bin/activate
+            . venv_cython/bin/activate
             pip install cython
             python setup.py install
 
       - run:
           name: Running tests (cython)
           command: |
-            . venv/bin/activate
+            . venv_cython/bin/activate
             pip install pytest
             pytest
-
-  "no-cython":
-    docker:
-      - image: ubuntu:18.04
-        environment:
-          CC: clang-6.0
-          CFLAGS: "-march=native -std=c++17"
-    steps:
-      - checkout
-
-      - run: apt-get update -qq
-      - run: >
-          apt-get install -y
-          build-essential
-          clang-6.0
-          python3.7
-          python3.7-dev
-          python3-pip
-          python3-setuptools
-          python3.7-venv
 
       - run: python3.7 -m venv venv
       - run:
@@ -69,10 +49,9 @@ jobs:
             pip install pytest
             pytest
 
+
 workflows:
   version: 2
   build_and_test:
     jobs:
-      - "cython"
-      - "no-cython"
-
+      - "ubuntu"
