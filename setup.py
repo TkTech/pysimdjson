@@ -4,9 +4,12 @@ import os.path
 
 from setuptools import setup, find_packages, Extension
 
+# Do not use wildcards on *any* paths in extensions, as they won't be expanded
+# on Windows causing build failures.
 try:
     from Cython.Build import cythonize
 except ImportError:
+    # If Cython isn't available we'll build from the pre-generated cpp sources.
     extensions = [
         Extension(
             'simdjson.csimdjson',
