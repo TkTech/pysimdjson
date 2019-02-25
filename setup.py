@@ -9,7 +9,7 @@ try:
 except ImportError:
     extensions = [
         Extension(
-            'simdjson.*',
+            'simdjson.csimdjson',
             sources=[
                 'simdjson/csimdjson.cpp'
             ],
@@ -19,7 +19,7 @@ except ImportError:
 else:
     extensions = cythonize([
         Extension(
-            'simdjson.*',
+            'simdjson.csimdjson',
             sources=[
                 'simdjson/csimdjson.pyx'
             ],
