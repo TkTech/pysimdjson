@@ -1,8 +1,9 @@
 # cython: language_level=2
 from json import JSONDecodeError
-from simdjson cimport CParsedJson, json_parse
 from cpython.dict cimport PyDict_SetItem
 from libc.string cimport strcmp
+
+from csimdjson cimport CParsedJson, json_parse
 
 # Maximum default depth used when allocating capacity.
 cdef int DEFAULT_MAX_DEPTH = 1024

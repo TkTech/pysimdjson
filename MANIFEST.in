@@ -1,4 +1,4 @@
-include src/*
-include simdjson.cpp
-include simdjson.pyx
-include simdjson.pxd
+include simdjson/src/*
+include simdjson/csimdjson.cpp
+include simdjson/csimdjson.pyx
+include simdjson/csimdjson.pxd

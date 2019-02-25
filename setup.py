@@ -9,9 +9,9 @@ try:
 except ImportError:
     extensions = [
         Extension(
-            'simdjson',
+            'simdjson.*',
             sources=[
-                'simdjson.cpp'
+                'simdjson/csimdjson.cpp'
             ],
             language='c++'
         )
@@ -19,13 +19,15 @@ except ImportError:
 else:
     extensions = cythonize([
         Extension(
-            'simdjson',
+            'simdjson.*',
             sources=[
-                'simdjson.pyx'
+                'simdjson/csimdjson.pyx'
             ],
             language='c++'
         )
     ], compiler_directives={
+        # Make sure we embed function signatures as the first line of the
+        # docstring so sphinx can pull them out for documentation.
         'embedsignature': True
     })
 
@@ -63,6 +65,6 @@ setup(
     ],
     ext_modules=extensions,
     package_data = {
-        '': ['*.pyd']
+        'simdjson': ['simdjson/*.pyd']
     }
 )
