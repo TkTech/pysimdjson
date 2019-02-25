@@ -37,5 +37,8 @@ cdef extern from 'src/simdjson.h':
         bool
     )
 
+# Do not remove this, we're tricking Cython into importing the .cpp here. I
+# imagine at some point the cpp will be removed entirely as the amalgamation
+# script improves and we'll just have the header.
 cdef extern from 'src/simdjson.cpp':
     pass
