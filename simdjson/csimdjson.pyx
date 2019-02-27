@@ -159,7 +159,11 @@ cdef class Iterator:
         return self.iter.get_tape_location()
 
     cpdef size_t get_tape_length(self):
-        """The total length of the underlying tape structure."""
+        """The total length of the underlying tape structure.
+
+        The length of the tape is _not_ the same as the # of elements in the
+        document. Some elements consume more than a single entry on the tape.
+        """
         return self.iter.get_tape_length()
 
     cpdef size_t get_depth(self):
@@ -281,6 +285,28 @@ cdef class ParsedJson:
         return iter.to_obj()
 
     def items(self, query):
+        """Given a `query` string, find matching elements in the document and
+        return them.
+
+        If you only desire part of a document, this method offers significant
+        oppertunities for performance gains, as it will avoid creating Python
+        objects for anything other than the matching objects. If you have a
+        situation where you check a boolean, such as:
+
+            .. code-block:: json
+
+                {"results": ["...50MB..."], "success": true}
+
+        ... you could check just the success field before wasting time loading
+        the entire document into Python objects.
+
+            .. code-block:: python
+
+                with open("myjson.json", "rb") as source:
+                    pj = ParsedJson(source)
+                    if pj.items(".success"):
+                        document = pj.to_obj()
+        """
         cdef list parsed_query = parse_query(query)
 
         iter = Iterator(self)
@@ -288,6 +314,10 @@ cdef class ParsedJson:
             raise JSONDecodeError('Error iterating over document', '', 0)
 
         return self._items(iter, parsed_query)
+
+    cpdef bool is_valid(self):
+        """True if the internal state of the parsed json is valid."""
+        return self.pj.isValid()
 
     cdef object _items(self, Iterator iter, list parsed_query):
         # TODO: Proof-of-concept, needs an optimization pass.
@@ -433,8 +463,10 @@ def loads(s):
     """
     Deserialize and return the entire JSON object in `s` (bytes).
 
-    Note that unlike the built-in Python `json.loads`, this method only accepts
-    byte strings. simdjson internally only works with UTF-8.
+    .. note::
+
+        Unlike the built-in Python `json.loads`, this method only
+        accepts byte strings, as simdjson will only work on encoded UTF-8.
     """
     return ParsedJson(s).to_obj()
 
@@ -444,6 +476,27 @@ cpdef list parse_query(query):
     """Parse a query string for use with :func:`~ParsedJson.items`.
 
     Returns a list in the form of `[(<op>, <value>), ...]`.
+
+        .. note::
+
+            This is exposed to Python solely for testing. A typical application
+            will never need to call this method.
+
+
+    This method is...interesting. It decomposes a sorta-jq query string into
+    a list of actions. For example, given the query `.results[].valid` it will
+    be decomposed into:
+
+        .. code-block:: python
+
+            [
+                [Q_GET, "results"],
+                [Q_ARRAY, ""],
+                [Q_GET, "valid"]
+            ]
+
+    If you need to use a field name that contains `[` or `.`, just quote it.
+    `."res[]\"lts"` would be perfectly valid.
     """
     cdef int current_state = Q_UNQUOTED
     cdef int current_op = N_NONE

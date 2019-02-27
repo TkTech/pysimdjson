@@ -36,6 +36,7 @@ cdef extern from 'src/simdjson.h':
             inline const char * get_string()
 
         bool allocateCapacity(size_t, size_t)
+        bool isValid()
 
     bool json_parse(
         const char *,
@@ -43,6 +44,7 @@ cdef extern from 'src/simdjson.h':
         CParsedJson&,
         bool
     )
+
 
 # Do not remove this, we're tricking Cython into importing the .cpp here. I
 # imagine at some point the cpp will be removed entirely as the amalgamation
