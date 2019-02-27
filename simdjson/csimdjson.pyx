@@ -16,8 +16,6 @@ cdef enum:
     Q_QUOTED = 20
     # Parsing an escape sequence
     Q_ESCAPE = 30
-    # Parsing the contents of an array subscript
-    Q_ARRAY = 40
 
     # No particular operation, default state.
     N_NONE = 0
@@ -31,9 +29,76 @@ cdef enum:
     N_ARRAY_SLICE = 40
 
 
+cdef object _to_obj(CParsedJson.iterator* iter):
+    # This is going to be by far the slowest part of this, as the cost of
+    # creating python objects is quite high.
+    # TODO: We can do better. The recursive method might be simple, but the
+    # overhead of calling this 13 million times while processing sandiego.json
+    # can't be ignored.
+    cdef char t = <char>iter.get_type()
+    cdef unicode k
+    cdef dict d
+    cdef list l
+
+    if t == '[':
+        l = []
+        if iter.down():
+            while True:
+                v = _to_obj(iter)
+                l.append(v)
+
+                if not iter.next():
+                    break
+
+            iter.up()
+        return l
+    elif t == '{':
+        d = {}
+        if iter.down():
+            while True:
+                k = iter.get_string().decode('utf-8')
+                iter.next()
+                v = _to_obj(iter)
+                PyDict_SetItem(d, k, v)
+
+                if not iter.next():
+                    break
+            iter.up()
+        return d
+    elif t == 'd':
+        return iter.get_double()
+    elif t == 'l':
+        return iter.get_integer()
+    elif t == '"':
+        k = iter.get_string().decode('utf-8')
+        return k
+    elif t == 't':
+        return True
+    elif t == 'f':
+        return False
+    elif t == 'n':
+        return None
+
+
 cdef class Iterator:
-    """A very thin wrapper around the interal simdjson ParsedJson::iterator
+    """A wrapper around the interal simdjson ParsedJson::iterator
     object.
+
+    Typically, it's only useful to use this object if you have very specific
+    needs, such as handling JSON with duplicate keys.
+
+        .. note::
+
+            This is a _very_ thin wrapper around the underlying simdjson
+            structures. This means that it is possible for this interface to
+            change between versions. If you depend on this, you should pin the
+            version of simdjson you are using until you can confirm that the
+            update works (which is just good practice in general!).
+
+            High-level interfaces like :func:`~loads()` and
+            :func:`~ParsedJson.items()` are reliable and will always be
+            available.
+
     """
     cdef CParsedJson.iterator* iter
 
@@ -43,107 +108,129 @@ cdef class Iterator:
     def __dealloc__(self):
         del self.iter
 
-    cpdef uint8_t get_type(self):
-        return self.iter.get_type()
-
     cpdef bool isOk(self):
+        """True if the internal state of the iterator is valid."""
         return self.iter.isOk()
 
     cpdef bool prev(self):
+        """Move to the previous element in the document. This will return False
+        if already at the start of the current scope."""
         return self.iter.prev()
 
     cpdef bool next(self):
+        """Move to the next element in the document. This will return False if
+        the end of the current scope has been reached."""
         return self.iter.next()
 
     cpdef bool down(self):
+        """Enter the current scope and move down a level in the document."""
         return self.iter.down()
 
     cpdef bool up(self):
+        """Exit the current scope and move up a level in the document."""
         return self.iter.up()
 
+    cpdef bool move_to_key(self, const char* key):
+        """Move to the given `key` within the current scope. Returns False if
+        the key was not found.
+        """
+        return self.iter.move_to_key(key)
+
+    cpdef bool move_forward(self, const char* key):
+        """Move forward along the tape in document order. This will enter and
+        exit scopes automatically, so it can be used to traverse an entire
+        document.
+        """
+        return self.iter.move_to_key(key)
+
+    cpdef void to_start_scope(self):
+        """Move to the start of the current scope."""
+        self.iter.to_start_scope()
+        return
+
+    cpdef uint8_t get_type(self):
+        """The type of the current element the iterator is pointing to. This
+        can be one of `"{}[]tfnr`."""
+        return self.iter.get_type()
+
+    cpdef size_t get_tape_location(self):
+        """The iterator's current location within the underlying tape
+        structure."""
+        return self.iter.get_tape_location()
+
+    cpdef size_t get_tape_length(self):
+        """The total length of the underlying tape structure."""
+        return self.iter.get_tape_length()
+
+    cpdef size_t get_depth(self):
+        """The current depth of the iterator in the tree."""
+        return self.iter.get_depth()
+
+    cpdef size_t get_scope_type(self):
+        """Like :func:`~Iterator.get_type()`, except it returns the type of the
+        containing scope. For example, given a state like this:
+
+            .. code-block:: json
+
+                {
+                    "hello": "world"
+                }
+
+            ... and the iterator is currently on "world", this method would
+            return `{`, as it is contained within an object/dict.
+        """
+        return self.iter.get_scope_type()
+
     cpdef bool is_object_or_array(self):
+        """True if the current element is an object/dict or an array (elements
+        for which :func:`~Iterator.get_type()` return either `{` or `[`)"""
         return self.iter.is_object_or_array()
 
     cpdef bool is_object(self):
+        """True if the current element is an object/dict."""
         return self.iter.is_object()
 
     cpdef bool is_array(self):
+        """True if the current element is an array."""
         return self.iter.is_array()
 
     cpdef bool is_string(self):
+        """True if the current element is a string."""
         return self.iter.is_string()
 
     cpdef bool is_integer(self):
+        """True if the current element is an integer."""
         return self.iter.is_integer()
 
     cpdef bool is_double(self):
+        """True if the current element is a double."""
         return self.iter.is_double()
 
     cpdef double get_double(self):
+        """Return the current element as a double. This is only valid if
+        :func:`~Iterator.is_double()` is True."""
         return self.iter.get_double()
 
     cpdef int64_t get_integer(self):
+        """Return the current element as an integer. This is only valid if
+        :func:`~Iterator.is_integer()` is True."""
         return self.iter.get_integer()
 
     cpdef bytes get_string(self):
-        return <bytes>self.iter.get_string()
+        """Return the current element as byte string. This is only valid if
+        :func:`~Iterator.is_string()` is True.
 
-    cpdef bool move_to_key(self, const char* key):
-        return self.iter.move_to_key(key)
+            .. note::
+
+                Internally, all the strings are encoded UTF-8. To use this byte
+                string in Python as unicode call `get_string().decode('utf-8')`.
+        """
+        return <bytes>self.iter.get_string()
 
     def to_obj(self):
         """Convert the current iterator and all of its children into Python
         objects and return them."""
-        return self._to_obj(self.iter)
-
-    cdef object _to_obj(self, CParsedJson.iterator* iter):
-        # This is going to be by far the slowest part of this, as the cost of
-        # creating python objects is quite high.
-        cdef char t = <char>iter.get_type()
-        cdef unicode k
-        cdef dict d
-        cdef list l
-
-        if t == '[':
-            l = []
-            if iter.down():
-                while True:
-                    v = self._to_obj(iter)
-                    l.append(v)
-
-                    if not iter.next():
-                        break
-
-                iter.up()
-            return l
-        elif t == '{':
-            # Updating the dict is incredibly expensive, consuming the majority
-            # of time in most of the JSON tests.
-            d = {}
-            if iter.down():
-                while True:
-                    k = iter.get_string().decode('utf-8')
-                    iter.next()
-                    v = self._to_obj(iter)
-                    PyDict_SetItem(d, k, v)
-
-                    if not iter.next():
-                        break
-                iter.up()
-            return d
-        elif t == 'd':
-            return iter.get_double()
-        elif t == 'l':
-            return iter.get_integer()
-        elif t == '"':
-            k = iter.get_string().decode('utf-8')
-            return k
-        elif t == 't':
-            return True
-        elif t == 'f':
-            return False
-        elif t == 'n':
-            return None
+        return _to_obj(self.iter)
 
 
 cdef class ParsedJson:

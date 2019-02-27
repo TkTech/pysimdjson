@@ -15,7 +15,14 @@ cdef extern from 'src/simdjson.h':
             inline bool down()
             inline bool up()
             bool move_to_key(const char*)
-            inline uint8_t get_type()
+            bool move_forward()
+            void to_start_scope()
+
+            uint8_t get_type()
+            size_t get_tape_location()
+            size_t get_tape_length()
+            size_t get_depth()
+            size_t get_scope_type()
 
             bool is_object_or_array()
             bool is_object()
