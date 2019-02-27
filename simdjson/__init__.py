@@ -4,3 +4,10 @@ from simdjson.csimdjson import (
     loads,
     parse_query
 )
+
+API_IMPORTS = [
+    Iterator,
+    ParsedJson,
+    loads,
+    parse_query
+]

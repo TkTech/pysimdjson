@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 import os.path
 
 from setuptools import setup, find_packages, Extension
@@ -68,7 +67,7 @@ setup(
         'bumpversion'
     ],
     ext_modules=extensions,
-    package_data = {
+    package_data={
         'simdjson': ['simdjson/*.pyd']
     }
 )

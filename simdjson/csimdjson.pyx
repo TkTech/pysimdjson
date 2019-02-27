@@ -3,7 +3,7 @@ from json import JSONDecodeError
 from cpython.dict cimport PyDict_SetItem
 from libc.string cimport strcmp
 
-from csimdjson cimport CParsedJson, json_parse
+from csimdjson cimport CParsedJson, json_parse, can_use_avx2
 
 # Maximum default depth used when allocating capacity.
 cdef int DEFAULT_MAX_DEPTH = 1024
@@ -246,6 +246,19 @@ cdef class ParsedJson:
     cdef CParsedJson pj
 
     def __init__(self, source=None):
+        avx2 = can_use_avx2()
+        if avx2 == -1:
+            raise RuntimeError(
+                'simdjson requires AVX2 support, however it has not been'
+                ' enabled by your operating system.'
+            )
+        elif avx2 == 0:
+            raise RuntimeError(
+                'simdjson requires AVX2 support, which is not provided by'
+                ' your processor.'
+            )
+
+
         if source:
             if not self.allocate_capacity(len(source)):
                 raise MemoryError

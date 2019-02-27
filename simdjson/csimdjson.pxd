@@ -1,5 +1,5 @@
 # cython: language_level=2
-from libc.stdint cimport uint8_t, int64_t
+from libc.stdint cimport int8_t, uint8_t, int64_t
 from libcpp cimport bool
 
 cdef extern from 'src/simdjson.h':
@@ -51,3 +51,7 @@ cdef extern from 'src/simdjson.h':
 # script improves and we'll just have the header.
 cdef extern from 'src/simdjson.cpp':
     pass
+
+
+cdef extern from 'cpuid.c':
+    int8_t can_use_avx2()
