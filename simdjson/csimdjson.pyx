@@ -136,12 +136,12 @@ cdef class Iterator:
         """
         return self.iter.move_to_key(key)
 
-    cpdef bool move_forward(self, const char* key):
+    cpdef bool move_forward(self):
         """Move forward along the tape in document order. This will enter and
         exit scopes automatically, so it can be used to traverse an entire
         document.
         """
-        return self.iter.move_to_key(key)
+        return self.iter.move_forward()
 
     cpdef void to_start_scope(self):
         """Move to the start of the current scope."""
@@ -150,7 +150,7 @@ cdef class Iterator:
 
     cpdef uint8_t get_type(self):
         """The type of the current element the iterator is pointing to. This
-        can be one of `"{}[]tfnr`."""
+        can be one of `"{}[]tfnrl`."""
         return self.iter.get_type()
 
     cpdef size_t get_tape_location(self):
@@ -290,8 +290,8 @@ cdef class ParsedJson:
 
         If you only desire part of a document, this method offers significant
         oppertunities for performance gains, as it will avoid creating Python
-        objects for anything other than the matching objects. If you have a
-        situation where you check a boolean, such as:
+        objects for anything other than the matching objects. For example, if
+        you have a situation where you check a boolean, such as:
 
             .. code-block:: json
 
@@ -306,6 +306,13 @@ cdef class ParsedJson:
                     pj = ParsedJson(source)
                     if pj.items(".success"):
                         document = pj.to_obj()
+
+            .. note::
+
+                It's important to note this is not using iterative parsing. By
+                the time `items()` can be used, the entire document has already
+                been parsed (which is relatively fast), but has not been
+                converted into Python objects (which is relatively slow).
         """
         cdef list parsed_query = parse_query(query)
 
