@@ -1,2 +1,2 @@
-src/* linguist-vendored
-*.cpp linguist-vendored
+simdjson/src/* linguist-vendored
+simdjson/*.cpp linguist-vendored
