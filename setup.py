@@ -52,12 +52,13 @@ setup(
     keywords=['json', 'simdjson'],
     zip_safe=False,
     classifiers=[
-        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
     ],
+    python_requires='>=3.4',
     tests_require=[
         'pytest>=2.10',
         'Cython',
