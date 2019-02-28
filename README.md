@@ -15,25 +15,20 @@ See the latest documentation at http://pysimdjson.tkte.ch.
 
 ## Installation
 
-There are binary wheels available for py3.6/py3.7 on OS X 10.12 & Windows. On
-other platforms you'll need a C++17-capable compiler.
+There are binary wheels available for some platforms. On other platforms you'll
+need a C++17-capable compiler.
 
 `pip install pysimdjson`
 
-If you're getting errors when installing from pip, there's probably no binary
-package available for your combination of platform & python version. As long as
-you have a C++17 compiler installed you can still use pip, you just need to
-provide a few extra compiler flags. The most common are:
+Binary wheels are available for:
 
-- gcc/clang: `CFLAGS="-march=native -std=c++17" pip install pysimdjson`
-- msvc (Visual Studio 2017):
+| Platform | py3.4 | py3.5 | py3.6 | py3.7 |
+| -------- | ----- | ----- | ----- | ----- |
+| OS X 10.12 | x | x | x | y |
+| Windows | x | x | y | y |
+| Linux | y | y | y | y |
 
-    ```
-    SET CL="/std:c++17 /arch:AVX2"
-    pip install pysimdjson
-    ```
-
-or from git:
+or build from git:
 
 ```
 git clone https://github.com/TkTech/pysimdjson.git

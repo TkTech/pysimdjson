@@ -121,23 +121,26 @@ class SIMDJsonBuild(BuildAssist):
         }
 
     def using_unix_on_darwin(self, compiler):
-        flags = {
+        if self.darwin_version.major >= 10 and self.darwin_version.minor >= 7:
+            # After OS X Lion libstdc is deprecated, so we need to make sure we
+            # link against libc++ instead.
+            return {
+                'extra_compile_args': [
+                    '-march=native',
+                    '-stdlib=libc++'
+                ],
+                'extra_link_args': [
+                    '-lc++',
+                    '-nodefaultlibs'
+                ]
+            }
+
+        return {
             'extra_compile_args': [
                 '-std=c++17',
                 '-march=native'
             ]
         }
-
-        if self.darwin_version.major >= 10 and self.darwin_version.minor >= 7:
-            # After OS X Lion libstdc is deprecated, so we need to make sure we
-            # link against libc++ instead.
-            flags['extra_compile_args'].append('-stdlib=libc++')
-            flags['extra_link_args'] = [
-                '-lc++',
-                '-nodefaultlibs'
-            ]
-
-        return flags
 
 
 # Do not use wildcards on *any* paths in extensions, as they won't be expanded
