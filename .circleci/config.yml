@@ -5,7 +5,6 @@ jobs:
       - image: ubuntu:18.04
         environment:
           CC: clang-6.0
-          CFLAGS: "-march=native -std=c++17"
     steps:
       - checkout
 

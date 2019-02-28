@@ -6,7 +6,6 @@ image:
 
 environment:
   global:
-    CL: "/std:c++17 /arch:AVX2"
     TWINE_USERNAME: pysimdjson_builder
     TWINE_PASSWORD:
       secure: HCIIaAmxHl2V3Ae+f9lkEzBV+flzNLjpTuGq9yXaL7A=
