@@ -58,14 +58,21 @@ setup(
         'Intended Audience :: Developers',
     ],
     python_requires='>=3.4',
+    setup_requires=[
+        'pytest-runner'
+    ],
     tests_require=[
         'pytest>=2.10',
-        'Cython',
-        'm2r',
-        'sphinx',
-        'ghp-import',
-        'bumpversion'
     ],
+    extras_require={
+        'dev': [
+            'Cython',
+            'm2r',
+            'sphinx',
+            'ghp-import',
+            'bumpversion'
+        ],
+    },
     ext_modules=extensions,
     package_data={
         'simdjson': ['simdjson/*.pyd']
