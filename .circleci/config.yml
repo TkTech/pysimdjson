@@ -115,6 +115,7 @@ workflows:
       - "ubuntu"
       - "manylinux":
         filters:
-          branches: /.*/
-        tags:
-          only: /^v.*/
+          branches:
+            ignore: /.*/
+          tags:
+            only: /^v.*/
