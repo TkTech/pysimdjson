@@ -102,9 +102,19 @@ jobs:
       - store_artifacts:
           path: wheelhouse
 
+      - run:
+           name: Uploading to pypi
+           command: |
+               /opt/python/cp37-cp37m/bin/pip install twine
+               /opt/python/cp37-cp37m/bin/twine upload wheelhouse/*
+
 workflows:
   version: 2
   build_and_test:
     jobs:
       - "ubuntu"
       - "manylinux"
+          filters:
+            branches: /.*/
+          tags:
+            only: /^v.*/
