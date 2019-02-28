@@ -114,8 +114,8 @@ workflows:
     jobs:
       - "ubuntu"
       - "manylinux":
-        filters:
-          branches:
-            ignore: /.*/
-          tags:
-            only: /^v.*/
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
