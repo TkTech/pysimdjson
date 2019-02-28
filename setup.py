@@ -67,7 +67,7 @@ class BuildAssist(build_ext):
                         )
                     else:
                         for e in self.extensions:
-                            e.extra_compile_ags = result['extra_compile_args']
+                            e.extra_compile_args = result['extra_compile_args']
 
                 if 'extra_link_args' in result:
                     if (
@@ -106,7 +106,7 @@ class BuildAssist(build_ext):
 class SIMDJsonBuild(BuildAssist):
     def using_msvc(self, compiler):
         return {
-            'extra_compile_flags': [
+            'extra_compile_args': [
                 '/std:c++17',
                 '/arch:AVX2'
             ]
