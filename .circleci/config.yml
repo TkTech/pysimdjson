@@ -48,6 +48,9 @@ jobs:
             . venv/bin/activate
             pytest
 
+      - store_artifacts:
+          path: dist
+
       - run:
           name: Ensure package can be installed (cython)
           command: |
@@ -67,8 +70,44 @@ jobs:
             pip install pysimdjson --no-index --find-links file:dist --no-binary :all:
             pip uninstall -y pysimdjson
 
+  "manylinux":
+    docker:
+      - image: tktechdocker/manylinux:gcc8.3.0
+        environment:
+          # Do not use -march=native, we may miss out on some optimizations but
+          # we want to work on any machines with AVX2.
+          CFLAGS: "-march=haswell -std=c++17 -static-libstdc++"
+          CC: /usr/local/gcc-8.3.0/bin/gcc-8.3.0
+          CXX: /usr/local/gcc-8.3.0/bin/g++-8.3.0
+
+    steps:
+      - checkout
+
+      - run:
+          command: |
+
+      - run: /opt/python/cp34-cp34m/bin/python setup.py bdist_wheel
+      - run: /opt/python/cp35-cp35m/bin/python setup.py bdist_wheel
+      - run: /opt/python/cp36-cp36m/bin/python setup.py bdist_wheel
+      - run: /opt/python/cp37-cp37m/bin/python setup.py bdist_wheel
+      - run: /opt/python/cp34-cp34m/bin/python setup.py bdist_wheel
+      - run: /opt/python/cp35-cp35m/bin/python setup.py bdist_wheel
+      - run: /opt/python/cp36-cp36m/bin/python setup.py bdist_wheel
+      - run: /opt/python/cp37-cp37m/bin/python setup.py bdist_wheel
+
+      - run:
+          name: Running auditwheel...
+          command: |
+              for whl in dist/*.whl; do
+                  auditwheel repair "$whl";
+               done
+
+      - store_artifacts:
+          path: wheelhouse
+
 workflows:
   version: 2
   build_and_test:
     jobs:
       - "ubuntu"
+      - "manylinux"
