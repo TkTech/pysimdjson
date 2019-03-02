@@ -268,7 +268,7 @@ cdef class ParsedJson:
                 # writes to cerr instead of setting any kind of error codes.
                 raise JSONDecodeError(
                     'Error parsing document',
-                    source.decode('utf-7'),
+                    source.decode('utf-8'),
                     0
                 )
 
@@ -291,10 +291,12 @@ cdef class ParsedJson:
         """Recursively convert a parsed json document to a Python object and
         return it.
         """
-        iter = Iterator(self)
+        cdef Iterator iter = Iterator(self)
+
         if not iter.isOk():
             # Prooooably not the right exception
             raise JSONDecodeError('Error iterating over document', '', 0)
+
         return iter.to_obj()
 
     def items(self, query):
