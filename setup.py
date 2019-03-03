@@ -212,6 +212,9 @@ setup(
             'ghp-import',
             'bumpversion'
         ],
+        'cli': [
+            'click'
+        ]
     },
     ext_modules=extensions,
     package_data={
@@ -219,5 +222,9 @@ setup(
     },
     cmdclass={
         'build_ext': SIMDJsonBuild
-    }
+    },
+    entry_points='''
+        [console_scripts]
+        pysimdjson=simdjson.cli:cli
+    '''
 )

@@ -8,6 +8,8 @@ from csimdjson cimport CParsedJson, json_parse, can_use_avx2
 # Maximum default depth used when allocating capacity.
 cdef int DEFAULT_MAX_DEPTH = 1024
 
+cdef long JSON_VALUE_MASK = 0xFFFFFFFFFFFFFF
+
 # State machine states for parsing item() query strings.
 cdef enum:
     # Parsing an unquoted string.
@@ -245,6 +247,7 @@ cdef class ParsedJson:
     """
     cdef CParsedJson pj
 
+
     def __init__(self, source=None):
         avx2 = can_use_avx2()
         if avx2 == -1:
@@ -299,6 +302,27 @@ cdef class ParsedJson:
 
         return iter.to_obj()
 
+    @property
+    def _tape(self):
+        cdef:
+            uint64_t[:] tape
+            uint64_t root
+            uint64_t tape_type
+
+        if self.pj.isValid():
+            # If the ParsedJson is valid we look at the payload of the first
+            # node which contains the total length of the tape. We need to know
+            # the length to create an efficient memoryview over it.
+            root = self.pj.tape[0]
+            tape_type = root >> 56
+            if not tape_type == 'r':
+                # Iterator.get_tape_length does the same check, but is this
+                # case even possible?
+                return
+
+            tape = <uint64_t[:root & JSON_VALUE_MASK]>self.pj.tape
+            return tape
+
     def items(self, query):
         """Given a `query` string, find matching elements in the document and
         return them.
@@ -346,12 +370,13 @@ cdef class ParsedJson:
         if not parsed_query:
             return
 
-        cdef char t = <char>iter.get_type()
-        cdef int op
-        cdef int current_index = 0
-        cdef int segments
-        cdef object obj = None
-        cdef list array_result
+        cdef:
+            char t = <char>iter.get_type()
+            int op
+            int current_index = 0
+            int segments
+            object obj = None
+            list array_result
 
         op, v = parsed_query[0]
         segments = len(parsed_query)

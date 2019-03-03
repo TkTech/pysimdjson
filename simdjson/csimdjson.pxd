@@ -1,5 +1,5 @@
 # cython: language_level=2
-from libc.stdint cimport int8_t, uint8_t, int64_t
+from libc.stdint cimport int8_t, uint8_t, int64_t, uint64_t
 from libcpp cimport bool
 
 cdef extern from 'src/simdjson.h':
@@ -37,6 +37,9 @@ cdef extern from 'src/simdjson.h':
 
         bool allocateCapacity(size_t, size_t)
         bool isValid()
+
+        uint64_t * tape
+        uint8_t * string_buf
 
     bool json_parse(
         const char *,
