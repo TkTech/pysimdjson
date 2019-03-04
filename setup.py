@@ -98,8 +98,8 @@ class BuildAssist(build_ext):
         # platform.mac_ver returns a result on platforms *other* than OS X,
         # make sure we're actually on it first...
         if self.platform == 'darwin':
-            return namedtuple('mac_ver', ['major', 'minor', 'bugfix'])(
-                *(int(v) for v in platform.mac_ver()[0].split('.'))
+            return namedtuple('mac_ver', ['major', 'minor'])(
+                *(int(v) for v in platform.mac_ver()[0].split('.')[:2])
             )
 
 
