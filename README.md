@@ -129,7 +129,7 @@ Comparing the built-in json module `loads` on py3.7 to simdjson `loads`.
 | `jsonexamples/update-center.json` | 0.5577604210000011 | 0.4961777420000004 |
 
 Getting subsets of the document is significantly faster. For `canada.json`
-getting `.type` using the naive approach and the `items()` appraoch, average
+getting `.type` using the naive approach and the `items()` approach, average
 over N=100.
 
 | Python | Time |
