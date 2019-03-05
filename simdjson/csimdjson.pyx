@@ -1,8 +1,7 @@
-# cython: language_level=2
 from json import JSONDecodeError
-from cpython.dict cimport PyDict_SetItem
 from libc.string cimport strcmp
 
+cimport cython
 from csimdjson cimport CParsedJson, json_parse, can_use_avx2
 
 # Maximum default depth used when allocating capacity.
@@ -29,6 +28,31 @@ cdef enum:
     N_ARRAY_SINGLE = 30
     # [<N>:<N>] operator
     N_ARRAY_SLICE = 40
+
+
+cdef enum ErrorCodes:
+    SUCCESS = 0
+    CAPACITY = 1
+    MEMALLOC = 2
+    TAPE_ERROR = 3
+
+
+cdef unicode _error_msg(int error_code):
+    # Stick to if/elif, Cython will translate this into an efficient switch()
+    # since it knows the type of error_code..
+    if error_code == ErrorCodes.SUCCESS:
+        return u'No errors'
+    elif error_code == ErrorCodes.CAPACITY:
+        return (
+            u'Buffer is smaller than document, call allocate_capacity'
+            u' to increase the size of the buffer.'
+        )
+    elif error_code == ErrorCodes.MEMALLOC:
+        return u'Error occured while allocating memory.'
+    elif error_code == ErrorCodes.TAPE_ERROR:
+        return u'Erorr occured while writing to the tape.'
+    else:
+        return u'Unknown error occured.'
 
 
 cdef object _to_obj(CParsedJson.iterator* iter):
@@ -60,8 +84,7 @@ cdef object _to_obj(CParsedJson.iterator* iter):
             while True:
                 k = iter.get_string().decode('utf-8')
                 iter.next()
-                v = _to_obj(iter)
-                PyDict_SetItem(d, k, v)
+                d[k] = _to_obj(iter)
 
                 if not iter.next():
                     break
@@ -266,14 +289,7 @@ cdef class ParsedJson:
             if not self.allocate_capacity(len(source)):
                 raise MemoryError
 
-            if not self.parse(source):
-                # We have no idea what really went wrong, simdjson oddly just
-                # writes to cerr instead of setting any kind of error codes.
-                raise JSONDecodeError(
-                    'Error parsing document',
-                    source.decode('utf-8'),
-                    0
-                )
+            self.parse(source)
 
     def allocate_capacity(self, size, max_depth=DEFAULT_MAX_DEPTH):
         """Resize the document buffer to `size` bytes."""
@@ -288,7 +304,19 @@ cdef class ParsedJson:
                 called with a sufficiently large size before this method is
                 called.
         """
-        return json_parse(source, len(source), self.pj, True)
+        cdef int parse_result = json_parse(source, len(source), self.pj, True)
+
+        if parse_result != 0:
+            if parse_result == ErrorCodes.MEMALLOC:
+                raise MemoryError
+
+            raise JSONDecodeError(
+                _error_msg(parse_result),
+                source.decode('utf-8'),
+                0
+            )
+
+        return self.is_valid()
 
     def to_obj(self):
         """Recursively convert a parsed json document to a Python object and

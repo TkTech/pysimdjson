@@ -41,13 +41,12 @@ cdef extern from 'src/simdjson.h':
         uint64_t * tape
         uint8_t * string_buf
 
-    bool json_parse(
+    int json_parse(
         const char *,
         size_t len,
         CParsedJson&,
         bool
     )
-
 
 # Do not remove this, we're tricking Cython into importing the .cpp here. I
 # imagine at some point the cpp will be removed entirely as the amalgamation
