@@ -39,7 +39,7 @@ cdef enum ErrorCodes:
 
 cdef unicode _error_msg(int error_code):
     # Stick to if/elif, Cython will translate this into an efficient switch()
-    # since it knows the type of error_code..
+    # since it knows the type of error_code.
     if error_code == ErrorCodes.SUCCESS:
         return u'No errors'
     elif error_code == ErrorCodes.CAPACITY:
@@ -82,7 +82,7 @@ cdef object _to_obj(CParsedJson.iterator* iter):
         d = {}
         if iter.down():
             while True:
-                k = iter.get_string().decode('utf-8')
+                k = iter.get_string()[:iter.get_string_length()].decode('utf-8')
                 iter.next()
                 d[k] = _to_obj(iter)
 
@@ -95,7 +95,7 @@ cdef object _to_obj(CParsedJson.iterator* iter):
     elif t == 'l':
         return iter.get_integer()
     elif t == '"':
-        k = iter.get_string().decode('utf-8')
+        k = iter.get_string()[:iter.get_string_length()].decode('utf-8')
         return k
     elif t == 't':
         return True
@@ -154,12 +154,6 @@ cdef class Iterator:
     cpdef bool up(self):
         """Exit the current scope and move up a level in the document."""
         return self.iter.up()
-
-    cpdef bool move_to_key(self, const char* key):
-        """Move to the given `key` within the current scope. Returns False if
-        the key was not found.
-        """
-        return self.iter.move_to_key(key)
 
     cpdef bool move_forward(self):
         """Move forward along the tape in document order. This will enter and
@@ -254,7 +248,7 @@ cdef class Iterator:
                 Internally, all the strings are encoded UTF-8. To use this byte
                 string in Python as unicode call `get_string().decode('utf-8')`.
         """
-        return <bytes>self.iter.get_string()
+        return <bytes>self.iter.get_string()[:self.iter.get_string_length()]
 
     def to_obj(self):
         """Convert the current iterator and all of its children into Python

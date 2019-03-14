@@ -1,5 +1,5 @@
 # cython: language_level=2
-from libc.stdint cimport int8_t, uint8_t, int64_t, uint64_t
+from libc.stdint cimport int8_t, uint8_t, int64_t, uint64_t, uint32_t
 from libcpp cimport bool
 
 cdef extern from 'src/simdjson.h':
@@ -14,7 +14,6 @@ cdef extern from 'src/simdjson.h':
             inline bool next()
             inline bool down()
             inline bool up()
-            bool move_to_key(const char*)
             bool move_forward()
             void to_start_scope()
 
@@ -33,13 +32,16 @@ cdef extern from 'src/simdjson.h':
 
             inline double get_double()
             inline int64_t get_integer()
-            inline const char * get_string()
+            const char * get_string()
+            uint32_t get_string_length()
 
         bool allocateCapacity(size_t, size_t)
         bool isValid()
 
         uint64_t * tape
         uint8_t * string_buf
+        uint32_t n_structural_indexes;
+        uint32_t *structural_indexes;
 
     int json_parse(
         const char *,
