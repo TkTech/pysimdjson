@@ -447,6 +447,10 @@ cdef class ParsedJson:
 
             if iter.down():
                 while True:
+                    if t == '{':
+                        if not iter.next():
+                            break
+
                     if segments > 1:
                         array_result.append(
                             self._items(
