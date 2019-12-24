@@ -25,3 +25,8 @@ def pytest_collection_modifyitems(config, items):
 def json_example(request):
     with open(request.param, 'rb') as fin:
         yield (request.param, fin.read())
+
+@pytest.fixture(scope='module', params=['jsonexamples/github_events.json'])
+def json_query_example(request):
+    with open(request.param, 'rb') as fin:
+        yield (request.param, fin.read(), '.[].payload.commits[0].author.name')

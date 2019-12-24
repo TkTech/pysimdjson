@@ -382,6 +382,13 @@ cdef class ParsedJson:
             raise JSONDecodeError('Error iterating over document', '', 0)
 
         return self._items(iter, parsed_query)
+    
+    def items_from_parsed_query(self, parsed_query):
+        iter = Iterator(self)
+        if not iter.isOk():
+            raise JSONDecodeError('Error iterating over document', '', 0)
+
+        return self._items(iter, parsed_query)
 
     cpdef bool is_valid(self):
         """True if the internal state of the parsed json is valid."""

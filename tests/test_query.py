@@ -67,3 +67,43 @@ def test_items():
     assert pj.items('.error.message') == 'All good captain'
 
     assert pj.items('.results[0]')
+
+def test_pre_parsed_query_items():
+    doc = b'{"simple": 1}'
+
+    pj = ParsedJson(doc)
+
+    parsed_query = parse_query('.')
+    assert pj.items_from_parsed_query(parsed_query) == {"simple": 1}
+
+    doc = b'''{
+        "count": 2,
+        "results": [
+            {"name": "result_a"},
+            {"name": "result_b"}
+        ],
+        "error": {
+            "message": "All good captain"
+        }
+    }'''
+
+    pj = ParsedJson(doc)
+
+    parsed_query = parse_query('.count')
+    assert pj.items_from_parsed_query(parsed_query) == 2
+    parsed_query = parse_query('.results')
+    assert pj.items_from_parsed_query(parsed_query) == [
+        {'name': 'result_a'},
+        {'name': 'result_b'}
+    ]
+    parsed_query = parse_query('.results[].name')
+    assert pj.items_from_parsed_query(parsed_query) == [
+        'result_a',
+        'result_b'
+    ]
+
+    parsed_query = parse_query('.error.message')
+    assert pj.items_from_parsed_query(parsed_query) == 'All good captain'
+
+    parsed_query = parse_query('.results[0]')
+    assert pj.items_from_parsed_query(parsed_query)

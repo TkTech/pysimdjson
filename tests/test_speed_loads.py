@@ -7,7 +7,7 @@ import simdjson
 
 
 @pytest.mark.slow
-def test_speed(json_example):
+def test_speed_loads(json_example):
     """Compare every example json file between simdjson and the built-in JSON module.
 
     Ideally, every file will parse signficantly faster under simdjson.
@@ -44,3 +44,4 @@ def test_speed(json_example):
         simd_time,
         json_time
     )
+
