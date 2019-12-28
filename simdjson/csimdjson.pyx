@@ -346,7 +346,7 @@ cdef class ParsedJson:
             return tape
 
     def items(self, query):
-        """Given a `query` string, find matching elements in the document and
+        """Given a `query` string or already parsed query (see parse query(query)), find matching elements in the document and
         return them.
 
         If you only desire part of a document, this method offers significant
@@ -375,7 +375,15 @@ cdef class ParsedJson:
                 been parsed (which is relatively fast), but has not been
                 converted into Python objects (which is relatively slow).
         """
-        cdef list parsed_query = parse_query(query)
+        cdef list parsed_query=None
+#        if PyString_Check(query):
+        if isinstance(query,str):
+            parsed_query = parse_query(query)
+#        elif PyList_Check(query):
+        elif isinstance(query,list):
+            parsed_query = query
+        else:
+            raise TypeError('Query needs to be of type String or List')
 
         iter = Iterator(self)
         if not iter.isOk():
@@ -383,13 +391,6 @@ cdef class ParsedJson:
 
         return self._items(iter, parsed_query)
     
-    def items_from_parsed_query(self, parsed_query):
-        iter = Iterator(self)
-        if not iter.isOk():
-            raise JSONDecodeError('Error iterating over document', '', 0)
-
-        return self._items(iter, parsed_query)
-
     cpdef bool is_valid(self):
         """True if the internal state of the parsed json is valid."""
         return self.pj.isValid()
