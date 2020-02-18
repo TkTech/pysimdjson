@@ -10,7 +10,7 @@ import simdjson
 def test_speed(json_example):
     """Compare every example json file between simdjson and the built-in JSON module.
 
-    Ideally, every file will parse signficantly faster under simdjson.
+    Ideally, every file will parse significantly faster under simdjson.
 
     .. note::
 
