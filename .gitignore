@@ -1,3 +1,7 @@
 *.pyc
-.venv
+*.pyd
+venv
+.eggs
 cython_debug/*
+build/
+*.egg-info

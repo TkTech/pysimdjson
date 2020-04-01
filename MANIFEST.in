@@ -1,5 +1,3 @@
-include simdjson/src/*
-include simdjson/cpuid.c
-include simdjson/csimdjson.cpp
-include simdjson/csimdjson.pyx
-include simdjson/csimdjson.pxd
+include simdjson/binding.cpp
+include simdjson/simdjson.h
+include simdjson/simdjson.cpp
