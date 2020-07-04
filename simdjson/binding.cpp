@@ -12,22 +12,12 @@ namespace py = pybind11;
 using namespace simdjson;
 
 #if defined(__GNUC__) || defined(__INTEL_COMPILER)
-#define PY_LIKELY(x) __builtin_expect(!!(x), 1)
-#define PY_UNLIKELY(x) __builtin_expect(!!(x), 0)
+#define py_likely(x) __builtin_expect(!!(x), 1)
+#define py_unlikely(x) __builtin_expect(!!(x), 0)
 #else
-#define PY_LIKELY(x) (x)
-#define PY_UNLIKELY(x) (x)
+#define py_likely(x) (x)
+#define py_unlikely(x) (x)
 #endif
-
-/**
- * Utility to convert std::string_view to a decoded Python string.
- *
- * Since simdjson already did UTF-8 validation, this method will convert while
- * ignoring any UTF-8 codec errors from CPython.
- */
-inline PyObject* string_view_to_str(const std::string_view s) {
-    return PyUnicode_DecodeUTF8(s.data(), s.size(), "ignore\0");
-}
 
 /** 
  * Converts a simdjson dom::element to a high-level Python object.
@@ -35,34 +25,28 @@ inline PyObject* string_view_to_str(const std::string_view s) {
  * When converting arrays or objects, it will recursively convert all children
  * as well.
  */
-PyObject* element_to_primitive(const dom::element &e) {
+PyObject* element_to_primitive(dom::element &e) {
     switch (e.type()) {
-    case dom::element_type::ARRAY:
-        {
-            dom::array arr = e.get_array();
-            auto size = arr.size();
-            auto i = 0;
-
-            PyObject *result = PyList_New(size);
-
-            for (dom::element array_element : arr) {
-                PyList_SET_ITEM(result, i, element_to_primitive(array_element));
-                i++;
-            }
-
-            return result;
-        }
     case dom::element_type::OBJECT:
         {
 			dom::object obj = e.get_object();
 
             PyObject *result = PyDict_New();
+            if (py_unlikely(!result)) return NULL;
 
             for (dom::key_value_pair field : obj) {
-                auto key = string_view_to_str(field.key);
+				auto key = PyUnicode_DecodeUTF8(
+                    field.key.data(),
+                    field.key.size(),
+                    "ignore\0"
+                );
+                if (py_unlikely(!key)) return NULL;
                 auto value = element_to_primitive(field.value);
+                if (py_unlikely(!value)) return NULL;
 
-                PyDict_SetItem(result, key, value);
+                if (py_unlikely(PyDict_SetItem(result, key, value) == -1)) {
+                    return NULL;
+                }
 
                 Py_DECREF(key);
                 Py_DECREF(value);
@@ -70,14 +54,35 @@ PyObject* element_to_primitive(const dom::element &e) {
 
             return result;
         }
+    case dom::element_type::ARRAY:
+        {
+            dom::array arr = e.get_array();
+            auto size = arr.size();
+            auto i = 0;
+
+            PyObject *result = PyList_New(size);
+            if (py_unlikely(!result)) return NULL;
+
+            for (dom::element array_element : arr) {
+                auto value = element_to_primitive(array_element);
+                if (py_unlikely(!value)) return NULL;
+                PyList_SET_ITEM(result, i, value);
+                i++;
+            }
+
+            return result;
+        }
+    case dom::element_type::STRING:
+    {
+        std::string_view s = e.get_string();
+        return PyUnicode_FromStringAndSize(s.data(), s.size());
+    }
     case dom::element_type::INT64:
         return PyLong_FromLongLong(e.get_int64());
     case dom::element_type::UINT64:
 		return PyLong_FromUnsignedLongLong(e.get_uint64());
     case dom::element_type::DOUBLE:
 		return PyFloat_FromDouble(e.get_double());
-    case dom::element_type::STRING:
-		return string_view_to_str(e.get_string());
     case dom::element_type::BOOL:
 		if (e.get_bool()) {
 			Py_RETURN_TRUE;
@@ -85,9 +90,12 @@ PyObject* element_to_primitive(const dom::element &e) {
 			Py_RETURN_FALSE;
 		}
     case dom::element_type::NULL_VALUE:
-    default:
         Py_RETURN_NONE;
     }
+
+    // We should probably SetErr here, something has gone severely wrong if we
+    // encounter unhandled types.
+    return NULL;
 }
 
 PYBIND11_MODULE(csimdjson, m) {
@@ -138,7 +146,7 @@ PYBIND11_MODULE(csimdjson, m) {
         .value("NULL_VALUE", dom::element_type::NULL_VALUE);
 
 
-    // Base class for all errors except for MEMALLOC (which becomes a
+	// Base class for all errors except for MEMALLOC (which becomes a
     // MemoryError subclass) and IO_ERROR (which becomes an IOError subclass).
     static py::exception<simdjson_error> ex_simdjson_error(m,
             "SimdjsonError", PyExc_RuntimeError);
@@ -197,9 +205,8 @@ PYBIND11_MODULE(csimdjson, m) {
                 return p.load(path).value();
             },
             py::return_value_policy::take_ownership,
-            py::keep_alive<0, 1>()
-        )
-
+			py::keep_alive<0, 1>()
+		)
         .def("parse",
             [](dom::parser &p, const std::string &s) {
                 return p.parse(padded_string(s)).value();
@@ -241,10 +248,13 @@ PYBIND11_MODULE(csimdjson, m) {
         .def_property_readonly(
             "up",
             [](dom::element &e) {
-                // return static_cast<py::handle>(element_to_primitive(e));
-                return py::reinterpret_steal<py::object>(element_to_primitive(e));
+                auto value = element_to_primitive(e);
+                if (py_unlikely(!value)) {
+                    // Do what?
+                }
+                return py::reinterpret_steal<py::object>(value);
             },
-            py::return_value_policy::move,
+            py::return_value_policy::take_ownership,
             "Uplift a simdjson element to a primitive Python type."
         );
 }

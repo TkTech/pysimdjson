@@ -19,17 +19,15 @@ class DelayedInclude:
         import pybind11
         return pybind11.get_include()
 
+extra_compile_args = []
+extra_link_args = []
 
-extra_compile_args = [
-    # Safely ignored on VS2013+.
-    '-std=c++11'
-]
-
-# A trick picked up from a PyTorch ticket. On OS X 10.9, the C++ stdlib was
-# changed. distutils will try to use the same one that CPython was compiled
-# for, which won't build at all with a recent XCode. We set
-# MACOSX_DEPLOYMENT_TARGET ourselves to force it to use the right stdlib.
-if platform.system() == 'Darwin':
+system = platform.system()
+if system == 'Darwin':
+    # A trick picked up from a PyTorch ticket. On OS X 10.9, the C++ stdlib was
+    # changed. distutils will try to use the same one that CPython was compiled
+    # for, which won't build at all with a recent XCode. We set
+    # MACOSX_DEPLOYMENT_TARGET ourselves to force it to use the right stdlib.
     if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
         current_version = platform.mac_ver()[0]
         target_version = get_config_vars().get(
@@ -39,7 +37,23 @@ if platform.system() == 'Darwin':
         if (LooseVersion(target_version) < '10.9'
                 and LooseVersion(current_version) >= '10.9'):
             os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
+elif system == 'Windows':
+    extra_compile_args.extend([
+        # /Od3 is only available on MSVC2019+.
+        '/Od3'
+    ])
 
+    if 'DEBUG' in os.environ:
+        extra_compile_args.extend([
+            '/DEBUG:FULL',
+            '/Z7'
+        ])
+        extra_link_args.extend(['/DEBUG:FULL'])
+
+if system in ('Linux', 'Darwin', 'FreeBSD'):
+    extra_compile_args.extend([
+        '-std=c++11'
+    ])
 
 setup(
     name='pysimdjson',
@@ -62,10 +76,8 @@ setup(
     ],
     python_requires='>3.4',
     extras_require={
-        'build': [
-            'pybind11'
-        ],
         'dev': [
+            'pybind11',
             'm2r',
             'sphinx',
             'ghp-import',
@@ -90,7 +102,8 @@ setup(
                 DelayedInclude()
             ],
             language='c++',
-            extra_compile_args=extra_compile_args
+            extra_compile_args=extra_compile_args,
+            extra_link_args=extra_link_args
         )
     ]
 )
