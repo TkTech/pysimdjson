@@ -39,8 +39,8 @@ if system == 'Darwin':
             os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 elif system == 'Windows':
     extra_compile_args.extend([
-        # /Od3 is only available on MSVC2019+.
-        '/Od3'
+        # /Ob3 is only available on MSVC2019+.
+        '/Ob3'
     ])
 
     if 'DEBUG' in os.environ:
