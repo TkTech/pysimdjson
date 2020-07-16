@@ -8,7 +8,7 @@ def test_json_pointer(parser):
     """Ensure JSON pointers work as expected and all possible exceptions
     are converted to Python types.
     """
-    doc = parser.parse('{"key": "value", "array": [0, 1, 2]}')
+    doc = parser.parse(b'{"key": "value", "array": [0, 1, 2]}')
 
     assert doc.at('key').type == element_type.STRING
     assert doc.at('array/0').type == element_type.INT64
@@ -41,12 +41,14 @@ def test_type_check(doc):
 
 def test_getitem(parser):
     """Ensure accessing a specific element works as expected."""
-    doc = parser.parse('''{"key": "value"}''')
+    doc = parser.parse(b'''{"key": "value"}''')
 
     with pytest.raises(KeyError):
         doc['no_such_key']
 
     assert doc['key']
+
+    doc = parser.parse(b'''[0, 1, 2]''')
 
 
 def test_uplift(doc):

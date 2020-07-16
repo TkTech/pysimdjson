@@ -33,7 +33,7 @@ def parser():
 
 @pytest.fixture
 def doc(parser):
-    yield parser.parse('''{
+    yield parser.parse(b'''{
         "array": [1, 2, 3],
         "object": {"hello": "world"},
         "int64": -1,

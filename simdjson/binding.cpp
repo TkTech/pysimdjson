@@ -29,23 +29,26 @@ PyObject* element_to_primitive(dom::element &e) {
     switch (e.type()) {
     case dom::element_type::OBJECT:
         {
-			dom::object obj = e.get_object();
+            dom::object obj = e.get_object();
 
             PyObject *result = PyDict_New();
-            if (py_unlikely(!result)) return NULL;
+            if (py_unlikely(!result)) throw std::bad_alloc();
 
             for (dom::key_value_pair field : obj) {
-				auto key = PyUnicode_DecodeUTF8(
+                auto key = PyUnicode_DecodeUTF8(
                     field.key.data(),
                     field.key.size(),
                     "ignore\0"
                 );
-                if (py_unlikely(!key)) return NULL;
+                if (py_unlikely(!key)) throw std::bad_alloc();
                 auto value = element_to_primitive(field.value);
-                if (py_unlikely(!value)) return NULL;
+                if (py_unlikely(!value)) throw std::bad_alloc();
 
                 if (py_unlikely(PyDict_SetItem(result, key, value) == -1)) {
-                    return NULL;
+                    // Seems like the only way we'll get here is a bad
+                    // allocation. Other types of issues will already raise
+                    // exceptions directly, like TypeError.
+                    throw std::bad_alloc();
                 }
 
                 Py_DECREF(key);
@@ -61,11 +64,11 @@ PyObject* element_to_primitive(dom::element &e) {
             auto i = 0;
 
             PyObject *result = PyList_New(size);
-            if (py_unlikely(!result)) return NULL;
+            if (py_unlikely(!result)) throw std::bad_alloc();
 
             for (dom::element array_element : arr) {
                 auto value = element_to_primitive(array_element);
-                if (py_unlikely(!value)) return NULL;
+                if (py_unlikely(!value)) throw std::bad_alloc();
                 PyList_SET_ITEM(result, i, value);
                 i++;
             }
@@ -80,30 +83,32 @@ PyObject* element_to_primitive(dom::element &e) {
     case dom::element_type::INT64:
         return PyLong_FromLongLong(e.get_int64());
     case dom::element_type::UINT64:
-		return PyLong_FromUnsignedLongLong(e.get_uint64());
+        return PyLong_FromUnsignedLongLong(e.get_uint64());
     case dom::element_type::DOUBLE:
-		return PyFloat_FromDouble(e.get_double());
+        return PyFloat_FromDouble(e.get_double());
     case dom::element_type::BOOL:
-		if (e.get_bool()) {
-			Py_RETURN_TRUE;
-		} else {
-			Py_RETURN_FALSE;
-		}
+        if (e.get_bool()) {
+            Py_RETURN_TRUE;
+        } else {
+            Py_RETURN_FALSE;
+        }
     case dom::element_type::NULL_VALUE:
         Py_RETURN_NONE;
+    default:
+        // This should never, ever, happen. The only way we get here is if
+        // simdjson.cpp/.h were updated with new types that don't match JSON
+        // types 1:1 and we missed it.
+        throw py::value_error(
+            "Encountered an unknown element_type."
+            " This is an internal pysimdjson error, please report an issue"
+            " at https://github.com/TkTech/pysimdjson with the file that"
+            " failed."
+        );
     }
-
-    // We should probably SetErr here, something has gone severely wrong if we
-    // encounter unhandled types.
-    return NULL;
 }
 
 PYBIND11_MODULE(csimdjson, m) {
-    m.doc() = 
-        "Low-level bindings for the simdjson project.\n\n"
-        "Typically, you won't use this module directly, but would"
-        " import the simdjson module instead, which acts more like"
-        " python's built-in json module.";
+    m.doc() = "Low-level bindings for the simdjson project.";
 
     m.attr("MAXSIZE_BYTES") = py::int_(SIMDJSON_MAXSIZE_BYTES);
     m.attr("PADDING") = py::int_(SIMDJSON_PADDING);
@@ -146,7 +151,7 @@ PYBIND11_MODULE(csimdjson, m) {
         .value("NULL_VALUE", dom::element_type::NULL_VALUE);
 
 
-	// Base class for all errors except for MEMALLOC (which becomes a
+    // Base class for all errors except for MEMALLOC (which becomes a
     // MemoryError subclass) and IO_ERROR (which becomes an IOError subclass).
     static py::exception<simdjson_error> ex_simdjson_error(m,
             "SimdjsonError", PyExc_RuntimeError);
@@ -205,8 +210,8 @@ PYBIND11_MODULE(csimdjson, m) {
                 return p.load(path).value();
             },
             py::return_value_policy::take_ownership,
-			py::keep_alive<0, 1>()
-		)
+            py::keep_alive<0, 1>()
+        )
         .def("parse",
             [](dom::parser &p, const std::string &s) {
                 return p.parse(padded_string(s)).value();
@@ -250,7 +255,7 @@ PYBIND11_MODULE(csimdjson, m) {
             [](dom::element &e) {
                 auto value = element_to_primitive(e);
                 if (py_unlikely(!value)) {
-                    // Do what?
+                    throw std::bad_alloc();
                 }
                 return py::reinterpret_steal<py::object>(value);
             },

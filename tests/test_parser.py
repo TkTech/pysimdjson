@@ -14,4 +14,4 @@ def test_load(parser):
 
 def test_parse(parser):
     """Ensure we can load from string fragments."""
-    parser.parse('{"hello": "world"}')
+    parser.parse(b'{"hello": "world"}')

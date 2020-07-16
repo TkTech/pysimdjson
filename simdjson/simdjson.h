@@ -1,4 +1,4 @@
-/* auto-generated on Tue 23 Jun 2020 20:51:12 EDT. Do not edit! */
+/* auto-generated on Mon Jul  6 18:16:52 EDT 2020. Do not edit! */
 /* begin file include/simdjson.h */
 #ifndef SIMDJSON_H
 #define SIMDJSON_H
@@ -58,7 +58,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
-
+#include <cfloat>
+#include <cassert>
 
 #ifdef _MSC_VER
 #define SIMDJSON_VISUAL_STUDIO 1
@@ -91,24 +92,28 @@
 
 #if defined(__x86_64__) || defined(_M_AMD64)
 #define SIMDJSON_IS_X86_64 1
-#endif
-#if defined(__aarch64__) || defined(_M_ARM64)
+#elif defined(__aarch64__) || defined(_M_ARM64)
 #define SIMDJSON_IS_ARM64 1
+#else 
+#define SIMDJSON_IS_32BITS 1
+
+// We do not support 32-bit platforms, but it can be
+// handy to identify them.
+#if defined(_M_IX86) || defined(__i386__)
+#define SIMDJSON_IS_X86_32BITS 1
+#elif defined(__arm__) || defined(_M_ARM)
+#define SIMDJSON_IS_ARM_32BITS 1
 #endif
 
-#if (!defined(SIMDJSON_IS_X86_64)) && (!defined(SIMDJSON_IS_ARM64))
-#ifdef SIMDJSON_REGULAR_VISUAL_STUDIO
-#pragma message("The simdjson library is designed\
- for 64-bit processors and it seems that you are not \
+#endif // defined(__x86_64__) || defined(_M_AMD64)
+
+#ifdef SIMDJSON_IS_32BITS
+#pragma message("The simdjson library is designed \
+for 64-bit processors and it seems that you are not \
 compiling for a known 64-bit platform. All fast kernels \
 will be disabled and performance may be poor. Please \
 use a 64-bit target such as x64 or 64-bit ARM.")
-#else
-#error "The simdjson library is designed\
- for 64-bit processors. It seems that you are not \
-compiling for a known 64-bit platform."
-#endif
-#endif // (!defined(SIMDJSON_IS_X86_64)) && (!defined(SIMDJSON_IS_ARM64))
+#endif // SIMDJSON_IS_32BITS
 
 // this is almost standard?
 #undef STRINGIFY_IMPLEMENTATION_
@@ -128,6 +133,15 @@ compiling for a known 64-bit platform."
 #define SIMDJSON_IMPLEMENTATION_WESTMERE 0
 #endif // SIMDJSON_IS_ARM64
 
+// Our fast kernels require 64-bit systems.
+//
+// On 32-bit x86, we lack 64-bit popcnt, lzcnt, blsr instructions. 
+// Furthermore, the number of SIMD registers is reduced. 
+//
+// On 32-bit ARM, we would have smaller registers.
+//
+// The simdjson users should still have the fallback kernel. It is 
+// slower, but it should run everywhere.
 #if SIMDJSON_IS_X86_64
 #ifndef SIMDJSON_IMPLEMENTATION_HASWELL
 #define SIMDJSON_IMPLEMENTATION_HASWELL 1
@@ -138,7 +152,7 @@ compiling for a known 64-bit platform."
 #define SIMDJSON_IMPLEMENTATION_ARM64 0
 #endif // SIMDJSON_IS_X86_64
 
-// we are going to use runtime dispatch
+// We are going to use runtime dispatch.
 #ifdef SIMDJSON_IS_X86_64
 #ifdef __clang__
 // clang does not have GCC push pop
@@ -176,7 +190,6 @@ compiling for a known 64-bit platform."
 #endif
 #endif
 
-
 // workaround for large stack sizes under -O0.
 // https://github.com/simdjson/simdjson/issues/691
 #ifdef __APPLE__
@@ -190,7 +203,12 @@ compiling for a known 64-bit platform."
 #endif
 #endif
 
+
+#if SIMDJSON_DO_NOT_USE_THREADS_NO_MATTER_WHAT
+// No matter what happened, we undefine SIMDJSON_THREADS_ENABLED and so disable threads.
 #undef SIMDJSON_THREADS_ENABLED
+#endif
+
 
 #if defined(__clang__)
 #define NO_SANITIZE_UNDEFINED __attribute__((no_sanitize("undefined")))
@@ -268,7 +286,6 @@ static inline void aligned_free_char(char *mem_block) {
 
 #else // NDEBUG
 
-#include <cassert>
 #define SIMDJSON_UNREACHABLE() assert(0);
 #define SIMDJSON_ASSUME(COND) assert(COND)
 
@@ -355,12 +372,15 @@ constexpr size_t DEFAULT_MAX_DEPTH = 1024;
   #define SIMDJSON_PUSH_DISABLE_ALL_WARNINGS __pragma(warning( push, 0 ))
   #define SIMDJSON_DISABLE_VS_WARNING(WARNING_NUMBER) __pragma(warning( disable : WARNING_NUMBER ))
   // Get rid of Intellisense-only warnings (Code Analysis)
-  // Though __has_include is C++17, it looks like it is supported in Visual Studio 2017 or better.
-  // We are probably not supporting earlier version of Visual Studio in any case.
+  // Though __has_include is C++17, it is supported in Visual Studio 2017 or better (_MSC_VER>=1910).
+  #if defined(_MSC_VER) && (_MSC_VER>=1910) 
   #if __has_include(<CppCoreCheck\Warnings.h>)
   #include <CppCoreCheck\Warnings.h>
   #define SIMDJSON_DISABLE_UNDESIRED_WARNINGS SIMDJSON_DISABLE_VS_WARNING(ALL_CPPCORECHECK_WARNINGS)
-  #else
+  #endif
+  #endif
+
+  #ifndef SIMDJSON_DISABLE_UNDESIRED_WARNINGS
   #define SIMDJSON_DISABLE_UNDESIRED_WARNINGS
   #endif
 
@@ -2020,7 +2040,7 @@ SIMDJSON_DISABLE_UNDESIRED_WARNINGS
 #define SIMDJSON_SIMDJSON_VERSION_H
 
 /** The version of simdjson being used (major.minor.revision) */
-#define SIMDJSON_VERSION 0.4.0
+#define SIMDJSON_VERSION 0.4.6
 
 namespace simdjson {
 enum {
@@ -2035,7 +2055,7 @@ enum {
   /**
    * The revision (major.minor.REVISION) of simdjson being used.
    */
-  SIMDJSON_VERSION_REVISION = 0
+  SIMDJSON_VERSION_REVISION = 6
 };
 } // namespace simdjson
 
@@ -3655,7 +3675,12 @@ private:
   /**
    * The loaded buffer (reused each time load() is called)
    */
+  #if defined(_MSC_VER) && _MSC_VER < 1910
+  // older versions of Visual Studio lack proper support for unique_ptr.
+  std::unique_ptr<char[]> loaded_bytes;
+  #else
   std::unique_ptr<char[], decltype(&aligned_free_char)> loaded_bytes;
+  #endif
 
   /** Capacity of loaded_bytes buffer. */
   size_t _loaded_bytes_capacity{0};
@@ -4009,21 +4034,42 @@ public:
    */
   inline simdjson_result<object> get_object() const noexcept;
   /**
-   * Cast this element to a string.
+   * Cast this element to a null-terminated C string. 
+   * 
+   * The string is guaranteed to be valid UTF-8.
    *
-   * Equivalent to get<const char *>().
+   * The get_c_str() function is equivalent to get<const char *>().
+   * 
+   * The length of the string is given by get_string_length(). Because JSON strings
+   * may contain null characters, it may be incorrect to use strlen to determine the 
+   * string length.
    *
-   * @returns An pointer to a null-terminated string. This string is stored in the parser and will
+   * It is possible to get a single string_view instance which represents both the string
+   * content and its length: see get_string().
+   *
+   * @returns A pointer to a null-terminated UTF-8 string. This string is stored in the parser and will
    *          be invalidated the next time it parses a document or when it is destroyed.
    *          Returns INCORRECT_TYPE if the JSON element is not a string.
    */
   inline simdjson_result<const char *> get_c_str() const noexcept;
   /**
-   * Cast this element to a string.
+   * Gives the length in bytes of the string.
+   * 
+   * It is possible to get a single string_view instance which represents both the string
+   * content and its length: see get_string().
+   *
+   * @returns A string length in bytes.
+   *          Returns INCORRECT_TYPE if the JSON element is not a string.
+   */
+  inline simdjson_result<size_t> get_string_length() const noexcept;
+  /**
+   * Cast this element to a string. 
+   * 
+   * The string is guaranteed to be valid UTF-8.
    *
    * Equivalent to get<std::string_view>().
    *
-   * @returns A string. The string is stored in the parser and will be invalidated the next time it
+   * @returns An UTF-8 string. The string is stored in the parser and will be invalidated the next time it
    *          parses a document or when it is destroyed.
    *          Returns INCORRECT_TYPE if the JSON element is not a string.
    */
@@ -4200,7 +4246,9 @@ public:
   inline operator bool() const noexcept(false);
 
   /**
-   * Read this element as a null-terminated string.
+   * Read this element as a null-terminated UTF-8 string.
+   * 
+   * Be mindful that JSON allows strings to contain null characters.
    *
    * Does *not* convert other types to a string; requires that the JSON type of the element was
    * an actual string.
@@ -4211,7 +4259,7 @@ public:
   inline explicit operator const char*() const noexcept(false);
 
   /**
-   * Read this element as a null-terminated string.
+   * Read this element as a null-terminated UTF-8 string.
    *
    * Does *not* convert other types to a string; requires that the JSON type of the element was
    * an actual string.
@@ -4411,6 +4459,7 @@ public:
   really_inline simdjson_result<dom::array> get_array() const noexcept;
   really_inline simdjson_result<dom::object> get_object() const noexcept;
   really_inline simdjson_result<const char *> get_c_str() const noexcept;
+  really_inline simdjson_result<size_t> get_string_length() const noexcept;
   really_inline simdjson_result<std::string_view> get_string() const noexcept;
   really_inline simdjson_result<int64_t> get_int64() const noexcept;
   really_inline simdjson_result<uint64_t> get_uint64() const noexcept;
@@ -5821,6 +5870,10 @@ really_inline simdjson_result<const char *> simdjson_result<dom::element>::get_c
   if (error()) { return error(); }
   return first.get_c_str();
 }
+really_inline simdjson_result<size_t> simdjson_result<dom::element>::get_string_length() const noexcept {
+  if (error()) { return error(); }
+  return first.get_string_length();
+}
 really_inline simdjson_result<std::string_view> simdjson_result<dom::element>::get_string() const noexcept {
   if (error()) { return error(); }
   return first.get_string();
@@ -5956,6 +6009,15 @@ inline simdjson_result<const char *> element::get_c_str() const noexcept {
   switch (tape.tape_ref_type()) {
     case internal::tape_type::STRING: {
       return tape.get_c_str();
+    }
+    default:
+      return INCORRECT_TYPE;
+  }
+}
+inline simdjson_result<size_t> element::get_string_length() const noexcept {
+  switch (tape.tape_ref_type()) {
+    case internal::tape_type::STRING: {
+      return tape.get_string_length();
     }
     default:
       return INCORRECT_TYPE;
@@ -6724,7 +6786,12 @@ inline char *allocate_padded_buffer(size_t length) noexcept {
   // return (char *) malloc(length + SIMDJSON_PADDING);
   // However, we might as well align to cache lines...
   size_t totalpaddedlength = length + SIMDJSON_PADDING;
+#if defined(_MSC_VER) && _MSC_VER < 1910
+  // For legacy Visual Studio 2015 since it does not have proper C++11 support
+  char *padded_buffer = new[totalpaddedlength];
+#else
   char *padded_buffer = aligned_malloc_char(64, totalpaddedlength);
+#endif
 #ifndef NDEBUG
   if (padded_buffer == nullptr) {
     return nullptr;
@@ -7346,10 +7413,18 @@ namespace dom {
 //
 // parser inline implementation
 //
+#if defined(_MSC_VER) && _MSC_VER < 1910
+// older versions of Visual Studio lack proper support for unique_ptr.
+really_inline parser::parser(size_t max_capacity) noexcept
+  : _max_capacity{max_capacity},
+    loaded_bytes(nullptr) {
+}
+#else 
 really_inline parser::parser(size_t max_capacity) noexcept
   : _max_capacity{max_capacity},
     loaded_bytes(nullptr, &aligned_free_char) {
 }
+#endif
 really_inline parser::parser(parser &&other) noexcept = default;
 really_inline parser &parser::operator=(parser &&other) noexcept = default;
 
@@ -7611,14 +7686,14 @@ really_inline T tape_ref::next_tape_value() const noexcept {
 }
 
 really_inline uint32_t internal::tape_ref::get_string_length() const noexcept {
-  uint64_t string_buf_index = size_t(tape_value());
+  size_t string_buf_index = size_t(tape_value());
   uint32_t len;
   memcpy(&len, &doc->string_buf[string_buf_index], sizeof(len));
   return len;
 }
 
 really_inline const char * internal::tape_ref::get_c_str() const noexcept {
-  uint64_t string_buf_index = size_t(tape_value());
+  size_t string_buf_index = size_t(tape_value());
   return reinterpret_cast<const char *>(&doc->string_buf[string_buf_index + sizeof(uint32_t)]);
 }
 
