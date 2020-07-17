@@ -3,8 +3,8 @@ import os.path
 import platform
 from sysconfig import get_config_vars
 
-from packaging import version
 from setuptools import setup, find_packages, Extension
+from distutils.version import LooseVersion
 
 
 root = os.path.abspath(os.path.dirname(__file__))
@@ -35,8 +35,8 @@ if system == 'Darwin':
             'MACOSX_DEPLOYMENT_TARGET',
             current_version
         )
-        if (version.parse(target_version) < version.parse('10.9')
-                and version.parse(current_version) >= version.parse('10.9')):
+        if (LooseVersion(target_version) < '10.9'
+                and LooseVersion(current_version) >= '10.9'):
             os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 elif system == 'Windows':
     extra_compile_args.extend([
