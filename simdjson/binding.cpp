@@ -9,6 +9,8 @@
 namespace py = pybind11;
 using namespace simdjson;
 
+inline py::object element_to_primitive(dom::element e, bool recursive);
+
 inline py::object sv_to_unicode(std::string_view sv) {
     /* pybind11 doesn't build in its string_view support if you're
      * targeting c++11, even if string_view is available. So we do it
@@ -18,42 +20,45 @@ inline py::object sv_to_unicode(std::string_view sv) {
     );
 }
 
+inline py::dict object_to_dict(dom::object obj, bool recursive) {
+    py::dict result;
+
+    for (dom::key_value_pair field : obj) {
+        auto k = sv_to_unicode(field.key).release().ptr();
+        auto v = element_to_primitive(field.value, recursive).release().ptr();
+        auto err = PyDict_SetItem(result.ptr(), k, v);
+        if (err == -1) throw std::bad_alloc();
+
+        Py_DECREF(k);
+        Py_DECREF(v);
+    }
+
+    return result;
+}
+
+inline py::list array_to_list(dom::array arr, bool recursive) {
+    py::list result(arr.size());
+    size_t i = 0;
+
+    for (dom::element field : arr) {
+        PyList_SET_ITEM(
+            result.ptr(),
+            i,
+            element_to_primitive(field, recursive).release().ptr()
+        );
+        i++;
+    }
+
+    return result;
+}
+
 inline py::object element_to_primitive(dom::element e, bool recursive = false) {
     switch (e.type()) {
     case dom::element_type::OBJECT:
-        if (recursive) {
-            dom::object obj(e);
-            py::dict result;
-
-            for (dom::key_value_pair field : obj) {
-                auto err = PyDict_SetItem(
-                    result.ptr(),
-                    sv_to_unicode(field.key).release().ptr(),
-                    element_to_primitive(field.value, recursive).release().ptr()
-                );
-                if (err == -1) throw std::bad_alloc();
-            }
-
-            return result;
-        }
+        if (recursive) return object_to_dict(dom::object(e), recursive);
         return py::cast(dom::object(e));
     case dom::element_type::ARRAY:
-        if (recursive) {
-            dom::array arr(e);
-            py::list result(arr.size());
-            size_t i = 0;
-
-            for (dom::element field : arr) {
-                PyList_SET_ITEM(
-                    result.ptr(),
-                    i,
-                    element_to_primitive(field, recursive).release().ptr()
-                );
-                i++;
-            }
-
-            return result;
-        }
+        if (recursive) return array_to_list(dom::array(e), recursive);
         return py::cast(dom::array(e));
     case dom::element_type::STRING:
         return sv_to_unicode(e.get_string());
@@ -258,6 +263,11 @@ PYBIND11_MODULE(csimdjson, m) {
             },
             py::return_value_policy::reference_internal,
             py::keep_alive<0, 1>()
+        )
+        .def("as_list",
+            [](dom::array &self) {
+                return array_to_list(self, true);
+            }
         );
 
     py::class_<dom::object>(m, "Object")
@@ -339,6 +349,11 @@ PYBIND11_MODULE(csimdjson, m) {
                     i++;
                 }
                 return result;
+            }
+        )
+        .def("as_dict",
+            [](dom::object &self) {
+                return object_to_dict(self, true);
             }
         );
 }

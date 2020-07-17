@@ -54,17 +54,36 @@ def test_array_slicing(parser):
     """Ensure we can slice our csimdjson.Array just like a real array."""
     doc = parser.parse(b'[0, 1, 2, 3, 4, 5]')
 
+    assert isinstance(doc, csimdjson.Array)
     assert list(doc) == [0, 1, 2, 3, 4, 5]
     assert doc[-1] == 5
     assert doc[0:2] == [0, 1]
     assert doc[::2] == [0, 2, 4]
     assert doc[::-1] == [5, 4, 3, 2, 1, 0]
 
-def test_object(parser):
-    doc = parser.parse(b'{"a": "b", "c": [0, 1, 2]}')
+    # Converting to a list recursively uplifts.
+    assert doc.as_list() == [0, 1, 2, 3, 4, 5]
 
+def test_object(parser):
+    """Ensure we can access a csimdjson.Object just a like a Mapping."""
+    doc = parser.parse(b'{"a": "b", "c": [0, 1, 2], "x": {"f": "z"}}')
+
+    # We implement __contains__, no uplifting required.
     assert 'a' in doc
     assert 'd' not in doc
 
-    assert doc.keys() == ['a', 'c']
-    assert doc.values() == ['b', [0, 1, 2]]
+    # Both keys() and values() recursively uplift Array and Object, or 99%
+    # of things expecting a Mapping would break.
+    assert doc.keys() == ['a', 'c', 'x']
+    assert doc.values() == ['b', [0, 1, 2], {'f': 'z'}]
+
+    # But individual key access returns proxy objects.
+    assert isinstance(doc["x"], csimdjson.Object)
+    assert isinstance(doc["c"], csimdjson.Array)
+
+    # Converting to a dict recursively uplifts.
+    assert doc.as_dict() == {
+        'a': 'b',
+        'c': [0, 1, 2],
+        'x': {'f': 'z'}
+    }
