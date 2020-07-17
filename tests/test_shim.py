@@ -17,7 +17,9 @@ def test_load():
 
 def test_loads():
     """Ensure basic usage of loads is the same."""
-    with open('jsonexamples/canada.json', 'rb') as fin:
+    # We don't use a binary file here because pre-py3.6 the built-in couldn't
+    # handle bytes.
+    with open('jsonexamples/canada.json', 'r') as fin:
         content = fin.read()
 
     assert json.loads(content) == simdjson.loads(content)
