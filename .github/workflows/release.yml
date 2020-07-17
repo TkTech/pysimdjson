@@ -4,11 +4,11 @@ on:
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
-name: Create Release
+name: Create release
 
 jobs:
   build:
-    name: Create Release
+    name: Creating Windows and OSX wheels
 
     runs-on: ${{ matrix.os }}
     strategy:
@@ -42,11 +42,11 @@ jobs:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        python setup.py sdist bdist_wheel
+        python setup.py bdist_wheel
         twine upload dist/*
 
   build_manylinux2010:
-    name: Create manylinux2010 Release
+    name: Creating manylinux2010 release
 
     runs-on: ubuntu-latest
 
@@ -70,6 +70,32 @@ jobs:
       with:
         python-versions: 'cp35-cp35m cp36-cp36m cp37-cp37m cp38-cp38'
         build-requirements: 'pybind11'
+
+    - name: Build and publish
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        twine upload dist/*
+
+  sdist:
+    name: Creating source release
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Install python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        pip install wheel twine
 
     - name: Build and publish
       env:
