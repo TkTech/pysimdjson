@@ -18,7 +18,7 @@ import csimdjson
 
 
 def csimdjson_loads(content):
-    return csimdjson.parser().parse(content).up
+    return csimdjson.Parser().parse(content)
 
 
 @pytest.mark.slow

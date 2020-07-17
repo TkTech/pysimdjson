@@ -9,6 +9,15 @@
 namespace py = pybind11;
 using namespace simdjson;
 
+inline py::object sv_to_unicode(std::string_view sv) {
+    /* pybind11 doesn't build in its string_view support if you're
+     * targeting c++11, even if string_view is available. So we do it
+     * ourselves. */
+    return py::reinterpret_steal<py::object>(
+        PyUnicode_FromStringAndSize(sv.data(), sv.size())
+    );
+}
+
 inline py::object element_to_primitive(dom::element e) {
     switch (e.type()) {
     case dom::element_type::OBJECT:
@@ -16,15 +25,15 @@ inline py::object element_to_primitive(dom::element e) {
     case dom::element_type::ARRAY:
         return py::cast(dom::array(e));
     case dom::element_type::STRING:
-        return py::cast(e.get_string());
+        return sv_to_unicode(e.get_string());
     case dom::element_type::INT64:
-        return py::cast(e.get_int64());
+        return py::cast(int64_t(e));
     case dom::element_type::UINT64:
-        return py::cast(e.get_uint64());
+        return py::cast(uint64_t(e));
     case dom::element_type::DOUBLE:
-        return py::cast(e.get_double());
+        return py::cast(double(e));
     case dom::element_type::BOOL:
-        return py::cast(e.get_bool());
+        return py::cast(bool(e));
     case dom::element_type::NULL_VALUE:
         return py::none();
     default:
@@ -39,6 +48,31 @@ inline py::object element_to_primitive(dom::element e) {
         );
     }
 }
+
+namespace pybind11 { namespace detail {
+    // Caster for the elements in Array.
+    template <> struct type_caster<dom::element> {
+        public:
+            PYBIND11_TYPE_CASTER(dom::element, _("Element"));
+
+            static handle cast(dom::element src, py::return_value_policy, py::handle) {
+                return element_to_primitive(src).release();
+            }
+    };
+
+    // Caster for the key_value_pairs in Object.
+    template <> struct type_caster<dom::key_value_pair> {
+        public:
+            PYBIND11_TYPE_CASTER(dom::key_value_pair, _("KeyValuePair"));
+
+            static handle cast(dom::key_value_pair src, py::return_value_policy, py::handle) {
+                return py::make_tuple(
+                    sv_to_unicode(src.key),
+                    sv_to_unicode(src.value)
+                ).release();
+            }
+    };
+}}
 
 PYBIND11_MAKE_OPAQUE(dom::array);
 PYBIND11_MAKE_OPAQUE(dom::object);
@@ -134,27 +168,57 @@ PYBIND11_MODULE(csimdjson, m) {
             [](dom::parser &self, std::string &path) {
                 return element_to_primitive(self.load(path));
             },
-            py::return_value_policy::reference_internal
+            py::return_value_policy::reference_internal,
+            py::keep_alive<0, 1>()
+
         )
         .def("parse",
             [](dom::parser &self, const std::string &s) {
                 return element_to_primitive(self.parse(padded_string(s)));
             },
-            py::return_value_policy::reference_internal
+            py::return_value_policy::reference_internal,
+            py::keep_alive<0, 1>()
         );
 
     py::class_<dom::array>(m, "Array")
         .def("__truediv__",
-            [](dom::array &self, const char *json_pointer) -> py::object {
+            [](dom::array &self, const char *json_pointer) {
                 return element_to_primitive(self.at(json_pointer));
             },
             py::return_value_policy::reference_internal
         )
         .def("__getitem__",
-            [](dom::array &self, int64_t i) -> py::object {
+            [](dom::array &self, int64_t i) {
+                // Allow negative indexes which will return counting from the
+                // end of the array.
+                if (i < 0) i += self.size();
                 return element_to_primitive(self.at(i));
             },
             py::return_value_policy::reference_internal
+        )
+        .def("__getitem__",
+            [](dom::array &self, py::slice slice) {
+                size_t start, stop, step, slicelength;
+
+                if (!slice.compute(self.size(), &start, &stop, &step, &slicelength))
+                    throw py::error_already_set();
+
+                py::list *result = new py::list(slicelength);
+
+                for (size_t i = 0; i < slicelength; ++i) {
+                    // py::list doesn't expose the efficient setter for
+                    // pre-allocated lists. You CANNOT use PyList_Insert
+                    // or you'll segfault.
+                    PyList_SET_ITEM(
+                        result->ptr(),
+                        i,
+                        element_to_primitive(self.at(start)).release().ptr()
+                    );
+                    start += step;
+                }
+
+                return result;
+            }
         )
         .def("__len__", [](dom::object &self) { return self.size(); })
         .def("__iter__",
@@ -166,7 +230,7 @@ PYBIND11_MODULE(csimdjson, m) {
 
     py::class_<dom::object>(m, "Object")
         .def("__truediv__",
-            [](dom::object &self, const char *json_pointer) -> py::object {
+            [](dom::object &self, const char *json_pointer) {
                 return element_to_primitive(self.at(json_pointer));
             },
             py::return_value_policy::reference_internal
@@ -189,7 +253,7 @@ PYBIND11_MODULE(csimdjson, m) {
         )
         .def("__len__", [](dom::object &self) { return self.size(); })
         .def("__getitem__",
-            [](dom::object &self, const char *key) -> py::object {
+            [](dom::object &self, const char *key) {
                 try {
                     return element_to_primitive(self[key]);
                 } catch (const simdjson_error& e) {

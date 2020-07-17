@@ -33,18 +33,29 @@ def test_getitem(parser):
     with pytest.raises(KeyError):
         doc['no_such_key']
 
-    assert doc['key']
+    assert doc['key'] == 'value'
 
     doc = parser.parse(b'''[0, 1, 2]''')
 
+    assert doc[1] == 1
 
 def test_uplift(doc):
-    """Ensure elements can be uplifted to Python objects."""
-    assert list(doc['array']) == [1, 2, 3]
-    assert doc['object'] == {"hello": "world"}
+    """Ensure every JSON type is uplifted to the proper Python type."""
+    assert isinstance(doc['array'], csimdjson.Array)
+    assert isinstance(doc['object'], csimdjson.Object)
     assert doc['int64'] == -1
     assert doc['uint64'] == 18446744073709551615
     assert doc['double'] == 1.1
     assert doc['string'] == 'test'
     assert doc['bool'] is True
     assert doc['null_value'] is None
+
+def test_array_slicing(parser):
+    """Ensure we can slice our csimdjson.Array just like a real array."""
+    doc = parser.parse(b'[0, 1, 2, 3, 4, 5]')
+
+    assert list(doc) == [0, 1, 2, 3, 4, 5]
+    assert doc[-1] == 5
+    assert doc[0:2] == [0, 1]
+    assert doc[::2] == [0, 2, 4]
+    assert doc[::-1] == [5, 4, 3, 2, 1, 0]
