@@ -1,7 +1,6 @@
 import pytest
 
 import csimdjson
-from csimdjson import element_type
 
 
 def test_json_pointer(parser):
@@ -10,9 +9,9 @@ def test_json_pointer(parser):
     """
     doc = parser.parse(b'{"key": "value", "array": [0, 1, 2]}')
 
-    assert doc.at('key').type == element_type.STRING
-    assert doc.at('array/0').type == element_type.INT64
-    assert (doc / 'array' / '0').type == element_type.INT64
+    assert isinstance(doc.at('key'), str)
+    assert isinstance(doc.at('array/0'), int)
+    assert isinstance(doc / 'array' / '0', int)
 
     with pytest.raises(csimdjson.NoSuchFieldError):
         doc.at('no_such_key')
@@ -25,18 +24,6 @@ def test_json_pointer(parser):
 
     with pytest.raises(csimdjson.InvalidJSONPointerError):
         doc.at('array/')
-
-
-def test_type_check(doc):
-    """Ensures that JSON types are what they say they are."""
-    assert doc['array'].type == element_type.ARRAY
-    assert doc['object'].type == element_type.OBJECT
-    assert doc['int64'].type == element_type.INT64
-    assert doc['uint64'].type == element_type.UINT64
-    assert doc['double'].type == element_type.DOUBLE
-    assert doc['string'].type == element_type.STRING
-    assert doc['bool'].type == element_type.BOOL
-    assert doc['null_value'].type == element_type.NULL_VALUE
 
 
 def test_getitem(parser):
@@ -53,11 +40,11 @@ def test_getitem(parser):
 
 def test_uplift(doc):
     """Ensure elements can be uplifted to Python objects."""
-    assert doc['array'].up == [1, 2, 3]
-    assert doc['object'].up == {"hello": "world"}
-    assert doc['int64'].up == -1
-    assert doc['uint64'].up == 18446744073709551615
-    assert doc['double'].up == 1.1
-    assert doc['string'].up == 'test'
-    assert doc['bool'].up is True
-    assert doc['null_value'].up is None
+    assert list(doc['array']) == [1, 2, 3]
+    assert doc['object'] == {"hello": "world"}
+    assert doc['int64'] == -1
+    assert doc['uint64'] == 18446744073709551615
+    assert doc['double'] == 1.1
+    assert doc['string'] == 'test'
+    assert doc['bool'] is True
+    assert doc['null_value'] is None

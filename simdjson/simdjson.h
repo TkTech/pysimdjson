@@ -3090,6 +3090,7 @@ public:
      * Part of the std::iterator interface.
      */
     inline bool operator!=(const iterator& other) const noexcept;
+    inline bool operator==(const iterator& other) const noexcept;
   private:
     really_inline iterator(const internal::tape_ref &tape) noexcept;
     internal::tape_ref tape;
@@ -4556,6 +4557,7 @@ public:
      * Part of the std::iterator interface.
      */
     inline bool operator!=(const iterator& other) const noexcept;
+    inline bool operator==(const iterator& other) const noexcept;
     /**
      * Get the key of this key/value pair.
      */
@@ -5381,6 +5383,9 @@ inline element array::iterator::operator*() const noexcept {
 }
 inline bool array::iterator::operator!=(const array::iterator& other) const noexcept {
   return tape.json_index != other.tape.json_index;
+}
+inline bool array::iterator::operator==(const array::iterator& other) const noexcept {
+  return tape.json_index == other.tape.json_index;
 }
 inline array::iterator& array::iterator::operator++() noexcept {
   tape.json_index = tape.after_element();
@@ -6658,6 +6663,9 @@ inline const key_value_pair object::iterator::operator*() const noexcept {
 }
 inline bool object::iterator::operator!=(const object::iterator& other) const noexcept {
   return tape.json_index != other.tape.json_index;
+}
+inline bool object::iterator::operator==(const object::iterator& other) const noexcept {
+  return tape.json_index == other.tape.json_index;
 }
 inline object::iterator& object::iterator::operator++() noexcept {
   tape.json_index++;

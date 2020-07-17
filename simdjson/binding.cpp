@@ -1,8 +1,6 @@
 /**
  * This file provides the low-level bindings around the C++ simdjson library,
  * exposing it to Python as the csimdjson module.
- *
- * For the most part, it's a direct 1:1 binding with the API found in simdjson.
  */
 #include <pybind11/pybind11.h>
 #include <Python.h>
@@ -11,89 +9,24 @@
 namespace py = pybind11;
 using namespace simdjson;
 
-#if defined(__GNUC__) || defined(__INTEL_COMPILER)
-#define py_likely(x) __builtin_expect(!!(x), 1)
-#define py_unlikely(x) __builtin_expect(!!(x), 0)
-#else
-#define py_likely(x) (x)
-#define py_unlikely(x) (x)
-#endif
-
-/** 
- * Converts a simdjson dom::element to a high-level Python object.
- *
- * When converting arrays or objects, it will recursively convert all children
- * as well.
- */
-PyObject* element_to_primitive(dom::element &e) {
+inline py::object element_to_primitive(dom::element e) {
     switch (e.type()) {
     case dom::element_type::OBJECT:
-        {
-            dom::object obj = e.get_object();
-
-            PyObject *result = PyDict_New();
-            if (py_unlikely(!result)) throw std::bad_alloc();
-
-            for (dom::key_value_pair field : obj) {
-                auto key = PyUnicode_DecodeUTF8(
-                    field.key.data(),
-                    field.key.size(),
-                    "ignore\0"
-                );
-                if (py_unlikely(!key)) throw std::bad_alloc();
-                auto value = element_to_primitive(field.value);
-                if (py_unlikely(!value)) throw std::bad_alloc();
-
-                if (py_unlikely(PyDict_SetItem(result, key, value) == -1)) {
-                    // Seems like the only way we'll get here is a bad
-                    // allocation. Other types of issues will already raise
-                    // exceptions directly, like TypeError.
-                    throw std::bad_alloc();
-                }
-
-                Py_DECREF(key);
-                Py_DECREF(value);
-            }
-
-            return result;
-        }
+        return py::cast(dom::object(e));
     case dom::element_type::ARRAY:
-        {
-            dom::array arr = e.get_array();
-            auto size = arr.size();
-            auto i = 0;
-
-            PyObject *result = PyList_New(size);
-            if (py_unlikely(!result)) throw std::bad_alloc();
-
-            for (dom::element array_element : arr) {
-                auto value = element_to_primitive(array_element);
-                if (py_unlikely(!value)) throw std::bad_alloc();
-                PyList_SET_ITEM(result, i, value);
-                i++;
-            }
-
-            return result;
-        }
+        return py::cast(dom::array(e));
     case dom::element_type::STRING:
-    {
-        std::string_view s = e.get_string();
-        return PyUnicode_FromStringAndSize(s.data(), s.size());
-    }
+        return py::cast(e.get_string());
     case dom::element_type::INT64:
-        return PyLong_FromLongLong(e.get_int64());
+        return py::cast(e.get_int64());
     case dom::element_type::UINT64:
-        return PyLong_FromUnsignedLongLong(e.get_uint64());
+        return py::cast(e.get_uint64());
     case dom::element_type::DOUBLE:
-        return PyFloat_FromDouble(e.get_double());
+        return py::cast(e.get_double());
     case dom::element_type::BOOL:
-        if (e.get_bool()) {
-            Py_RETURN_TRUE;
-        } else {
-            Py_RETURN_FALSE;
-        }
+        return py::cast(e.get_bool());
     case dom::element_type::NULL_VALUE:
-        Py_RETURN_NONE;
+        return py::none();
     default:
         // This should never, ever, happen. The only way we get here is if
         // simdjson.cpp/.h were updated with new types that don't match JSON
@@ -106,6 +39,9 @@ PyObject* element_to_primitive(dom::element &e) {
         );
     }
 }
+
+PYBIND11_MAKE_OPAQUE(dom::array);
+PYBIND11_MAKE_OPAQUE(dom::object);
 
 PYBIND11_MODULE(csimdjson, m) {
     m.doc() = "Low-level bindings for the simdjson project.";
@@ -139,17 +75,6 @@ PYBIND11_MODULE(csimdjson, m) {
         .value("INVALID_JSON_POINTER", error_code::INVALID_JSON_POINTER)
         .value("INVALID_URI_FRAGMENT", error_code::INVALID_URI_FRAGMENT)
         .value("UNEXPECTED_ERROR", error_code::UNEXPECTED_ERROR);
-
-    py::enum_<dom::element_type>(m, "element_type", py::arithmetic())
-        .value("ARRAY", dom::element_type::ARRAY)
-        .value("OBJECT", dom::element_type::OBJECT)
-        .value("INT64", dom::element_type::INT64)
-        .value("UINT64", dom::element_type::UINT64)
-        .value("DOUBLE", dom::element_type::DOUBLE)
-        .value("STRING", dom::element_type::STRING)
-        .value("BOOL", dom::element_type::BOOL)
-        .value("NULL_VALUE", dom::element_type::NULL_VALUE);
-
 
     // Base class for all errors except for MEMALLOC (which becomes a
     // MemoryError subclass) and IO_ERROR (which becomes an IOError subclass).
@@ -200,39 +125,73 @@ PYBIND11_MODULE(csimdjson, m) {
         }
     });
 
-    py::class_<dom::parser>(m, "parser")
+    py::class_<dom::parser>(m, "Parser")
         .def(py::init<>())
         .def(py::init<size_t>(),
                 py::arg("max_capacity") = SIMDJSON_MAXSIZE_BYTES)
 
         .def("load",
-            [](dom::parser &p, std::string &path) {
-                return p.load(path).value();
+            [](dom::parser &self, std::string &path) {
+                return element_to_primitive(self.load(path));
             },
-            py::return_value_policy::take_ownership,
-            py::keep_alive<0, 1>()
+            py::return_value_policy::reference_internal
         )
         .def("parse",
-            [](dom::parser &p, const std::string &s) {
-                return p.parse(padded_string(s)).value();
+            [](dom::parser &self, const std::string &s) {
+                return element_to_primitive(self.parse(padded_string(s)));
             },
-            py::return_value_policy::take_ownership,
-            py::keep_alive<0, 1>()
+            py::return_value_policy::reference_internal
         );
 
-    py::class_<dom::element>(m, "element")
-        .def_property_readonly("type", &dom::element::type)
-        .def("at",
-            [](dom::element &e, const char *json_pointer) {
-                return e.at(json_pointer).value();
+    py::class_<dom::array>(m, "Array")
+        .def("__truediv__",
+            [](dom::array &self, const char *json_pointer) -> py::object {
+                return element_to_primitive(self.at(json_pointer));
             },
-            py::return_value_policy::take_ownership,
-            "Get the value associated with the given JSON pointer."
+            py::return_value_policy::reference_internal
         )
         .def("__getitem__",
-            [](dom::element &e, const char *key) {
+            [](dom::array &self, int64_t i) -> py::object {
+                return element_to_primitive(self.at(i));
+            },
+            py::return_value_policy::reference_internal
+        )
+        .def("__len__", [](dom::object &self) { return self.size(); })
+        .def("__iter__",
+            [](dom::array &self) {
+                return py::make_iterator(self.begin(), self.end());
+            },
+            py::return_value_policy::reference_internal
+        );
+
+    py::class_<dom::object>(m, "Object")
+        .def("__truediv__",
+            [](dom::object &self, const char *json_pointer) -> py::object {
+                return element_to_primitive(self.at(json_pointer));
+            },
+            py::return_value_policy::reference_internal
+        )
+        .def("at",
+            [](dom::object &self, const char *json_pointer) {
+                return element_to_primitive(self.at(json_pointer));
+            },
+            py::return_value_policy::reference_internal,
+            "Get the value associated with the given JSON pointer."
+        )
+        .def("__iter__",
+            [](dom::object &self) {
+                return py::make_iterator(
+                    self.begin(),
+                    self.end()
+                );
+            },
+            py::return_value_policy::reference_internal
+        )
+        .def("__len__", [](dom::object &self) { return self.size(); })
+        .def("__getitem__",
+            [](dom::object &self, const char *key) -> py::object {
                 try {
-                    return e[key].value();
+                    return element_to_primitive(self[key]);
                 } catch (const simdjson_error& e) {
                     switch (e.error()) {
                         case error_code::NO_SUCH_FIELD:
@@ -242,24 +201,6 @@ PYBIND11_MODULE(csimdjson, m) {
                     }
                 }
             },
-            py::return_value_policy::take_ownership
-        )
-        .def("__truediv__",
-            [](dom::element &e, const char *json_pointer) {
-                return e.at(json_pointer).value();
-            },
-            py::return_value_policy::take_ownership
-        )
-        .def_property_readonly(
-            "up",
-            [](dom::element &e) {
-                auto value = element_to_primitive(e);
-                if (py_unlikely(!value)) {
-                    throw std::bad_alloc();
-                }
-                return py::reinterpret_steal<py::object>(value);
-            },
-            py::return_value_policy::take_ownership,
-            "Uplift a simdjson element to a primitive Python type."
+            py::return_value_policy::reference_internal
         );
 }

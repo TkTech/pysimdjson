@@ -28,7 +28,7 @@ def pytest_collection_modifyitems(config, items):
 @pytest.fixture
 def parser():
     import csimdjson
-    yield csimdjson.parser()
+    yield csimdjson.Parser()
 
 
 @pytest.fixture
