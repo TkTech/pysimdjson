@@ -21,6 +21,8 @@ jobs:
             python-version: 3.5
           - os: windows-latest
             python-version: 3.6
+          - os: windows-latest
+            python-version: pypy3
 
     steps:
     - uses: actions/checkout@v2
