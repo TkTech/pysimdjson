@@ -23,16 +23,26 @@ jobs:
             python-version: 3.6
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+
+    - name: Install platform dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: >
+        sudo apt-get install -y
+        build-essential
+        clang-6.0
+
+    - name: Install python dependencies
       run: |
         python -m pip install --upgrade pip
         pip install wheel twine
-        python setup.py install
+        pip install -e '.[dev]'
+
     - name: Build and publish
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
