@@ -59,3 +59,12 @@ def test_array_slicing(parser):
     assert doc[0:2] == [0, 1]
     assert doc[::2] == [0, 2, 4]
     assert doc[::-1] == [5, 4, 3, 2, 1, 0]
+
+def test_object(parser):
+    doc = parser.parse(b'{"a": "b", "c": [0, 1, 2]}')
+
+    assert 'a' in doc
+    assert 'd' not in doc
+
+    assert doc.keys() == ['a', 'c']
+    assert doc.values() == ['b', [0, 1, 2]]

@@ -18,11 +18,42 @@ inline py::object sv_to_unicode(std::string_view sv) {
     );
 }
 
-inline py::object element_to_primitive(dom::element e) {
+inline py::object element_to_primitive(dom::element e, bool recursive = false) {
     switch (e.type()) {
     case dom::element_type::OBJECT:
+        if (recursive) {
+            dom::object obj(e);
+            py::dict result;
+
+            for (dom::key_value_pair field : obj) {
+                auto err = PyDict_SetItem(
+                    result.ptr(),
+                    sv_to_unicode(field.key).release().ptr(),
+                    element_to_primitive(field.value, recursive).release().ptr()
+                );
+                if (err == -1) throw std::bad_alloc();
+            }
+
+            return result;
+        }
         return py::cast(dom::object(e));
     case dom::element_type::ARRAY:
+        if (recursive) {
+            dom::array arr(e);
+            py::list result(arr.size());
+            size_t i = 0;
+
+            for (dom::element field : arr) {
+                PyList_SET_ITEM(
+                    result.ptr(),
+                    i,
+                    element_to_primitive(field, recursive).release().ptr()
+                );
+                i++;
+            }
+
+            return result;
+        }
         return py::cast(dom::array(e));
     case dom::element_type::STRING:
         return sv_to_unicode(e.get_string());
@@ -225,7 +256,8 @@ PYBIND11_MODULE(csimdjson, m) {
             [](dom::array &self) {
                 return py::make_iterator(self.begin(), self.end());
             },
-            py::return_value_policy::reference_internal
+            py::return_value_policy::reference_internal,
+            py::keep_alive<0, 1>()
         );
 
     py::class_<dom::object>(m, "Object")
@@ -249,7 +281,8 @@ PYBIND11_MODULE(csimdjson, m) {
                     self.end()
                 );
             },
-            py::return_value_policy::reference_internal
+            py::return_value_policy::reference_internal,
+            py::keep_alive<0, 1>()
         )
         .def("__len__", [](dom::object &self) { return self.size(); })
         .def("__getitem__",
@@ -266,5 +299,46 @@ PYBIND11_MODULE(csimdjson, m) {
                 }
             },
             py::return_value_policy::reference_internal
+        )
+        .def("__contains__",
+            [](dom::object &self, const char *key) {
+                simdjson_result<dom::element> result = self[key];
+                return result.error() ? false : true;
+            }
+        )
+        .def("keys",
+            [](dom::object &self) {
+                // We can't use iterators here until upstream #1046 is fixed.
+                py::list *result = new py::list(self.size());
+                size_t i = 0;
+                for (dom::key_value_pair field : self) {
+                    PyList_SET_ITEM(
+                        result->ptr(),
+                        i,
+                        sv_to_unicode(field.key).release().ptr()
+                    );
+                    i++;
+                }
+                return result;
+            }
+        )
+        .def("values",
+            [](dom::object &self) {
+                // We can't use iterators here until upstream #1046 is fixed.
+                py::list *result = new py::list(self.size());
+                size_t i = 0;
+                for (dom::key_value_pair field : self) {
+                    PyList_SET_ITEM(
+                        result->ptr(),
+                        i,
+                        element_to_primitive(
+                            field.value,
+                            true
+                        ).release().ptr()
+                    );
+                    i++;
+                }
+                return result;
+            }
         );
 }
