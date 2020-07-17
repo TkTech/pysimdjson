@@ -39,7 +39,7 @@ jobs:
         pip install wheel twine
         pip install -e '.[dev]'
 
-    - name: Build and publish
+    - name: Publishing
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
@@ -73,12 +73,12 @@ jobs:
         python-versions: 'cp35-cp35m cp36-cp36m cp37-cp37m cp38-cp38'
         build-requirements: 'pybind11'
 
-    - name: Build and publish
+    - name: Publishing
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
-        twine upload dist/*
+        twine upload dist/*-manylinux*.whl
 
   sdist:
     name: Creating source release
@@ -99,7 +99,7 @@ jobs:
         python -m pip install --upgrade setuptools
         pip install wheel twine
 
-    - name: Build and publish
+    - name: Publishing
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
