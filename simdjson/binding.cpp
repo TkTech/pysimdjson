@@ -201,19 +201,22 @@ PYBIND11_MODULE(csimdjson, m) {
                 py::arg("max_capacity") = SIMDJSON_MAXSIZE_BYTES)
 
         .def("load",
-            [](dom::parser &self, std::string &path) {
-                return element_to_primitive(self.load(path));
+            [](dom::parser &self, std::string &path, bool recursive = false) {
+                return element_to_primitive(self.load(path), recursive);
             },
-            py::return_value_policy::reference_internal,
-            py::keep_alive<0, 1>()
+            py::arg("path"),
+            py::arg("recursive") = false
 
         )
         .def("parse",
-            [](dom::parser &self, const std::string &s) {
-                return element_to_primitive(self.parse(padded_string(s)));
+            [](dom::parser &self, const std::string &s, bool recursive = false) {
+                return element_to_primitive(
+                    self.parse(padded_string(s)),
+                    recursive
+                );
             },
-            py::return_value_policy::reference_internal,
-            py::keep_alive<0, 1>()
+            py::arg("s"),
+            py::arg("recursive") = false
         );
 
     py::class_<dom::array>(m, "Array")
@@ -267,7 +270,9 @@ PYBIND11_MODULE(csimdjson, m) {
         .def("as_list",
             [](dom::array &self) {
                 return array_to_list(self, true);
-            }
+            },
+            "Convert this Array to a regular list, recursively"
+            " converting any objects/lists it finds."
         );
 
     py::class_<dom::object>(m, "Object")
@@ -354,6 +359,8 @@ PYBIND11_MODULE(csimdjson, m) {
         .def("as_dict",
             [](dom::object &self) {
                 return object_to_dict(self, true);
-            }
+            },
+            "Convert this Object to a regular dictionary, recursively"
+            " converting any objects/lists it finds."
         );
 }

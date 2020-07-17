@@ -13,19 +13,14 @@ if platform.python_implementation() == 'PyPy':
 from orjson import loads as orjson_loads
 from rapidjson import loads as rapidjson_loads
 from simplejson import loads as simplejson_loads
-
-import csimdjson
-
-
-def csimdjson_loads(content):
-    return csimdjson.Parser().parse(content)
+from simdjson import loads as simdjson_loads
 
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
     ['group', 'func'],
     [
-        ('csimdjson', csimdjson_loads),
+        ('simdjson', simdjson_loads),
         ('orjson', orjson_loads),
         ('rapidjson', rapidjson_loads),
         ('simplejson', simplejson_loads),
