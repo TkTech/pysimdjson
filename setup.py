@@ -2,9 +2,9 @@ import os
 import os.path
 import platform
 
+from setuptools import setup, find_packages, Extension
 from distutils.version import LooseVersion
 from distutils.sysconfig import get_config_vars
-from setuptools import setup, find_packages, Extension
 
 
 root = os.path.abspath(os.path.dirname(__file__))
