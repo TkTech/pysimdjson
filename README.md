@@ -1,145 +1,122 @@
 ![PyPI - License](https://img.shields.io/pypi/l/pysimdjson.svg?style=flat-square)
-[![CircleCI branch](https://img.shields.io/circleci/project/github/TkTech/pysimdjson/master.svg?style=flat-square)](https://circleci.com/gh/TkTech/pysimdjson)
-[![AppVeyor branch](https://img.shields.io/appveyor/ci/TkTech/pysimdjson/master.svg?style=flat-square)](https://ci.appveyor.com/project/TkTech/pysimdjson)
 
 # pysimdjson
 
-Quick-n'dirty Python bindings for [simdjson][] just to see if going down this path
-might yield some parse time improvements in real-world applications. So far,
-the results are promising, especially when only part of a document is of
-interest.
+Python bindings for the [simdjson][] project, a SIMD-accelerated JSON parser.
 
-Bindings are currently tested on OS X, Linux, and Windows.
-
-See the latest documentation at http://pysimdjson.tkte.ch.
+Bindings are currently tested on OS X, Linux, and Windows for Python 3.4+.
 
 ## Installation
 
-There are binary wheels available for some platforms. On other platforms you'll
-need a C++17-capable compiler.
+If binary wheels are available for your platform, you can install from pip
+with no further requirements:
 
-`pip install pysimdjson`
+    pip install pysimdjson
 
-Binary wheels are available for:
+The project is self-contained, and has no additional dependencies. If binary
+wheels are not available for your platform, or you want to build from source
+for the best performance, you'll need a C++11-capable compiler to compile the
+sources:
 
-| Platform | py3.4 | py3.5 | py3.6 | py3.7 |
-| -------- | ----- | ----- | ----- | ----- |
-| OS X 10.12 | x | x | x | y |
-| Windows | x | x | y | y |
-| Linux | y | y | y | y |
+    pip install 'pysimdjson[dev]' --no-binary :all:
 
-or build from git:
+## Development and Testing
 
-```
-git clone https://github.com/TkTech/pysimdjson.git
-cd pysimdjson
-python setup.py install
-```
+This project comes with a full test suite. To install development and testing
+dependencies, use:
 
-## Example
+    pip install -e ".[dev]"
 
-```python
-import simdjson
+To also install 3rd party JSON libraries used for running benchmarks, use:
 
-with open('sample.json', 'rb') as fin:
-    doc = simdjson.loads(fin.read())
-```
+    pip install -e ".[benchmark]"
 
-However, this doesn't really gain you that much over, say, ujson. You're still
-loading the entire document and converting the entire thing into a series of
-Python objects which is very expensive. You can instead use `items()` to pull
-only part of a document into Python.
+To run the tests, just type `pytest`. To also run the benchmarks, use `pytest
+--runslow`.
 
-Example document:
+To properly test on Windows, you need both a recent version of Visual Studio
+(VS) as well as VS2015, patch 3. Older versions of CPython required portable
+C/C++ extensions to be built with the same version of VS as the interpreter.
+Use the [Developer Command Prompt][devprompt] to easily switch between
+versions.
 
-```json
-{
-    "type": "search_results",
-    "count": 2,
-    "results": [
-        {"username": "bob"},
-        {"username": "tod"}
-    ],
-    "error": {
-        "message": "All good captain"
-    }
-}
-```
+## How It Works
 
-And now lets try some queries...
+This project uses [pybind11][] to generate the low-level bindings on top of the
+simdjson project. You can use it just like the built-in json module, or use
+the simdjson-specific API for much better performance.
 
 ```python
 import simdjson
-
-with open('sample.json', 'rb') as fin:
-    # Calling ParsedJson with a document is a shortcut for
-    # calling pj.allocate_capacity(<size>) and pj.parse(<doc>). If you're
-    # parsing many JSON documents of similar sizes, you can allocate
-    # a large buffer just once and keep re-using it instead.
-    pj = simdjson.ParsedJson(fin.read())
-
-    pj.items('.type') #> "search_results"
-    pj.items('.count') #> 2
-    pj.items('.results[].username') #> ["bob", "tod"]
-    pj.items('.error.message') #> "All good captain"
+doc = simdjson.loads('{"hello": "world"}')
 ```
 
-### AVX2
+## Making things faster
 
-simdjson requires AVX2 support to function. Check to see if your OS/processor supports it:
+pysimdjson provides an api compatible with the built-in json module for
+convenience, and this API is pretty fast (beating or tying all other Python
+JSON libraries). However, it also provides a simdjson-specific API that can
+perform significantly better.
 
-- OS X: `sysctl -a | grep machdep.cpu.leaf7_features`
-- Linux: `grep avx2 /proc/cpuinfo`
+### Don't load the entire document
 
-### Low-level interface
+95% of the time spent loading a JSON document into Python is spent in the
+creation of Python objects, not the actual parsing of the document. You can
+avoid all of this overhead by ignoring parts of the document you don't want.
 
-You can use the low-level simdjson Iterator interface directly, just be aware
-that this interface can change any time. If you depend on it you should pin to
-a specific version of simdjson. You may need to use this interface if you're
-dealing with odd JSON, such as a document with repeated non-unique keys.
+pysimdjson supports this in two ways - the use of JSON pointers via `at()`,
+or proxies for objects and lists.
 
 ```python
-with open('sample.json', 'rb') as fin:
-    pj = simdjson.ParsedJson(fin.read())
-    iter = simdjson.Iterator(pj)
-    if iter.is_object():
-        if iter.down():
-            print(iter.get_string())
+import simdjson
+parser = simdjson.Parser()
+doc = parser.parse(b'{"res": [{"name": "first"}, {"name": "second"}]')
 ```
 
-## Early Benchmark
+For our sample above, we really just want the second entry in `res`, we
+don't care about anything else. We can do this two ways:
 
-Comparing the built-in json module `loads` on py3.7 to simdjson `loads`.
+```python
+assert doc['res'][1]['name'] == 'second' # True
+assert doc.at('res/1/name') == 'second' # True
+```
 
-| File | `json` time | `pysimdjson` time | speedup (rounded) |
-| ---- | ----------- | ----------------- | ------------------|
-| `jsonexamples/mesh.pretty.json` | 1.7129034710000006 | 0.46509220500000126 | 73% |
-| `jsonexamples/numbers.json` | 0.16577519699999854 | 0.04843887400000213 | 71% |
-| `jsonexamples/canada.json` | 5.305393378 | 1.6547515810000002 | 69% |
-| `jsonexamples/mesh.json` | 1.0325923849999974 | 0.38916503499999777 | 62% |
-| `jsonexamples/twitterescaped.json` | 0.7587005720000022 | 0.41576198399999953 | 45% |
-| `jsonexamples/instruments.json` | 0.24350973299999978 | 0.13639699600000021 | 44% |
-| `jsonexamples/gsoc-2018.json` | 1.5382746889999996 | 0.9597240750000005 | 38% |
-| `jsonexamples/marine_ik.json` | 4.505123285000002 | 2.8965093270000004 | 36% |
-| `jsonexamples/twitter.json` | 0.6069602610000011 | 0.41049074900000093 | 32% |
-| `jsonexamples/github_events.json` | 0.04840242700000097 | 0.034239397999998644 | 29% |
-| `jsonexamples/apache_builds.json` | 0.09916733999999999 | 0.074089268 | 24% |
-| `jsonexamples/citm_catalog.json` | 1.3718639709999998 | 1.0438697340000003 | 24% |
-| `jsonexamples/random.json` | 0.6930746310000018 | 0.6175370539999996 | 11% |
-| `jsonexamples/update-center.json` | 0.5577604210000011 | 0.4961777420000004 | 11% |
+Both of these approaches will be much faster than using `load/s()`, since
+they avoid loading the parts of the document we didn't care about.
 
-Getting subsets of the document is significantly faster. For `canada.json`
-getting `.type` using the naive approach and the `items()` approach, average
-over N=100.
+### Re-use the parser.
 
-| Python | Time |
-| ------ | ---- |
-| `json.loads(canada_json)['type']` | 5.76244878 |
-| `simdjson.loads(canada_json)['type']` | 1.5984486990000004 |
-| `simdjson.ParsedJson(canada_json).items('.type')` | 0.3949587819999998 |
+One of the easiest performance gains if you're working on many documents is
+to re-use the parser.
 
-This approach avoids creating Python objects for fields that aren't of
-interest. When you only care about a small part of the document, it will always
-be faster.
+```python
+import simdjson
+parser = simdjson.Parser()
+
+for i in range(0, 100):
+    doc = parser.parse(b'{"a": "b"})
+```
+
+This will drastically reduce the number of allocations being made, as it will
+reuse the existing buffer when possible. If it's too small, it'll grow to fit.
+
+## Performance Considerations
+
+The actual parsing of a document is a small fraction (~5%) of the total time
+spent bringing a JSON document into CPython. However, even in the case of
+bringing the entire document into Python, pysimdjson will almost always be
+faster or equivelent to other high-speed Python libraries.
+
+There are two things to keep in mind when trying to get the best performance:
+
+1. Do you really need the entire document? If you have a JSON document with
+   thousands of keys but just need to check if the "published" key is
+   `True`, use the JSON pointer interface to pull only a single field into
+   Python.
+2. There is significant overhead in calling a C++ function from Python.
+   Minimizing the number of function calls can offer significant speedups in
+   some use cases.
 
 [simdjson]: https://github.com/lemire/simdjson
+[pybind11]: https://pybind11.readthedocs.io/en/stable/
+[devprompt]: https://docs.microsoft.com/en-us/dotnet/framework/tools/developer-command-prompt-for-vs
