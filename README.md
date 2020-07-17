@@ -43,15 +43,62 @@ versions.
 ## How It Works
 
 This project uses [pybind11][] to generate the low-level bindings on top of the
-simdjson project. This low-level interface is available at runtime in the
-`csimdjson` module. Ex:
+simdjson project. You can use it just like the built-in json module, or use
+the simdjson-specific API for much better performance.
 
 ```python
-import csimdjson
-
-parser = csimdjson.parser()
-doc = parser.parse('{"hello": "world"}')
+import simdjson
+doc = simdjson.loads('{"hello": "world"}')
 ```
+
+## Making things faster
+
+pysimdjson provides an api compatible with the built-in json module for
+convenience, and this API is pretty fast (beating or tying all other Python
+JSON libraries). However, it also provides a simdjson-specific API that can
+perform significantly better.
+
+### Don't load the entire document
+
+95% of the time spent loading a JSON document into Python is spent in the
+creation of Python objects, not the actual parsing of the document. You can
+avoid all of this overhead by ignoring parts of the document you don't want.
+
+pysimdjson supports this in two ways - the use of JSON pointers via `at()`,
+or proxies for objects and lists.
+
+```python
+import simdjson
+parser = simdjson.Parser()
+doc = parser.parse(b'{"res": [{"name": "first"}, {"name": "second"}]')
+```
+
+For our sample above, we really just want the second entry in `res`, we
+don't care about anything else. We can do this two ways:
+
+```python
+assert doc['res'][1]['name'] == 'second' # True
+assert doc.at('res/1/name') == 'second' # True
+```
+
+Both of these approaches will be much faster than using `load/s()`, since
+they avoid loading the parts of the document we didn't care about.
+
+### Re-use the parser.
+
+One of the easiest performance gains if you're working on many documents is
+to re-use the parser.
+
+```python
+import simdjson
+parser = simdjson.Parser()
+
+for i in range(0, 100):
+    doc = parser.parse(b'{"a": "b"})
+```
+
+This will drastically reduce the number of allocations being made, as it will
+reuse the existing buffer when possible. If it's too small, it'll grow to fit.
 
 ## Performance Considerations
 
