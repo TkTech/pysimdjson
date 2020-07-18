@@ -1,46 +1,60 @@
 """Parser benchmarks, styled after the ones used by orjson."""
-import platform
-from json import loads as json_loads
+import re
+import importlib
 
 import pytest
 
-if platform.python_implementation() == 'PyPy':
-    pytest.skip(
-        'Skipping benchmarks on pypy, as orjson does not support it.',
-        allow_module_level=True
-    )
 
-from orjson import loads as orjson_loads
-from rapidjson import loads as rapidjson_loads
-from simplejson import loads as simplejson_loads
-from simdjson import loads as simdjson_loads
+# The files each benchmark will be run against.
+TEST_FILES = [
+    'jsonexamples/canada.json',
+    'jsonexamples/twitter.json',
+    'jsonexamples/github_events.json',
+    'jsonexamples/citm_catalog.json',
+    'jsonexamples/mesh.json'
+]
+
+
+def pytest_generate_tests(metafunc):
+    # Only run the benchmarks against libraries we could actually find.
+    # We tend to be a lot more portable than the alternatives, so we
+    # sometimes can't compare. ex: orjson on PyPy.
+    libs = ['json', 'orjson', 'rapidjson', 'simplejson', 'simdjson']
+    available = []
+
+    for module in libs:
+        try:
+            i = importlib.import_module(module)
+        except ModuleNotFoundError:
+            continue
+
+        available.append((module, getattr(i, 'loads')))
+
+    metafunc.parametrize(
+        ['group', 'func'],
+        available,
+        ids=[p[0] for p in available],
+        scope='class'
+    )
+    metafunc.parametrize(
+        'path',
+        TEST_FILES,
+        ids=[
+            re.sub(r'jsonexamples/([^\.]*).json', r'{\1}', path)
+            for path in TEST_FILES
+        ],
+        scope='class'
+    )
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize(
-    ['group', 'func'],
-    [
-        ('simdjson', simdjson_loads),
-        ('orjson', orjson_loads),
-        ('rapidjson', rapidjson_loads),
-        ('simplejson', simplejson_loads),
-        ('json', json_loads)
-    ]
-)
-@pytest.mark.parametrize(
-    'path',
-    [
-        'jsonexamples/canada.json',
-        'jsonexamples/twitter.json',
-        'jsonexamples/github_events.json',
-        'jsonexamples/citm_catalog.json',
-        'jsonexamples/mesh.json'
-    ]
-)
-def test_loads_json(group, func, path, benchmark):
-    benchmark.group = '{path} deserialization'.format(path=path)
-    benchmark.extra_info['group'] = group
+class TestBenchmarks:
+    def test_loads(self, group, func, path, benchmark):
+        """Test the complete loading of documents."""
+        benchmark.group = '{path} deserialization'.format(path=path)
+        benchmark.extra_info['group'] = group
 
-    with open(path, 'rb') as src:
-        content = src.read()
+        with open(path, 'rb') as src:
+            content = src.read()
+
         benchmark(func, content)

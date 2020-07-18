@@ -40,7 +40,8 @@ if system == 'Darwin':
             os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 elif system == 'Windows':
     extra_compile_args.extend([
-        # /Ob3 is only available on MSVC2019+.
+        # /Ob3 is only available on MSVC2019+ but will be safely ignored
+        # on earlier platforms.
         '/Ob3'
     ])
 
@@ -55,6 +56,7 @@ if system in ('Linux', 'Darwin', 'FreeBSD'):
     extra_compile_args.extend([
         '-std=c++11'
     ])
+
 
 setup(
     name='pysimdjson',
@@ -77,19 +79,28 @@ setup(
     ],
     python_requires='>3.4',
     extras_require={
+        # Dependencies for building from source.
         'dev': [
-            'pybind11',
+            'pybind11'
+        ],
+        # Dependencies for package release.
+        'release': [
             'm2r',
             'sphinx',
             'ghp-import',
-            'bumpversion',
-            'pytest',
-            'pytest-benchmark'
+            'bumpversion'
         ],
+        # Dependencies for running tests.
+        'test': [
+            'pytest'
+        ],
+        # Dependencies for running benchmarks.
         'benchmark': [
+            'pytest',
+            'pytest-benchmark',
             'orjson',
             'python-rapidjson',
-            'simplejson',
+            'simplejson'
         ]
     },
     ext_modules=[
