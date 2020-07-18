@@ -55,6 +55,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Build (manylinux2014)
+      uses: RalfG/python-wheels-manylinux-build@v0.3-manylinux2014_x86_64
+      with:
+        python-versions: 'cp35-cp35m cp36-cp36m cp37-cp37m cp38-cp38'
+        build-requirements: 'pybind11'
+
     - name: Set up Python
       uses: actions/setup-python@v1
       with:
@@ -65,13 +71,6 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         pip install wheel twine
-        pip install -e '.[dev]'
-
-    - name: Build (manylinux2014)
-      uses: RalfG/python-wheels-manylinux-build@v0.3-manylinux2014_x86_64
-      with:
-        python-versions: 'cp35-cp35m cp36-cp36m cp37-cp37m cp38-cp38'
-        build-requirements: 'pybind11'
 
     - name: Publishing
       env:
