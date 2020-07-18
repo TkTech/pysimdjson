@@ -25,8 +25,11 @@ def pytest_generate_tests(metafunc):
     for module in libs:
         try:
             i = importlib.import_module(module)
-        except ModuleNotFoundError:
-            continue
+        except Exception as e:
+            # Pre py3.6, ModuleImportError does not exist as a builtin.
+            if e.__class__.__name__ in ('ModuleImportError', 'ImportError'):
+                continue
+            raise
 
         available.append((module, getattr(i, 'loads')))
 

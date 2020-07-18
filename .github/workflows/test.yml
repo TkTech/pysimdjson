@@ -20,12 +20,14 @@ jobs:
             python-version: pypy3
 
     steps:
-    - uses: actions/checkout@v2
-
+      # Python needs to be setup before checkout to prevent files from being
+      # left in the source tree. See setup-python/issues/106.
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
+    - uses: actions/checkout@v2
 
     - name: Installing platform dependencies
       if: matrix.os == 'ubuntu-latest'
