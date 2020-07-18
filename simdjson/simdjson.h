@@ -1,4 +1,4 @@
-/* auto-generated on Mon Jul  6 18:16:52 EDT 2020. Do not edit! */
+/* auto-generated on Sat Jul 18 11:00:06 EDT 2020. Do not edit! */
 /* begin file include/simdjson.h */
 #ifndef SIMDJSON_H
 #define SIMDJSON_H
@@ -389,8 +389,8 @@ constexpr size_t DEFAULT_MAX_DEPTH = 1024;
 
 #else // SIMDJSON_REGULAR_VISUAL_STUDIO
 
-  #define really_inline inline __attribute__((always_inline, unused))
-  #define never_inline inline __attribute__((noinline, unused))
+  #define really_inline inline __attribute__((always_inline))
+  #define never_inline inline __attribute__((noinline))
 
   #define UNUSED __attribute__((unused))
   #define WARN_UNUSED __attribute__((warn_unused_result))
@@ -3090,6 +3090,11 @@ public:
      * Part of the std::iterator interface.
      */
     inline bool operator!=(const iterator& other) const noexcept;
+    /**
+     * Check if these values come from the same place in the JSON.
+     *
+     * Part of the std::iterator interface.
+     */
     inline bool operator==(const iterator& other) const noexcept;
   private:
     really_inline iterator(const internal::tape_ref &tape) noexcept;
@@ -4557,6 +4562,11 @@ public:
      * Part of the std::iterator interface.
      */
     inline bool operator!=(const iterator& other) const noexcept;
+    /**
+     * Check if these key value pairs come from the same place in the JSON.
+     *
+     * Part of the std::iterator interface.
+     */
     inline bool operator==(const iterator& other) const noexcept;
     /**
      * Get the key of this key/value pair.
