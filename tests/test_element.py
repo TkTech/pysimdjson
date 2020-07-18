@@ -39,6 +39,7 @@ def test_getitem(parser):
 
     assert doc[1] == 1
 
+
 def test_uplift(doc):
     """Ensure every JSON type is uplifted to the proper Python type."""
     assert isinstance(doc['array'], csimdjson.Array)
@@ -49,6 +50,7 @@ def test_uplift(doc):
     assert doc['string'] == 'test'
     assert doc['bool'] is True
     assert doc['null_value'] is None
+
 
 def test_array_slicing(parser):
     """Ensure we can slice our csimdjson.Array just like a real array."""
@@ -63,6 +65,7 @@ def test_array_slicing(parser):
 
     # Converting to a list recursively uplifts.
     assert doc.as_list() == [0, 1, 2, 3, 4, 5]
+
 
 def test_object(parser):
     """Ensure we can access a csimdjson.Object just a like a Mapping."""
