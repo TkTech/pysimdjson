@@ -1,8 +1,6 @@
 """Parser benchmarks, styled after the ones used by orjson."""
 import re
 import json
-import operator
-import functools
 import importlib
 
 import pytest
@@ -95,6 +93,7 @@ class TestBenchmarks:
 
     def test_deepest_key(self, group, module, path, benchmark):
         """Test how quickly we can access the deepest key."""
+        benchmark.group = '{path} deepest key'.format(path=path)
         benchmark.extra_info['group'] = group
 
         with open(path, 'rb') as src:
@@ -116,9 +115,4 @@ class TestBenchmarks:
                 'Skipping a benchmark file that does not contain a dict.'
             )
 
-        deepest_key = _deep(doc)
-        benchmark.group = '{path} deepest key ({key})'.format(
-            path=path,
-            key=deepest_key
-        )
-        benchmark(_do_path, method, deepest_key, content)
+        benchmark(_do_path, method, _deep(doc), content)
