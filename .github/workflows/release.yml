@@ -67,16 +67,10 @@ jobs:
         pip install wheel twine
         pip install -e '.[dev]'
 
-    - name: Build (manylinux2010)
-      uses: RalfG/python-wheels-manylinux-build@v0.3-manylinux2010_x86_64
-      with:
-        python-versions: 'cp35-cp35m cp36-cp36m cp37-cp37m'
-        build-requirements: 'pybind11'
-
     - name: Build (manylinux2014)
       uses: RalfG/python-wheels-manylinux-build@v0.3-manylinux2014_x86_64
       with:
-        python-versions: 'cp38-cp38'
+        python-versions: 'cp35-cp35m cp36-cp36m cp37-cp37m cp38-cp38'
         build-requirements: 'pybind11'
 
     - name: Publishing
