@@ -20,7 +20,14 @@ def pytest_generate_tests(metafunc):
     # Only run the benchmarks against libraries we could actually find.
     # We tend to be a lot more portable than the alternatives, so we
     # sometimes can't compare. ex: orjson on PyPy.
-    libs = ['json', 'orjson', 'rapidjson', 'simplejson', 'simdjson']
+    libs = [
+        'json',
+        'orjson',
+        'rapidjson',
+        'simplejson',
+        'simdjson',
+        'ujson'
+    ]
     available = []
 
     for module in libs:

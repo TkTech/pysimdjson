@@ -100,7 +100,8 @@ setup(
             'pytest-benchmark',
             'orjson',
             'python-rapidjson',
-            'simplejson'
+            'simplejson',
+            'ujson'
         ]
     },
     ext_modules=[

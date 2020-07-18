@@ -124,97 +124,111 @@ interest. For each test file we show the time taken to completely deserialize
 the document into Python objects, as well as the time to get the deepest key in
 each file. The second approach avoids all unnecessary object creation.
 
+<!-- BENCHMARK START -->
+
 ### jsonexamples/canada.json deserialization
 | Name                 |   Min (μs) |   Max (μs) |   StdDev |      Ops |
 |----------------------|------------|------------|----------|----------|
-| ✨ simdjson-{canada} |   11.06660 |   32.72010 |  0.00572 | 50.49244 |
-| orjson-{canada}      |   12.70790 |   26.67180 |  0.00424 | 55.58212 |
-| simplejson-{canada}  |   38.48230 |   50.24570 |  0.00447 | 22.64854 |
-| rapidjson-{canada}   |   39.67800 |   57.52180 |  0.00476 | 21.76358 |
-| json-{canada}        |   42.54410 |   54.52020 |  0.00345 | 20.03848 |
+| ✨ simdjson-{canada} |   10.61630 |   27.12380 |  0.00442 | 58.42790 |
+| orjson-{canada}      |   11.97230 |   29.95960 |  0.00469 | 56.21902 |
+| ujson-{canada}       |   19.12120 |   60.73670 |  0.01320 | 26.66618 |
+| simplejson-{canada}  |   39.64180 |   59.80270 |  0.00535 | 20.51313 |
+| rapidjson-{canada}   |   40.57460 |   78.20690 |  0.01444 | 17.10311 |
+| json-{canada}        |   42.95370 |   62.18130 |  0.00470 | 20.21549 |
 
 ### jsonexamples/canada.json deepest key
 | Name                 |   Min (μs) |   Max (μs) |   StdDev |       Ops |
 |----------------------|------------|------------|----------|-----------|
-| ✨ simdjson-{canada} |    3.38700 |   10.86230 |  0.00101 | 222.97853 |
-| orjson-{canada}      |   13.34780 |   33.54840 |  0.00652 |  44.09761 |
-| simplejson-{canada}  |   38.01830 |   69.71770 |  0.00843 |  20.47350 |
-| rapidjson-{canada}   |   39.95230 |   59.47640 |  0.00667 |  20.16637 |
-| json-{canada}        |   42.18320 |   63.19890 |  0.00686 |  19.37501 |
+| ✨ simdjson-{canada} |    3.38440 |    7.60380 |  0.00071 | 255.69203 |
+| ujson-{canada}       |   11.10420 |   34.35320 |  0.00742 |  49.72907 |
+| orjson-{canada}      |   12.92510 |   45.33800 |  0.00745 |  41.44936 |
+| simplejson-{canada}  |   38.92410 |   64.06250 |  0.00856 |  19.70330 |
+| rapidjson-{canada}   |   41.22570 |   66.68340 |  0.00756 |  19.22791 |
+| json-{canada}        |   43.08250 |   64.75990 |  0.00661 |  18.15876 |
 
 ### jsonexamples/twitter.json deserialization
 | Name                  |   Min (μs) |   Max (μs) |   StdDev |       Ops |
 |-----------------------|------------|------------|----------|-----------|
-| orjson-{twitter}      |    2.25720 |    8.80010 |  0.00090 | 395.26644 |
-| ✨ simdjson-{twitter} |    2.54290 |   17.11490 |  0.00189 | 250.52593 |
-| simplejson-{twitter}  |    3.35020 |    9.28810 |  0.00094 | 272.00414 |
-| rapidjson-{twitter}   |    4.39350 |   10.72390 |  0.00083 | 208.02216 |
-| json-{twitter}        |    5.24810 |   11.10900 |  0.00086 | 177.25899 |
+| orjson-{twitter}      |    2.29380 |    8.67020 |  0.00094 | 372.10773 |
+| ✨ simdjson-{twitter} |    2.49010 |   22.30540 |  0.00198 | 281.95565 |
+| ujson-{twitter}       |    2.74350 |   12.06470 |  0.00105 | 317.20009 |
+| simplejson-{twitter}  |    3.35320 |   19.56840 |  0.00202 | 217.32882 |
+| rapidjson-{twitter}   |    4.32850 |   13.21370 |  0.00119 | 194.83892 |
+| json-{twitter}        |    5.27190 |   11.25140 |  0.00117 | 167.84380 |
 
 ### jsonexamples/twitter.json deepest key
 | Name                  |   Min (μs) |   Max (μs) |   StdDev |        Ops |
 |-----------------------|------------|------------|----------|------------|
-| ✨ simdjson-{twitter} |    0.35660 |    3.52600 |  0.00020 | 2099.88860 |
-| orjson-{twitter}      |    2.26630 |    9.70870 |  0.00104 |  384.04157 |
-| simplejson-{twitter}  |    3.36320 |   11.10170 |  0.00120 |  263.55812 |
-| rapidjson-{twitter}   |    4.40140 |   12.07110 |  0.00123 |  203.94305 |
-| json-{twitter}        |    5.21540 |   15.52110 |  0.00112 |  178.51096 |
+| ✨ simdjson-{twitter} |    0.35740 |    2.01060 |  0.00009 | 2423.86485 |
+| orjson-{twitter}      |    2.29750 |   11.01000 |  0.00105 |  366.48762 |
+| ujson-{twitter}       |    2.76260 |   14.13210 |  0.00143 |  285.69895 |
+| simplejson-{twitter}  |    3.35340 |   13.34750 |  0.00118 |  257.05624 |
+| rapidjson-{twitter}   |    4.31330 |   12.43220 |  0.00141 |  192.75979 |
+| json-{twitter}        |    5.23560 |   13.85480 |  0.00126 |  168.04882 |
 
 ### jsonexamples/github_events.json deserialization
 | Name                        |   Min (μs) |   Max (μs) |   StdDev |        Ops |
 |-----------------------------|------------|------------|----------|------------|
-| orjson-{github_events}      |    0.17800 |    0.84640 |  0.00004 | 5232.35967 |
-| ✨ simdjson-{github_events} |    0.20090 |    2.23790 |  0.00009 | 3685.60740 |
-| json-{github_events}        |    0.28770 |    1.01060 |  0.00005 | 3247.96256 |
-| simplejson-{github_events}  |    0.30560 |    1.19760 |  0.00003 | 3126.57352 |
-| rapidjson-{github_events}   |    0.33170 |    0.67080 |  0.00003 | 2860.73395 |
+| orjson-{github_events}      |    0.17850 |    0.62230 |  0.00002 | 5331.74983 |
+| ✨ simdjson-{github_events} |    0.19760 |    2.36700 |  0.00009 | 3905.95971 |
+| ujson-{github_events}       |    0.25860 |    0.67530 |  0.00003 | 3642.89767 |
+| json-{github_events}        |    0.28910 |    1.09600 |  0.00009 | 2924.08415 |
+| simplejson-{github_events}  |    0.30620 |    1.29520 |  0.00005 | 3007.32539 |
+| rapidjson-{github_events}   |    0.33290 |    1.15310 |  0.00006 | 2654.55940 |
 
 ### jsonexamples/github_events.json deepest key
 | Name                        |   Min (μs) |   Max (μs) |   StdDev |         Ops |
 |-----------------------------|------------|------------|----------|-------------|
-| ✨ simdjson-{github_events} |    0.04050 |    0.33410 |  0.00001 | 21166.03658 |
-| orjson-{github_events}      |    0.17970 |    0.53880 |  0.00002 |  5235.09246 |
-| json-{github_events}        |    0.29140 |    0.98010 |  0.00004 |  3262.97633 |
-| simplejson-{github_events}  |    0.30800 |    2.07340 |  0.00006 |  3087.47964 |
-| rapidjson-{github_events}   |    0.33660 |    0.66480 |  0.00002 |  2799.91656 |
+| ✨ simdjson-{github_events} |    0.03950 |    3.31210 |  0.00005 | 15973.82108 |
+| orjson-{github_events}      |    0.18030 |    0.65220 |  0.00005 |  4911.43253 |
+| ujson-{github_events}       |    0.26070 |    0.96760 |  0.00005 |  3549.92113 |
+| json-{github_events}        |    0.29040 |    1.54090 |  0.00007 |  3047.37921 |
+| simplejson-{github_events}  |    0.30920 |    0.98670 |  0.00008 |  2953.84031 |
+| rapidjson-{github_events}   |    0.33390 |    1.56730 |  0.00010 |  2461.45389 |
 
 ### jsonexamples/citm_catalog.json deserialization
 | Name                       |   Min (μs) |   Max (μs) |   StdDev |       Ops |
 |----------------------------|------------|------------|----------|-----------|
-| orjson-{citm_catalog}      |    5.42280 |   25.94490 |  0.00322 | 132.97562 |
-| ✨ simdjson-{citm_catalog} |    6.24880 |   23.46540 |  0.00487 |  97.93701 |
-| json-{citm_catalog}        |    9.20710 |   17.70010 |  0.00271 |  88.13338 |
-| simplejson-{citm_catalog}  |    9.96980 |   20.16560 |  0.00314 |  81.37851 |
-| rapidjson-{citm_catalog}   |   11.77450 |   41.98760 |  0.00442 |  70.71896 |
+| orjson-{citm_catalog}      |    5.24950 |   18.22640 |  0.00323 | 129.49044 |
+| ✨ simdjson-{citm_catalog} |    6.05650 |   29.15550 |  0.00584 |  70.17580 |
+| ujson-{citm_catalog}       |    6.24130 |   18.69410 |  0.00373 | 109.60956 |
+| json-{citm_catalog}        |    9.10930 |   26.54630 |  0.00414 |  76.55235 |
+| simplejson-{citm_catalog}  |   13.69630 |   28.63450 |  0.00401 |  57.28718 |
+| rapidjson-{citm_catalog}   |   21.78300 |   65.30240 |  0.01055 |  28.63350 |
 
 ### jsonexamples/citm_catalog.json deepest key
-| Name                       |   Min (μs) |   Max (μs) |   StdDev |       Ops |
-|----------------------------|------------|------------|----------|-----------|
-| ✨ simdjson-{citm_catalog} |    0.87760 |    3.74490 |  0.00026 | 980.67148 |
-| orjson-{citm_catalog}      |    5.42820 |   18.30850 |  0.00412 | 123.67493 |
-| json-{citm_catalog}        |    9.08970 |   23.72150 |  0.00399 |  85.87864 |
-| simplejson-{citm_catalog}  |    9.82740 |   24.80090 |  0.00447 |  79.48858 |
-| rapidjson-{citm_catalog}   |   11.71590 |   28.64550 |  0.00490 |  67.48895 |
+| Name                       |   Min (μs) |   Max (μs) |   StdDev |        Ops |
+|----------------------------|------------|------------|----------|------------|
+| ✨ simdjson-{citm_catalog} |    0.87070 |    2.86480 |  0.00019 | 1056.22226 |
+| orjson-{citm_catalog}      |    5.40520 |   26.24650 |  0.00551 |  102.43563 |
+| ujson-{citm_catalog}       |    6.38280 |   26.49210 |  0.00562 |   96.65066 |
+| json-{citm_catalog}        |    9.16770 |   29.45910 |  0.00498 |   76.90314 |
+| simplejson-{citm_catalog}  |   13.66750 |   30.54480 |  0.00471 |   57.54416 |
+| rapidjson-{citm_catalog}   |   19.16620 |   49.23040 |  0.00714 |   36.04769 |
 
 ### jsonexamples/mesh.json deserialization
 | Name               |   Min (μs) |   Max (μs) |   StdDev |       Ops |
 |--------------------|------------|------------|----------|-----------|
-| ✨ simdjson-{mesh} |    2.61070 |   12.71490 |  0.00158 | 295.08199 |
-| orjson-{mesh}      |    2.93950 |   11.48570 |  0.00127 | 292.54539 |
-| json-{mesh}        |    5.60170 |   18.03550 |  0.00153 | 158.64945 |
-| rapidjson-{mesh}   |    7.21990 |   21.84580 |  0.00201 | 123.34775 |
-| simplejson-{mesh}  |    8.35430 |   16.78820 |  0.00182 | 106.41059 |
+| ✨ simdjson-{mesh} |    2.60850 |   17.85500 |  0.00189 | 276.39681 |
+| ujson-{mesh}       |    2.80000 |   11.36520 |  0.00148 | 297.40696 |
+| orjson-{mesh}      |    2.87780 |   14.34770 |  0.00156 | 272.06333 |
+| json-{mesh}        |    5.69520 |   22.03140 |  0.00282 | 132.44125 |
+| rapidjson-{mesh}   |    7.28240 |   24.61470 |  0.00249 | 113.59051 |
+| simplejson-{mesh}  |    8.37720 |   18.80480 |  0.00201 | 104.81092 |
 
 ### jsonexamples/mesh.json deepest key
 | Name               |   Min (μs) |   Max (μs) |   StdDev |       Ops |
 |--------------------|------------|------------|----------|-----------|
-| ✨ simdjson-{mesh} |    1.01200 |    2.90980 |  0.00019 | 909.77466 |
-| orjson-{mesh}      |    2.87630 |   10.38550 |  0.00133 | 299.85643 |
-| json-{mesh}        |    5.61810 |   14.77090 |  0.00139 | 163.70380 |
-| rapidjson-{mesh}   |    7.12080 |   19.14110 |  0.00210 | 119.10425 |
-| simplejson-{mesh}  |    8.33190 |   24.92470 |  0.00315 |  96.34057 |
+| ✨ simdjson-{mesh} |    1.01600 |   12.12980 |  0.00067 | 619.16472 |
+| ujson-{mesh}       |    2.75500 |   14.19920 |  0.00166 | 309.06497 |
+| orjson-{mesh}      |    2.84420 |   24.41680 |  0.00248 | 245.50994 |
+| json-{mesh}        |    5.63860 |   14.53620 |  0.00160 | 154.31889 |
+| rapidjson-{mesh}   |    7.11940 |   18.68600 |  0.00208 | 117.20282 |
+| simplejson-{mesh}  |    8.27930 |   19.76000 |  0.00207 | 106.66946 |
+<!-- BENCHMARK END -->
 
 
 [simdjson]: https://github.com/lemire/simdjson
 [pybind11]: https://pybind11.readthedocs.io/en/stable/
 [devprompt]: https://docs.microsoft.com/en-us/dotnet/framework/tools/developer-command-prompt-for-vs
+
