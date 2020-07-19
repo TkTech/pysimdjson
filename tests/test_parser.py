@@ -1,7 +1,5 @@
 import pytest
 
-import csimdjson
-
 
 def test_load(parser):
     """Ensure we can load from disk."""
