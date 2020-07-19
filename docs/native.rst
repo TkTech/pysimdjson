@@ -18,23 +18,6 @@ accessed.
 .. autoclass:: Object
    :members:
 
-Exceptions
-----------
-
-.. autoclass:: SimdjsonError
-
-   Base class for all pysimdjson errors.
-
-.. autoclass:: CapacityError
-
-.. autoclass:: NoSuchFieldError
-
-.. autoclass:: IndexOutOfBoundsError
-
-.. autoclass:: IncorrectTypeError
-
-.. autoclass:: InvalidJSONPointerError
-
 Constants
 ---------
 
@@ -58,3 +41,8 @@ Constants
    :value: 1024
 
    The maximum number of nested objects and arrays.
+
+.. py:data:: VERSION
+   :type: str
+
+   The version of the embedded simdjson library.
