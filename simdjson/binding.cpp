@@ -195,7 +195,18 @@ PYBIND11_MODULE(csimdjson, m) {
         }
     });
 
-    py::class_<dom::parser>(m, "Parser")
+    py::class_<dom::parser>(
+            m,
+            "Parser",
+            "A `Parser` instance is used to load a JSON document.\n\n"
+            "A Parser can be reused to parse multiple documents, in which\n"
+            "case it wil reuse its internal buffer, only increasing it if\n"
+            "needed.\n"
+            "The :class:`~Object` and :class:`~Array` objects returned by\n"
+            "a Parser are invalidated when a new document is parsed.\n\n"
+            ":param max_capacity: The maximum size the internal buffer can\n"
+            "                     grow to. [default: SIMDJSON_MAXSIZE_BYTES]"
+        )
         .def(py::init<>())
         .def(py::init<size_t>(),
                 py::arg("max_capacity") = SIMDJSON_MAXSIZE_BYTES)
@@ -205,8 +216,11 @@ PYBIND11_MODULE(csimdjson, m) {
                 return element_to_primitive(self.load(path), recursive);
             },
             py::arg("path"),
-            py::arg("recursive") = false
-
+            py::arg("recursive") = false,
+            "Load a JSON document from the file system path `path`.\n\n"
+            ":param path: A filesystem path.\n"
+            ":param recursive: Recursively turn the document into real\n"
+            "                  python objects instead of pysimdjson proxies."
         )
         .def("parse",
             [](dom::parser &self, const std::string &s, bool recursive = false) {
@@ -216,10 +230,21 @@ PYBIND11_MODULE(csimdjson, m) {
                 );
             },
             py::arg("s"),
-            py::arg("recursive") = false
+            py::arg("recursive") = false,
+            "Parse a JSON document from the byte string `s`.\n\n"
+            ":param s: The document to parse.\n"
+            ":param recursive: Recursively turn the document into real\n"
+            "                  python objects instead of pysimdjson proxies."
         );
 
-    py::class_<dom::array>(m, "Array")
+    py::class_<dom::array>(
+            m,
+            "Array",
+            "A proxy object that behaves much like a real `list()`.\n"
+            "Python objects are not created until an element in the list\n"
+            "is accessed.\n\n"
+            "Supports iteration, indexing, `len()`, and slicing."
+        )
         .def("__truediv__",
             [](dom::array &self, const char *json_pointer) {
                 return element_to_primitive(self.at(json_pointer));
@@ -271,11 +296,18 @@ PYBIND11_MODULE(csimdjson, m) {
             [](dom::array &self) {
                 return array_to_list(self, true);
             },
-            "Convert this Array to a regular list, recursively"
+            "Convert this Array to a regular python list, recursively"
             " converting any objects/lists it finds."
         );
 
-    py::class_<dom::object>(m, "Object")
+    py::class_<dom::object>(
+            m,
+            "Object",
+            "A proxy object that behaves much like a real `dict()`.\n"
+            "Python objects are not created until an element in the Object\n"
+            "is accessed.\n\n"
+            "Supports iteration, indexing, `len()`, and `in`/`not in`."
+        )
         .def("__truediv__",
             [](dom::object &self, const char *json_pointer) {
                 return element_to_primitive(self.at(json_pointer));
@@ -335,7 +367,8 @@ PYBIND11_MODULE(csimdjson, m) {
                     i++;
                 }
                 return result;
-            }
+            },
+            "Returns a list of all keys in this `Object`."
         )
         .def("values",
             [](dom::object &self) {
@@ -354,13 +387,14 @@ PYBIND11_MODULE(csimdjson, m) {
                     i++;
                 }
                 return result;
-            }
+            },
+            "Returns a list of all values in this `Object`."
         )
         .def("as_dict",
             [](dom::object &self) {
                 return object_to_dict(self, true);
             },
-            "Convert this Object to a regular dictionary, recursively"
-            " converting any objects/lists it finds."
+            "Convert this `Object` to a regular python dictionary,\n"
+            " recursively converting any objects or lists it finds."
         );
 }

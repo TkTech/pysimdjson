@@ -4,4 +4,5 @@ venv
 .eggs
 cython_debug/*
 build/
+_build/
 *.egg-info

@@ -11,7 +11,14 @@ try:
         # Constants
         MAXSIZE_BYTES,
         PADDING,
-        DEFAULT_MAX_DEPTH
+        DEFAULT_MAX_DEPTH,
+        # Exceptions
+        SimdjsonError,
+        CapacityError,
+        NoSuchFieldError,
+        IndexOutOfBoundsError,
+        IncorrectTypeError,
+        InvalidJSONPointerError
     )
 except ImportError:
     raise RuntimeError('Unable to import low-level simdjson bindings.')
@@ -24,7 +31,13 @@ _ALL_IMPORTS = [
     error_code,
     MAXSIZE_BYTES,
     PADDING,
-    DEFAULT_MAX_DEPTH
+    DEFAULT_MAX_DEPTH,
+    SimdjsonError,
+    CapacityError,
+    NoSuchFieldError,
+    IndexOutOfBoundsError,
+    IncorrectTypeError,
+    InvalidJSONPointerError
 ]
 
 
@@ -33,8 +46,8 @@ def load(fp, *, cls=None, object_hook=None, parse_float=None, parse_int=None,
     """
     Same as the built-in json.load(), with the following exceptions:
 
-        - All parse_* arguments are currently ignored. Allowing these would
-          defeat most of the speed gains that come from using simdjson.
+        - All parse_* arguments are currently ignored. simdjson does not
+          currently provide hooks for these, but it is planned.
         - object_pairs_hook is ignored.
         - cls is ignored.
     """
@@ -51,8 +64,8 @@ def loads(s, *, cls=None, object_hook=None, parse_float=None, parse_int=None,
     """
     Same as the built-in json.loads(), with the following exceptions:
 
-        - All parse_* arguments are currently ignored. Allowing these would
-          defeat most of the speed gains that come from using simdjson.
+        - All parse_* arguments are currently ignored. simdjson does not
+          currently provide hooks for these, but it is planned.
         - object_pairs_hook is ignored.
         - cls is ignored.
     """
