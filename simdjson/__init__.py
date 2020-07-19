@@ -1,3 +1,4 @@
+"""High-level bindings for the simdjson project."""
 import json
 
 try:
@@ -6,19 +7,10 @@ try:
         Parser,
         Array,
         Object,
-        # Enums
-        error_code,
         # Constants
         MAXSIZE_BYTES,
         PADDING,
-        DEFAULT_MAX_DEPTH,
-        # Exceptions
-        SimdjsonError,
-        CapacityError,
-        NoSuchFieldError,
-        IndexOutOfBoundsError,
-        IncorrectTypeError,
-        InvalidJSONPointerError
+        DEFAULT_MAX_DEPTH
     )
 except ImportError:
     raise RuntimeError('Unable to import low-level simdjson bindings.')
@@ -28,16 +20,9 @@ _ALL_IMPORTS = [
     Parser,
     Array,
     Object,
-    error_code,
     MAXSIZE_BYTES,
     PADDING,
-    DEFAULT_MAX_DEPTH,
-    SimdjsonError,
-    CapacityError,
-    NoSuchFieldError,
-    IndexOutOfBoundsError,
-    IncorrectTypeError,
-    InvalidJSONPointerError
+    DEFAULT_MAX_DEPTH
 ]
 
 

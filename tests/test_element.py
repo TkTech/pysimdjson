@@ -13,16 +13,16 @@ def test_json_pointer(parser):
     assert isinstance(doc.at('array/0'), int)
     assert isinstance(doc / 'array' / '0', int)
 
-    with pytest.raises(csimdjson.NoSuchFieldError):
+    with pytest.raises(KeyError):
         doc.at('no_such_key')
 
-    with pytest.raises(csimdjson.IndexOutOfBoundsError):
+    with pytest.raises(IndexError):
         doc.at('array/9')
 
-    with pytest.raises(csimdjson.IncorrectTypeError):
+    with pytest.raises(TypeError):
         doc.at('array/not_a_num')
 
-    with pytest.raises(csimdjson.InvalidJSONPointerError):
+    with pytest.raises(ValueError):
         doc.at('array/')
 
 

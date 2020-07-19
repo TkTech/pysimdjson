@@ -5,7 +5,7 @@ import csimdjson
 
 def test_load(parser):
     """Ensure we can load from disk."""
-    with pytest.raises(csimdjson.SimdjsonError):
+    with pytest.raises(ValueError):
         parser.load('jsonexamples/invalid.json')
 
     doc = parser.load("jsonexamples/small/demo.json")

@@ -119,78 +119,48 @@ PYBIND11_MODULE(csimdjson, m) {
     m.attr("MAXSIZE_BYTES") = py::int_(SIMDJSON_MAXSIZE_BYTES);
     m.attr("PADDING") = py::int_(SIMDJSON_PADDING);
     m.attr("DEFAULT_MAX_DEPTH") = py::int_(DEFAULT_MAX_DEPTH);
-
-    py::enum_<error_code>(m, "error_code", py::arithmetic())
-        .value("SUCCESS", error_code::SUCCESS)
-        .value("CAPACITY", error_code::CAPACITY)
-        .value("MEMALLOC", error_code::MEMALLOC)
-        .value("TAPE_ERROR", error_code::TAPE_ERROR)
-        .value("DEPTH_ERROR", error_code::DEPTH_ERROR)
-        .value("STRING_ERROR", error_code::STRING_ERROR)
-        .value("T_ATOM_ERROR", error_code::T_ATOM_ERROR)
-        .value("F_ATOM_ERROR", error_code::F_ATOM_ERROR)
-        .value("N_ATOM_ERROR", error_code::N_ATOM_ERROR)
-        .value("NUMBER_ERROR", error_code::NUMBER_ERROR)
-        .value("UTF8_ERROR", error_code::UTF8_ERROR)
-        .value("UNINITIALIZED", error_code::UNINITIALIZED)
-        .value("EMPTY", error_code::EMPTY)
-        .value("UNESCAPED_CHARS", error_code::UNESCAPED_CHARS)
-        .value("UNCLOSED_STRING", error_code::UNCLOSED_STRING)
-        .value("UNSUPPORTED_ARCHITECTURE", error_code::UNSUPPORTED_ARCHITECTURE)
-        .value("INCORRECT_TYPE", error_code::INCORRECT_TYPE)
-        .value("NUMBER_OUT_OF_RANGE", error_code::NUMBER_OUT_OF_RANGE)
-        .value("INDEX_OUT_OF_BOUNDS", error_code::INDEX_OUT_OF_BOUNDS)
-        .value("NO_SUCH_FIELD", error_code::NO_SUCH_FIELD)
-        .value("IO_ERROR", error_code::IO_ERROR)
-        .value("INVALID_JSON_POINTER", error_code::INVALID_JSON_POINTER)
-        .value("INVALID_URI_FRAGMENT", error_code::INVALID_URI_FRAGMENT)
-        .value("UNEXPECTED_ERROR", error_code::UNEXPECTED_ERROR);
-
-    // Base class for all errors except for MEMALLOC (which becomes a
-    // MemoryError subclass) and IO_ERROR (which becomes an IOError subclass).
-    static py::exception<simdjson_error> ex_simdjson_error(m,
-            "SimdjsonError", PyExc_RuntimeError);
-    static py::exception<simdjson_error> ex_capacity(m,
-            "CapacityError", ex_simdjson_error.ptr());
-    static py::exception<simdjson_error> ex_memalloc(m,
-            "MemallocError", PyExc_MemoryError);
-    static py::exception<simdjson_error> ex_no_such_field(m,
-            "NoSuchFieldError", ex_simdjson_error.ptr());
-    static py::exception<simdjson_error> ex_index_out_of_bounds(m,
-            "IndexOutOfBoundsError", ex_simdjson_error.ptr());
-    static py::exception<simdjson_error> ex_incorrect_type(m,
-            "IncorrectTypeError", ex_simdjson_error.ptr());
-    static py::exception<simdjson_error> ex_invalid_json_pointer(m,
-            "InvalidJSONPointerError", ex_simdjson_error.ptr());
+    m.attr("VERSION") = py::str(STRINGIFY(SIMDJSON_VERSION));
 
     py::register_exception_translator([](std::exception_ptr p) {
-        /* Converts simdjson_error exceptions into higher-level Python
-         * exceptions for a more typical Python experience.
-         * */
         try {
             if (p) std::rethrow_exception(p);
         } catch (const simdjson_error &e) {
             switch (e.error()) {
                 case error_code::NO_SUCH_FIELD:
-                    ex_no_such_field(e.what());
-                    break;
+                    throw py::key_error("No such key");
                 case error_code::INDEX_OUT_OF_BOUNDS:
-                    ex_index_out_of_bounds(e.what());
-                    break;
+                    throw py::index_error("list index out of range");
                 case error_code::INCORRECT_TYPE:
-                    ex_incorrect_type(e.what());
-                    break;
-                case error_code::INVALID_JSON_POINTER:
-                    ex_invalid_json_pointer(e.what());
-                    break;
-                case error_code::CAPACITY:
-                    ex_capacity(e.what());
-                    break;
+                    // We can give better error messages in each class, this is
+                    // just a catch-all.
+                    PyErr_SetString(PyExc_TypeError, "Unexpected type");
+                    return;
                 case error_code::MEMALLOC:
-                    ex_memalloc(e.what());
-                    break;
+                    PyErr_SetNone(PyExc_MemoryError);
+                    return;
+                case error_code::EMPTY:
+                case error_code::STRING_ERROR:
+                case error_code::T_ATOM_ERROR:
+                case error_code::F_ATOM_ERROR:
+                case error_code::N_ATOM_ERROR:
+                case error_code::NUMBER_ERROR:
+                case error_code::UNESCAPED_CHARS:
+                case error_code::UNCLOSED_STRING:
+                case error_code::NUMBER_OUT_OF_RANGE:
+                case error_code::INVALID_JSON_POINTER:
+                case error_code::INVALID_URI_FRAGMENT:
+                case error_code::CAPACITY:
+                case error_code::TAPE_ERROR:
+                    throw py::value_error(e.what());
+                case error_code::IO_ERROR:
+                    PyErr_SetString(PyExc_IOError, e.what());
+                    return;
+                case error_code::UTF8_ERROR:
+                    PyErr_SetString(PyExc_UnicodeDecodeError, e.what());
+                    return;
                 default:
-                    ex_simdjson_error(e.what());
+                    PyErr_SetString(PyExc_RuntimeError, e.what());
+                    return;
             }
         }
     });
@@ -334,16 +304,7 @@ PYBIND11_MODULE(csimdjson, m) {
         .def("__len__", [](dom::object &self) { return self.size(); })
         .def("__getitem__",
             [](dom::object &self, const char *key) {
-                try {
-                    return element_to_primitive(self[key]);
-                } catch (const simdjson_error& e) {
-                    switch (e.error()) {
-                        case error_code::NO_SUCH_FIELD:
-                            throw py::key_error("No such key");
-                        default:
-                            throw;
-                    }
-                }
+                return element_to_primitive(self[key]);
             },
             py::return_value_policy::reference_internal
         )
