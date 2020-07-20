@@ -12,6 +12,25 @@ accessed.
 .. autoclass:: Parser
    :members:
 
+   .. py:data:: implementations
+
+        A list of available parser implementations in the form of
+        `[(name, description),...]`.
+
+   .. py:data:: implementation
+
+        The active parser implementation as (name, description). Can be
+        any value from :py:attr:`implementations`. The best implementation
+        for your current platform will be picked by default.
+
+        Can be set to the name of any valid implementation to globally
+        change the Parser implementation.
+
+        .. warning::
+            Setting this to an implementation inappropriate for your platform
+            WILL cause illegal instructions or segfaults at best. It's up to
+            you to ensure an implementation is valid for your CPU.
+
 .. autoclass:: Array
    :members:
 

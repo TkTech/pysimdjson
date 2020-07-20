@@ -205,6 +205,42 @@ PYBIND11_MODULE(csimdjson, m) {
             ":param s: The document to parse.\n"
             ":param recursive: Recursively turn the document into real\n"
             "                  python objects instead of pysimdjson proxies."
+        )
+        .def_property_static(
+            "implementation",
+            [](py::object) {
+                return py::make_tuple(
+                    active_implementation->name(),
+                    active_implementation->description()
+                );
+            },
+            [](py::object, std::string name) {
+                // Check if it's a valid implementation. simdjson does not
+                // check so setting this wrong will segfault on the next
+                // parse.
+                for (auto implementation : available_implementations) {
+                    if (implementation->name() == name) {
+                        active_implementation = available_implementations[name];
+                        break;
+                    }
+                }
+                throw py::value_error("Unknown implementation");
+            }
+        )
+        .def_property_readonly_static(
+            "implementations",
+            [](py::object) {
+                py::list results;
+                for (auto implementation : available_implementations) {
+                    results.append(
+                        py::make_tuple(
+                            implementation->name(),
+                            implementation->description()
+                        )
+                    );
+                }
+                return results;
+            }
         );
 
     py::class_<dom::array>(
