@@ -19,11 +19,12 @@ with no further requirements:
 
 Binary wheels are available for x86_64 on the following:
 
-|          | py3.5 | py3.6 | py3.7 | py3.8 | pypy3 |
-| -------- | ----- | ----- | ----- | ----- | ----- |
-| OS X     | y     | y     | y     | y     | y     |
-| Windows  | x     | x     | y     | y     | x     |
-| Linux    | y     | y     | y     | y     | x     |
+|               | py3.5 | py3.6 | py3.7 | py3.8 | pypy3 |
+| ------------- | ----- | ----- | ----- | ----- | ----- |
+| OS X          | y     | y     | y     | y     | y     |
+| Windows       | x     | x     | y     | y     | x     |
+| Linux         | y     | y     | y     | y     | x     |
+| Linux (ARM64) | y     | y     | y     | y     | x     |
 
 
 If binary wheels are not available for your platform, you'll need a
