@@ -13,7 +13,7 @@ env:
   - secure: 0pA9waJ8KLstYc9LdrJmUnQB2eqxCnEqBjZMWSU3t+NNfVyLVq+9+6aMFEbPtOD0LYSWFSAMOlyLvBmjaEzl82fu6yuJdkFmT9bYt3sBv9w+GnkHgQi7eom2gIWwcWx5PaSYx2CDrYBjCwBipK87tUoQCj+DuevqmunXSHDwVxf05k2KJB+23FlAtJDmbQi2VRS2shrMchemftOpbspyjS6sc9RZBWj/RhUyISeuDi+2yk+2HRGhbGJ0G+S54pQFIlLc04E+QcpLKnH8qUWmf8zf+La5WAtOPLDCBOmbWM8UCJfDg4UZ2XQH2z6Er82DfY4oz+nU7qoKoFKJ7OTTgwI1yvsuXa/aYK2wqPQUGNv2kKA6zZOxlmMxFJumO0Ctri76LwyG+qD4aU3Ca+05tfedswAcatr9MXN2LLWLLSjX8rSIW8hQmQ2PItP68ZXWs5oxFCbpbD9Z/Wu1tD3m0eMDwoAWfUBeX8Zdxo4bBG8WzG9vJWDJo1Lqgjz/zibtf1PefCCdyxBsY/jTgxl2gtwbSqz50+7+2jB3KuBaU08uC/aq4BLQu1qdkrPYkQQDjTgcRIrM1gn9cVuLUoGnFwcm8RHhEkY0IU529iIn0So0YrGvEFUPlEU/x9WlbLfWLms9UnmTqkeR4E3YnOTpP8Avb9PWL6G62cTukwPN2ic=
   - CIBW_BEFORE_BUILD="pip install pybind11"
   - CIBW_BEFORE_TEST="pip install pybind11 pytest"
-  - CIBW_TEST_COMMAND="pytest {package}/tests"
+  - CIBW_TEST_COMMAND="pytest {project}/tests"
 
 install:
 - python3 -m pip install cibuildwheel==1.5.2
