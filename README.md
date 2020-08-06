@@ -109,7 +109,7 @@ import simdjson
 parser = simdjson.Parser()
 
 for i in range(0, 100):
-    doc = parser.parse(b'{"a": "b"})
+    doc = parser.parse(b'{"a": "b"}')
 ```
 
 This will drastically reduce the number of allocations being made, as it will
