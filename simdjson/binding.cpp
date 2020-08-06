@@ -291,7 +291,7 @@ PYBIND11_MODULE(csimdjson, m) {
                 return result;
             }
         )
-        .def("__len__", [](dom::array &self) { return self.size(); })
+        .def("__len__", &dom::array::size)
         .def("__iter__",
             [](dom::array &self) {
                 return py::make_iterator(self.begin(), self.end());
@@ -383,7 +383,7 @@ PYBIND11_MODULE(csimdjson, m) {
             py::return_value_policy::reference_internal,
             py::keep_alive<0, 1>()
         )
-        .def("__len__", [](dom::object &self) { return self.size(); })
+        .def("__len__", &dom::object::size)
         .def("__getitem__",
             [](dom::object &self, const char *key) {
                 return element_to_primitive(self[key]);
