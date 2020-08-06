@@ -12,7 +12,8 @@ TEST_FILES = [
     'jsonexamples/twitter.json',
     'jsonexamples/github_events.json',
     'jsonexamples/citm_catalog.json',
-    'jsonexamples/mesh.json'
+    'jsonexamples/mesh.json',
+    'jsonexamples/gsoc-2018.json'
 ]
 
 

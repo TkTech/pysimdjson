@@ -255,7 +255,8 @@ PYBIND11_MODULE(csimdjson, m) {
             [](dom::array &self, const char *json_pointer) {
                 return element_to_primitive(self.at(json_pointer));
             },
-            py::return_value_policy::reference_internal
+            py::return_value_policy::reference_internal,
+            py::is_operator()
         )
         .def("__getitem__",
             [](dom::array &self, int64_t i) {
@@ -290,13 +291,58 @@ PYBIND11_MODULE(csimdjson, m) {
                 return result;
             }
         )
-        .def("__len__", [](dom::object &self) { return self.size(); })
+        .def("__len__", [](dom::array &self) { return self.size(); })
         .def("__iter__",
             [](dom::array &self) {
                 return py::make_iterator(self.begin(), self.end());
             },
             py::return_value_policy::reference_internal,
             py::keep_alive<0, 1>()
+        )
+        .def("count",
+            [](dom::array &self, py::object value) {
+                // This is "correct" implementation of count at the cost
+                // of performance.
+                // We should also make a count for primitive types that
+                // converts the `value` just once, and compares against the
+                // basic types instead.
+                unsigned long long i = 0;
+                for (dom::element field : self) {
+                    if (element_to_primitive(field).equal(value)) {
+                        i++;
+                    }
+                }
+                return i;
+            }
+        )
+        .def("index",
+            [](dom::array &self, py::object x, py::object start, py::object end) {
+                // Cheat and use py::slice since it takes care of all the edge
+                // cases for us.
+                auto size = self.size();
+                size_t start_i, stop_i, step, slicelength;
+
+                py::slice slice(
+                    start.is_none() ? 0 : start.cast<ssize_t>(),
+                    end.is_none() ? size : end.cast<ssize_t>(),
+                    1
+                );
+
+                if (!slice.compute(size, &start_i, &stop_i, &step, &slicelength))
+                    throw py::error_already_set();
+
+                for (size_t i = 0; i < slicelength; ++i) {
+                    if (element_to_primitive(self.at(start_i)).equal(x)) {
+                        return start_i;
+                    }
+                    start_i += step;
+                }
+
+                throw py::value_error();
+            },
+            py::arg("x"),
+            py::arg("start") = py::none(),
+            py::arg("end") = py::none()
         )
         .def("as_list",
             [](dom::array &self) {
@@ -349,6 +395,21 @@ PYBIND11_MODULE(csimdjson, m) {
                 simdjson_result<dom::element> result = self[key];
                 return result.error() ? false : true;
             }
+        )
+        .def("get",
+            [](dom::object &self, const char *key, py::object def) {
+                try {
+                    return element_to_primitive(self[key]);
+                } catch (const simdjson_error &e) {
+                    if (e.error() == error_code::NO_SUCH_FIELD) {
+                        return def;
+                    }
+                    throw;
+                }
+            },
+            py::arg(),
+            py::arg() = py::none(),
+            py::return_value_policy::reference_internal
         )
         .def("keys",
             [](dom::object &self) {
