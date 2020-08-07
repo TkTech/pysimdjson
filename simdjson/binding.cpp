@@ -95,19 +95,6 @@ namespace pybind11 { namespace detail {
                 return element_to_primitive(src).release();
             }
     };
-
-    // Caster for the key_value_pairs in Object.
-    template <> struct type_caster<dom::key_value_pair> {
-        public:
-            PYBIND11_TYPE_CASTER(dom::key_value_pair, _("KeyValuePair"));
-
-            static handle cast(dom::key_value_pair src, py::return_value_policy, py::handle) {
-                return py::make_tuple(
-                    sv_to_unicode(src.key),
-                    sv_to_unicode(src.value)
-                ).release();
-            }
-    };
 }}
 
 PYBIND11_MAKE_OPAQUE(dom::array);
@@ -121,6 +108,85 @@ PYBIND11_MODULE(csimdjson, m) {
     m.attr("DEFAULT_MAX_DEPTH") = py::int_(DEFAULT_MAX_DEPTH);
     m.attr("VERSION") = py::str(STRINGIFY(SIMDJSON_VERSION));
 
+    // We can't just use py::make_iterator & py::make_key_iterator, because
+    // simdjson does not implement the expect std::iterator-like and
+    // std::pair-like properties. See upstream#1098 for future fixes.
+    // It looks tempting to replace with something like ranges-v3, which would
+    // turn all of this into a one-liner. However, ranges-v3 requires VS2019
+    // which would severely cripple our platform support.
+    struct PyKeyIterator {
+        PyKeyIterator(
+            const dom::object &obj
+        ) : obj(obj), first(obj.begin()), end(obj.end()) { }
+
+        py::object next() {
+            if (first == end)
+                throw py::stop_iteration();
+
+            auto v = first.key();
+            first++;
+            return sv_to_unicode(v);
+        }
+
+        const dom::object &obj;
+        dom::object::iterator first;
+        dom::object::iterator end;
+    };
+
+    struct PyValueIterator {
+        PyValueIterator(
+            const dom::object &obj
+        ) : obj(obj), first(obj.begin()), end(obj.end()) { }
+
+        py::object next() {
+            if (first == end)
+                throw py::stop_iteration();
+
+            auto v = first.value();
+            first++;
+            return element_to_primitive(v, true);
+        }
+
+        const dom::object &obj;
+        dom::object::iterator first;
+        dom::object::iterator end;
+    };
+
+    struct PyKeyValueIterator {
+        PyKeyValueIterator(
+            const dom::object &obj
+        ) : obj(obj), first(obj.begin()), end(obj.end()) { }
+
+        py::object next() {
+            if (first == end)
+                throw py::stop_iteration();
+
+            auto v = first.value();
+            auto k = first.key();
+            first++;
+            return py::make_tuple(
+                sv_to_unicode(k),
+                element_to_primitive(v, true)
+            );
+        }
+
+        const dom::object &obj;
+        dom::object::iterator first;
+        dom::object::iterator end;
+    };
+
+    py::class_<PyKeyIterator>(m, "KeyIterator")
+        .def("__iter__", [](PyKeyIterator &it) -> PyKeyIterator& { return it; })
+        .def("__next__", &PyKeyIterator::next);
+
+    py::class_<PyValueIterator>(m, "ValueIterator")
+        .def("__iter__", [](PyValueIterator &it) -> PyValueIterator& { return it; })
+        .def("__next__", &PyValueIterator::next);
+
+    py::class_<PyKeyValueIterator>(m, "KeyValueIterator")
+        .def("__iter__", [](PyKeyValueIterator &it) -> PyKeyValueIterator& { return it; })
+        .def("__next__", &PyKeyValueIterator::next);
+
     py::register_exception_translator([](std::exception_ptr p) {
         try {
             if (p) std::rethrow_exception(p);
@@ -133,7 +199,7 @@ PYBIND11_MODULE(csimdjson, m) {
                 case error_code::INCORRECT_TYPE:
                     // We can give better error messages in each class, this is
                     // just a catch-all.
-                    PyErr_SetString(PyExc_TypeError, "Unexpected type");
+                    PyErr_SetString(PyExc_TypeError, e.what());
                     return;
                 case error_code::MEMALLOC:
                     PyErr_SetNone(PyExc_MemoryError);
@@ -249,7 +315,8 @@ PYBIND11_MODULE(csimdjson, m) {
             "A proxy object that behaves much like a real `list()`.\n"
             "Python objects are not created until an element in the list\n"
             "is accessed.\n\n"
-            "Supports iteration, indexing, `len()`, and slicing."
+            "Complies with the `collections.abc.Sequence` interface, but does"
+            " not inherit from it."
         )
         .def("__truediv__",
             [](dom::array &self, const char *json_pointer) {
@@ -358,30 +425,14 @@ PYBIND11_MODULE(csimdjson, m) {
             "A proxy object that behaves much like a real `dict()`.\n"
             "Python objects are not created until an element in the Object\n"
             "is accessed.\n\n"
-            "Supports iteration, indexing, `len()`, and `in`/`not in`."
+            "Complies with the `collections.abc.Mapping` interface, but does"
+            " not inherit from it."
         )
         .def("__truediv__",
             [](dom::object &self, const char *json_pointer) {
                 return element_to_primitive(self.at(json_pointer));
             },
             py::return_value_policy::reference_internal
-        )
-        .def("at",
-            [](dom::object &self, const char *json_pointer) {
-                return element_to_primitive(self.at(json_pointer));
-            },
-            py::return_value_policy::reference_internal,
-            "Get the value associated with the given JSON pointer."
-        )
-        .def("__iter__",
-            [](dom::object &self) {
-                return py::make_iterator(
-                    self.begin(),
-                    self.end()
-                );
-            },
-            py::return_value_policy::reference_internal,
-            py::keep_alive<0, 1>()
         )
         .def("__len__", &dom::object::size)
         .def("__getitem__",
@@ -396,6 +447,18 @@ PYBIND11_MODULE(csimdjson, m) {
                 return result.error() ? false : true;
             }
         )
+        .def("__iter__",
+            [](dom::object &self) { return PyKeyIterator(self); },
+            py::return_value_policy::reference_internal,
+            py::keep_alive<0, 1>()
+        )
+        .def("at",
+            [](dom::object &self, const char *json_pointer) {
+                return element_to_primitive(self.at(json_pointer));
+            },
+            py::return_value_policy::reference_internal,
+            "Get the value associated with the given JSON pointer."
+        )
         .def("get",
             [](dom::object &self, const char *key, py::object def) {
                 try {
@@ -407,46 +470,26 @@ PYBIND11_MODULE(csimdjson, m) {
                     throw;
                 }
             },
-            py::arg(),
-            py::arg() = py::none(),
-            py::return_value_policy::reference_internal
+            py::arg("key"),
+            py::arg("default") = py::none(),
+            py::return_value_policy::reference_internal,
+            "Return the value of `key`, or `default` if the key does"
+            " not exist."
         )
         .def("keys",
-            [](dom::object &self) {
-                // We can't use iterators here until upstream #1046 is fixed.
-                py::list *result = new py::list(self.size());
-                size_t i = 0;
-                for (dom::key_value_pair field : self) {
-                    PyList_SET_ITEM(
-                        result->ptr(),
-                        i,
-                        sv_to_unicode(field.key).release().ptr()
-                    );
-                    i++;
-                }
-                return result;
-            },
-            "Returns a list of all keys in this `Object`."
+            [](dom::object &self) { return PyKeyIterator(self); },
+            "Returns an iterator over all keys in this `Object`."
         )
         .def("values",
-            [](dom::object &self) {
-                // We can't use iterators here until upstream #1046 is fixed.
-                py::list *result = new py::list(self.size());
-                size_t i = 0;
-                for (dom::key_value_pair field : self) {
-                    PyList_SET_ITEM(
-                        result->ptr(),
-                        i,
-                        element_to_primitive(
-                            field.value,
-                            true
-                        ).release().ptr()
-                    );
-                    i++;
-                }
-                return result;
-            },
-            "Returns a list of all values in this `Object`."
+            [](dom::object &self) { return PyValueIterator(self); },
+            "Returns an iterator over of all values in this `Object`."
+        )
+        .def("items",
+            [](dom::object &self) { return PyKeyValueIterator(self); },
+            py::return_value_policy::reference_internal,
+            py::keep_alive<0, 1>(),
+            "Returns an iterator over all the (key, value) pairs in this"
+            " `Object`."
         )
         .def("as_dict",
             [](dom::object &self) {

@@ -14,8 +14,7 @@ def test_object_abc_mapping(parser):
     assert isinstance(doc, simdjson.Object)
 
     # __iter__
-    # for left, right in zip(doc, ('a', 'c', 'x')):
-    #    assert left == right
+    assert list(iter(doc)) == ['a', 'c', 'x']
     # __len__
     assert len(doc) == 3
     # __contains__
@@ -30,9 +29,15 @@ def test_object_abc_mapping(parser):
         doc['z']
 
     # keys()
-    assert doc.keys() == ['a', 'c', 'x']
+    assert list(doc.keys()) == ['a', 'c', 'x']
     # values()
-    assert doc.values() == ['b', [0, 1, 2], {'f': 'z'}]
+    assert list(doc.values()) == ['b', [0, 1, 2], {'f': 'z'}]
+    # items()
+    assert list(doc.items()) == [
+        ('a', 'b'),
+        ('c', [0, 1, 2]),
+        ('x', {'f': 'z'})
+    ]
     # get()
     assert doc.get('a') == 'b'
     assert doc.get('z') is None

@@ -17,8 +17,7 @@ def test_array_abc_sequence(parser):
     assert isinstance(obj, simdjson.Array)
 
     # __iter__
-    for left, right in zip(obj, [1, 2, 3, 4, 5]):
-        assert left == right
+    assert list(iter(obj)) == [1, 2, 3, 4, 5]
     # __len__
     assert len(obj) == 5
     # __contains__
