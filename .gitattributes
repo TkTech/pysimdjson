@@ -1,2 +1,2 @@
-simdjson/src/* linguist-vendored
-simdjson/*.cpp linguist-vendored
+* linguist-vendored
+*.py linguist-vendored=false
