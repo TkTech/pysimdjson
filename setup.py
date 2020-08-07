@@ -61,7 +61,7 @@ if system in ('Linux', 'Darwin', 'FreeBSD'):
 setup(
     name='pysimdjson',
     packages=find_packages(),
-    version='2.4.0',
+    version='2.5.0',
     description='simdjson bindings for python',
     long_description=long_description,
     long_description_content_type='text/markdown',
