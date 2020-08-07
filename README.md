@@ -105,7 +105,7 @@ parse the document and retrieve a single property, the destination, and forward
 the payload without ever turning it into a Python object. Here's a (bad)
 example:
 
-```
+```python
 import simdjson
 
 @app.route('/store', methods=['POST'])
@@ -116,7 +116,7 @@ def store():
 ```
 
 With this, doc could contain thousands of objects, but the only one loaded
-into python was `key`, and we even minified the content as we went.
+into a python object was `key`, and we even minified the content as we went.
 
 ### Re-use the parser.
 
