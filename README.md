@@ -99,6 +99,25 @@ assert doc.at('res/1/name') == 'second' # True
 Both of these approaches will be much faster than using `load/s()`, since
 they avoid loading the parts of the document we didn't care about.
 
+Both `Object` and `Array` have a `mini` property that returns their entire
+content as a minified Python `str`. A message router for example would only
+parse the document and retrieve a single property, the destination, and forward
+the payload without ever turning it into a Python object. Here's a (bad)
+example:
+
+```
+import simdjson
+
+@app.route('/store', methods=['POST'])
+def store():
+    parser = simdjson.Parser()
+    doc = parser.parse(request.data)
+    redis.set(doc['key'], doc.mini)
+```
+
+With this, doc could contain thousands of objects, but the only one loaded
+into python was `key`, and we even minified the content as we went.
+
 ### Re-use the parser.
 
 One of the easiest performance gains if you're working on many documents is
