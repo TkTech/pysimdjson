@@ -85,7 +85,7 @@ or proxies for objects and lists.
 ```python
 import simdjson
 parser = simdjson.Parser()
-doc = parser.parse(b'{"res": [{"name": "first"}, {"name": "second"}]')
+doc = parser.parse(b'{"res": [{"name": "first"}, {"name": "second"}]}')
 ```
 
 For our sample above, we really just want the second entry in `res`, we
