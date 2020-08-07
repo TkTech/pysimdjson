@@ -62,3 +62,9 @@ def test_array_uplift(parser):
 
     assert doc.as_list() == [0, 1, 2, 3, 4, 5]
     assert isinstance(doc.as_list(), list)
+
+
+def test_array_mini(parser):
+    """Test JSON minifier."""
+    doc = parser.parse(b'[ 0, 1, 2,    3, 4, 5]')
+    assert doc.mini == '[0,1,2,3,4,5]'

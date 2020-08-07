@@ -417,6 +417,11 @@ PYBIND11_MODULE(csimdjson, m) {
             },
             "Convert this Array to a regular python list, recursively"
             " converting any objects/lists it finds."
+        )
+        .def_property_readonly("mini",
+            [](dom::array &self) -> std::string { return minify(self); },
+            "Returns the minified JSON representation of this Array as"
+            " a `str`."
         );
 
     py::class_<dom::object>(
@@ -497,5 +502,10 @@ PYBIND11_MODULE(csimdjson, m) {
             },
             "Convert this `Object` to a regular python dictionary,\n"
             " recursively converting any objects or lists it finds."
+        )
+        .def_property_readonly("mini",
+            [](dom::object &self) -> std::string { return minify(self); },
+            "Returns the minified JSON representation of this Object as"
+            " a `str`."
         );
 }

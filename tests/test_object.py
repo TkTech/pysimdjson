@@ -55,3 +55,9 @@ def test_object_uplift(parser):
         'x': {'f': 'z'}
     }
     assert isinstance(doc.as_dict(), dict)
+
+
+def test_object_mini(parser):
+    """Test JSON minifier."""
+    doc = parser.parse(b'{"a" : "z" }')
+    assert doc.mini == '{"a":"z"}'
