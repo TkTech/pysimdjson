@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 
@@ -43,3 +45,12 @@ def doc(parser):
         "bool": true,
         "null_value": null
     }''')
+
+
+@pytest.fixture
+def parsing_tests():
+    return {
+        'y': (Path('jsonexamples') / 'test_parsing').glob('y_*.json'),
+        'n': (Path('jsonexamples') / 'test_parsing').glob('n_*.json'),
+        'i': (Path('jsonexamples') / 'test_parsing').glob('i_*.json')
+    }

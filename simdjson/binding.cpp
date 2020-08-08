@@ -222,12 +222,29 @@ PYBIND11_MODULE(csimdjson, m) {
                     PyErr_SetString(PyExc_IOError, e.what());
                     return;
                 case error_code::UTF8_ERROR:
-                    PyErr_SetString(PyExc_UnicodeDecodeError, e.what());
+                {
+                    // simdjson doesn't yet give us any precise details on
+                    // where the error occured. See upstream#46.
+                    PyObject *unicode_error = PyUnicodeDecodeError_Create(
+                        "utf-8",
+                        "",
+                        0,
+                        0,
+                        1,
+                        e.what()
+                    );
+                    PyErr_SetObject(
+                        PyExc_UnicodeDecodeError,
+                        unicode_error
+                    );
+                    Py_XDECREF(unicode_error);
                     return;
+                }
                 default:
                     PyErr_SetString(PyExc_RuntimeError, e.what());
                     return;
             }
+            throw;
         }
     });
 
