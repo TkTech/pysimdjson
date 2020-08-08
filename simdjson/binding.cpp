@@ -2,6 +2,7 @@
  * This file provides the low-level bindings around the C++ simdjson library,
  * exposing it to Python as the csimdjson module.
  */
+#define PY_SSIZE_T_CLEAN
 #include <pybind11/pybind11.h>
 #include <Python.h>
 #include "simdjson.h"
@@ -225,7 +226,11 @@ PYBIND11_MODULE(csimdjson, m) {
                 {
                     // simdjson doesn't yet give us any precise details on
                     // where the error occured. See upstream#46.
-                    PyObject *unicode_error = PyUnicodeDecodeError_Create(
+                    // PyUnicodeDecodeError_* methods are stubs on PyPy3,
+                    // so we can't use that helper..
+                    PyObject *unicode_error = PyObject_CallFunction(
+                        PyExc_UnicodeDecodeError,
+                        "sy#nns",
                         "utf-8",
                         "",
                         0,
