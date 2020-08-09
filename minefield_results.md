@@ -1,4 +1,12 @@
 # Minefield results for simdjson 0.4.6
+## Summary
+|-----|---------------------------------------------|
+| 277 | 🎉 expected result                          |
+|   6 | 🔥 parsing should have failed but succeeded |
+|   0 | 🔥 parsing should have succeeded but failed |
+|  27 | ➖ result undefined, parsing failed         |
+|   8 | ➕ result undefined, parsing succeeded      |
+## Full Results
 | file                                                                                                                                                                                 | result                                      |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------|
 | [jsonexamples/test_parsing/y_array_arraysWithSpaces.json](jsonexamples/test_parsing/y_array_arraysWithSpaces.json)                                                                   | 🎉 expected result                          |
