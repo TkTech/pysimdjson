@@ -7,21 +7,20 @@ def test_json_pointer(parser):
     """
     doc = parser.parse(b'{"key": "value", "array": [0, 1, 2]}')
 
-    assert isinstance(doc.at('key'), str)
-    assert isinstance(doc.at('array/0'), int)
-    assert isinstance(doc / 'array' / '0', int)
+    assert isinstance(doc.at_pointer('/key'), str)
+    assert isinstance(doc.at_pointer('/array/0'), int)
 
     with pytest.raises(KeyError):
-        doc.at('no_such_key')
+        doc.at_pointer('/no_such_key')
 
     with pytest.raises(IndexError):
-        doc.at('array/9')
+        doc.at_pointer('/array/9')
 
     with pytest.raises(TypeError):
-        doc.at('array/not_a_num')
+        doc.at_pointer('/array/not_a_num')
 
     with pytest.raises(ValueError):
-        doc.at('array/')
+        doc.at_pointer('/array/')
 
 
 def test_uplift(doc):

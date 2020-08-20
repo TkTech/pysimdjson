@@ -340,13 +340,6 @@ PYBIND11_MODULE(csimdjson, m) {
             "Complies with the `collections.abc.Sequence` interface, but does"
             " not inherit from it."
         )
-        .def("__truediv__",
-            [](dom::array &self, const char *json_pointer) {
-                return element_to_primitive(self.at(json_pointer));
-            },
-            py::return_value_policy::reference_internal,
-            py::is_operator()
-        )
         .def("__getitem__",
             [](dom::array &self, int64_t i) {
                 // Allow negative indexes which will return counting from the
@@ -387,6 +380,13 @@ PYBIND11_MODULE(csimdjson, m) {
             },
             py::return_value_policy::reference_internal,
             py::keep_alive<0, 1>()
+        )
+        .def("at_pointer",
+            [](dom::array &self, const char *json_pointer) {
+                return element_to_primitive(self.at_pointer(json_pointer));
+            },
+            py::return_value_policy::reference_internal,
+            "Get the value associated with the given JSON pointer."
         )
         .def("count",
             [](dom::array &self, py::object value) {
@@ -455,12 +455,6 @@ PYBIND11_MODULE(csimdjson, m) {
             "Complies with the `collections.abc.Mapping` interface, but does"
             " not inherit from it."
         )
-        .def("__truediv__",
-            [](dom::object &self, const char *json_pointer) {
-                return element_to_primitive(self.at(json_pointer));
-            },
-            py::return_value_policy::reference_internal
-        )
         .def("__len__", &dom::object::size)
         .def("__getitem__",
             [](dom::object &self, const char *key) {
@@ -479,9 +473,9 @@ PYBIND11_MODULE(csimdjson, m) {
             py::return_value_policy::reference_internal,
             py::keep_alive<0, 1>()
         )
-        .def("at",
+        .def("at_pointer",
             [](dom::object &self, const char *json_pointer) {
-                return element_to_primitive(self.at(json_pointer));
+                return element_to_primitive(self.at_pointer(json_pointer));
             },
             py::return_value_policy::reference_internal,
             "Get the value associated with the given JSON pointer."

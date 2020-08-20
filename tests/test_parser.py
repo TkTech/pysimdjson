@@ -9,7 +9,7 @@ def test_load(parser):
         parser.load('jsonexamples/invalid.json')
 
     doc = parser.load("jsonexamples/small/demo.json")
-    doc.at('Image/Width')
+    doc.at_pointer('/Image/Width')
 
 
 def test_parse(parser):
