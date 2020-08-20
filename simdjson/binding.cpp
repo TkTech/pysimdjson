@@ -309,7 +309,7 @@ PYBIND11_MODULE(csimdjson, m) {
                 for (auto implementation : available_implementations) {
                     if (implementation->name() == name) {
                         active_implementation = available_implementations[name];
-                        break;
+                        return;
                     }
                 }
                 throw py::value_error("Unknown implementation");
