@@ -27,7 +27,8 @@ def pytest_generate_tests(metafunc):
         'rapidjson',
         'simplejson',
         'simdjson',
-        'ujson'
+        'ujson',
+        'yyjson'
     ]
     available = []
 
