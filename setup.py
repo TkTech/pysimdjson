@@ -101,7 +101,8 @@ setup(
             'orjson',
             'python-rapidjson',
             'simplejson',
-            'ujson'
+            'ujson',
+            'yyjson'
         ]
     },
     ext_modules=[
