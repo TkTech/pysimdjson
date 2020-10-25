@@ -26,9 +26,16 @@ def with_builtin(content):
     assert len(numpy.array(json.loads(content))) == 10001
 
 
+def with_orjson(content):
+    import numpy
+    import orjson
+
+    assert len(numpy.array(orjson.loads(content))) == 10001
+
+
 @pytest.mark.slow
 @pytest.mark.parametrize('loader', [
-    with_buffer, without_buffer, with_builtin])
+    with_buffer, without_buffer, with_builtin, with_orjson])
 def test_array_to_numpy(benchmark, loader):
     """Test how quickly we can load a homogeneous array of floats into a
     numpy array."""
