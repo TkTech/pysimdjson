@@ -106,9 +106,12 @@ def test_array_as_buffer(parser):
     with pytest.raises(ValueError):
         doc['i'].as_buffer(of_type='u')
 
+    # Ensure n-dimensional arrays are flattened.
     doc = parser.parse(b'''[[
         [1.0, 2.0],
         [3.0, 4.0]
     ]]''')
     view = memoryview(doc.as_buffer(of_type='d'))
-    print(len(view))
+    assert view.readonly is False
+    assert len(view) == 4
+    assert view.itemsize == 8
