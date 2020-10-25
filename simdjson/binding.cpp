@@ -91,15 +91,38 @@ inline py::object element_to_primitive(dom::element e, bool recursive = false) {
 }
 
 template <typename T>
+static void array_to_vector(dom::array src, VecPtr<T> &dst) {
+    auto capacity = dst->capacity();
+    auto size = dst->size();
+    auto minimum = src.size();
+
+    if (capacity - size < minimum) {
+        dst->reserve(size + minimum);
+    }
+
+    for (dom::element field : src) {
+        if (field.type() == dom::element_type::ARRAY) {
+            array_to_vector(field, dst);
+        } else {
+            dst->push_back(field);
+        }
+    }
+}
+
+template <typename T>
 class ArrayContainer {
     public:
-        ArrayContainer(dom::array &src)
+        ArrayContainer(dom::array src)
             : m_vec(VecPtr<T>(new std::vector<T>))
         {
             m_vec->reserve(src.size());
 
             for (dom::element field : src) {
-                m_vec->push_back(field);
+                if (field.type() == dom::element_type::ARRAY) {
+                    array_to_vector<T>(field, m_vec);
+                } else {
+                    m_vec->push_back(field);
+                }
             }
         }
 

@@ -105,3 +105,10 @@ def test_array_as_buffer(parser):
     # Signed elements should error on cast.
     with pytest.raises(ValueError):
         doc['i'].as_buffer(of_type='u')
+
+    doc = parser.parse(b'''[[
+        [1.0, 2.0],
+        [3.0, 4.0]
+    ]]''')
+    view = memoryview(doc.as_buffer(of_type='d'))
+    print(len(view))
