@@ -68,3 +68,40 @@ def test_array_mini(parser):
     """Test JSON minifier."""
     doc = parser.parse(b'[ 0, 1, 2,    3, 4, 5]')
     assert doc.mini == '[0,1,2,3,4,5]'
+
+
+def test_array_as_buffer(parser):
+    """Ensure we can export homogeneous arrays as buffers."""
+    doc = parser.parse(b'''{
+        "d": [1.2, 2.3, 3.4],
+        "i": [-1, 2, -3, 4],
+        "u": [1, 2, 3, 4, 5],
+        "x": [1, 2, 3, "not valid"]
+    }''')
+
+    view = memoryview(doc['d'].as_buffer(of_type='d'))
+    assert view.readonly is False
+    assert len(view) == 3
+    assert view.itemsize == 8
+
+    view = memoryview(doc['i'].as_buffer(of_type='i'))
+    assert view.readonly is False
+    assert len(view) == 4
+    assert view.itemsize == 8
+
+    view = memoryview(doc['u'].as_buffer(of_type='u'))
+    assert view.readonly is False
+    assert len(view) == 5
+    assert view.itemsize == 8
+
+    # Not a valid `of_type`.
+    with pytest.raises(ValueError):
+        doc['i'].as_buffer(of_type='x')
+
+    # Not a valid homogeneous array.
+    with pytest.raises(TypeError):
+        doc['x'].as_buffer(of_type='u')
+
+    # Signed elements should error on cast.
+    with pytest.raises(ValueError):
+        doc['i'].as_buffer(of_type='u')

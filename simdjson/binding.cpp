@@ -3,12 +3,16 @@
  * exposing it to Python as the csimdjson module.
  */
 #define PY_SSIZE_T_CLEAN
+#include <vector>
 #include <pybind11/pybind11.h>
 #include <Python.h>
 #include "simdjson.h"
 
 namespace py = pybind11;
 using namespace simdjson;
+
+template <typename T>
+using VecPtr = std::unique_ptr<std::vector<T>>;
 
 inline py::object element_to_primitive(dom::element e, bool recursive);
 
@@ -84,6 +88,42 @@ inline py::object element_to_primitive(dom::element e, bool recursive = false) {
             " failed."
         );
     }
+}
+
+template <typename T>
+class ArrayContainer {
+    public:
+        ArrayContainer(dom::array &src)
+            : m_vec(VecPtr<T>(new std::vector<T>))
+        {
+            m_vec->reserve(src.size());
+
+            for (dom::element field : src) {
+                m_vec->push_back(field);
+            }
+        }
+
+        VecPtr<T> m_vec;
+};
+
+template <typename T>
+void array_container(py::module &m) {
+    py::class_<ArrayContainer<T>>(
+        m,
+        ("ArrayContainer" + py::format_descriptor<T>::format()).c_str(),
+        "Internal lifecycle management class for Array buffers.",
+        py::buffer_protocol()
+    )
+    .def_buffer([](ArrayContainer<T> &self) -> py::buffer_info {
+        return py::buffer_info(
+            self.m_vec->data(),
+            sizeof(T),
+            py::format_descriptor<T>::format(),
+            1,
+            { self.m_vec->size() },
+            { self.m_vec->size() * sizeof(T) }
+        );
+    });
 }
 
 namespace pybind11 { namespace detail {
@@ -175,6 +215,10 @@ PYBIND11_MODULE(csimdjson, m) {
         dom::object::iterator first;
         dom::object::iterator end;
     };
+
+    array_container<double>(m);
+    array_container<int64_t>(m);
+    array_container<uint64_t>(m);
 
     py::class_<PyKeyIterator>(m, "KeyIterator")
         .def("__iter__", [](PyKeyIterator &it) -> PyKeyIterator& { return it; })
@@ -439,6 +483,31 @@ PYBIND11_MODULE(csimdjson, m) {
             },
             "Convert this Array to a regular python list, recursively"
             " converting any objects/lists it finds."
+        )
+        .def("as_buffer",
+            [](dom::array &self, char of_type) {
+                switch(of_type) {
+                case 'd':
+                    return py::cast(ArrayContainer<double>(self));
+                case 'i':
+                    return py::cast(ArrayContainer<int64_t>(self));
+                case 'u':
+                    return py::cast(ArrayContainer<uint64_t>(self));
+                default:
+                    throw py::value_error(
+                        "Not a known of_type. Must be one of {d,i,u}."
+                    );
+                }
+            },
+            "**Copies** the contents of a **homogeneous** array to an\n"
+            " object that can be used as a `buffer`. This means it can be\n"
+            " used as input for `numpy.frombuffer``, `bytearray`,\n"
+            " `memoryview`, etc. This object has a lifecycle that is\n"
+            " independent of the array and the parser.\n\n"
+            ":param of_type: One of 'd' (double), 'i' (signed 64-bit\n"
+            "                integer) or 'u' (unsigned 64-bit integer).",
+            py::kw_only(),
+            py::arg("of_type")
         )
         .def_property_readonly("mini",
             [](dom::array &self) -> std::string { return minify(self); },
