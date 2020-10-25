@@ -14,9 +14,9 @@ using namespace simdjson;
 template <typename T>
 using VecPtr = std::unique_ptr<std::vector<T>>;
 
-inline py::object element_to_primitive(dom::element e, bool recursive);
+static inline py::object element_to_primitive(dom::element e, bool recursive);
 
-inline py::object sv_to_unicode(std::string_view sv) {
+static inline py::object sv_to_unicode(std::string_view sv) {
     /* pybind11 doesn't build in its string_view support if you're
      * targeting c++11, even if string_view is available. So we do it
      * ourselves. */
@@ -25,7 +25,7 @@ inline py::object sv_to_unicode(std::string_view sv) {
     );
 }
 
-inline py::dict object_to_dict(dom::object obj, bool recursive) {
+static inline py::dict object_to_dict(dom::object obj, bool recursive) {
     py::dict result;
 
     for (dom::key_value_pair field : obj) {
@@ -41,7 +41,7 @@ inline py::dict object_to_dict(dom::object obj, bool recursive) {
     return result;
 }
 
-inline py::list array_to_list(dom::array arr, bool recursive) {
+static inline py::list array_to_list(dom::array arr, bool recursive) {
     py::list result(arr.size());
     size_t i = 0;
 
@@ -57,7 +57,7 @@ inline py::list array_to_list(dom::array arr, bool recursive) {
     return result;
 }
 
-inline py::object element_to_primitive(dom::element e, bool recursive = false) {
+static inline py::object element_to_primitive(dom::element e, bool recursive = false) {
     switch (e.type()) {
     case dom::element_type::OBJECT:
         if (recursive) return object_to_dict(dom::object(e), recursive);
@@ -92,14 +92,6 @@ inline py::object element_to_primitive(dom::element e, bool recursive = false) {
 
 template <typename T>
 static void array_to_vector(dom::array src, VecPtr<T> &dst) {
-    auto capacity = dst->capacity();
-    auto size = dst->size();
-    auto minimum = src.size();
-
-    if (capacity - size < minimum) {
-        dst->reserve(size + minimum);
-    }
-
     for (dom::element field : src) {
         if (field.type() == dom::element_type::ARRAY) {
             array_to_vector(field, dst);
@@ -115,7 +107,11 @@ class ArrayContainer {
         ArrayContainer(dom::array src)
             : m_vec(VecPtr<T>(new std::vector<T>))
         {
-            m_vec->reserve(src.size());
+            // This may over-allocate if the array is not flat, since array
+            // starts and ends each count as a slot on their own. However,
+            // this prevents us from having to grow whenever we find a new
+            // child array.
+            m_vec->reserve((src.slots() - 1) / 2);
 
             for (dom::element field : src) {
                 if (field.type() == dom::element_type::ARRAY) {
@@ -124,13 +120,15 @@ class ArrayContainer {
                     m_vec->push_back(field);
                 }
             }
+
+            m_vec->shrink_to_fit();
         }
 
         VecPtr<T> m_vec;
 };
 
 template <typename T>
-void array_container(py::module &m) {
+static void array_container(py::module &m) {
     py::class_<ArrayContainer<T>>(
         m,
         ("ArrayContainer" + py::format_descriptor<T>::format()).c_str(),
@@ -527,6 +525,8 @@ PYBIND11_MODULE(csimdjson, m) {
             " used as input for `numpy.frombuffer``, `bytearray`,\n"
             " `memoryview`, etc. This object has a lifecycle that is\n"
             " independent of the array and the parser.\n\n"
+            "When n-dimensional arrays are encountered, this method will\n"
+            " recursively flatten them.\n\n"
             ":param of_type: One of 'd' (double), 'i' (signed 64-bit\n"
             "                integer) or 'u' (unsigned 64-bit integer).",
             py::kw_only(),
@@ -536,6 +536,9 @@ PYBIND11_MODULE(csimdjson, m) {
             [](dom::array &self) -> std::string { return minify(self); },
             "Returns the minified JSON representation of this Array as"
             " a `str`."
+        )
+        .def_property_readonly("slots",
+            [](dom::array &self) -> size_t { return self.slots(); }
         );
 
     py::class_<dom::object>(

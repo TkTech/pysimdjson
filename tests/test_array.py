@@ -115,3 +115,9 @@ def test_array_as_buffer(parser):
     assert view.readonly is False
     assert len(view) == 4
     assert view.itemsize == 8
+
+
+def test_array_slots(parser):
+    """Esure we're getting the correct number of tape slots."""
+    doc = parser.parse(b'[0, 1, 2, 3, 4, 5]')
+    assert doc.slots == 14
