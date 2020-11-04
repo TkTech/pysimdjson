@@ -3,6 +3,7 @@
  * exposing it to Python as the csimdjson module.
  */
 #define PY_SSIZE_T_CLEAN
+#include <vector>
 #include <pybind11/pybind11.h>
 #include <Python.h>
 #include "simdjson.h"
@@ -10,9 +11,12 @@
 namespace py = pybind11;
 using namespace simdjson;
 
-inline py::object element_to_primitive(dom::element e, bool recursive);
+template <typename T>
+using VecPtr = std::unique_ptr<std::vector<T>>;
 
-inline py::object sv_to_unicode(std::string_view sv) {
+static inline py::object element_to_primitive(dom::element e, bool recursive);
+
+static inline py::object sv_to_unicode(std::string_view sv) {
     /* pybind11 doesn't build in its string_view support if you're
      * targeting c++11, even if string_view is available. So we do it
      * ourselves. */
@@ -21,7 +25,7 @@ inline py::object sv_to_unicode(std::string_view sv) {
     );
 }
 
-inline py::dict object_to_dict(dom::object obj, bool recursive) {
+static inline py::dict object_to_dict(dom::object obj, bool recursive) {
     py::dict result;
 
     for (dom::key_value_pair field : obj) {
@@ -37,7 +41,7 @@ inline py::dict object_to_dict(dom::object obj, bool recursive) {
     return result;
 }
 
-inline py::list array_to_list(dom::array arr, bool recursive) {
+static inline py::list array_to_list(dom::array arr, bool recursive) {
     py::list result(arr.size());
     size_t i = 0;
 
@@ -53,7 +57,7 @@ inline py::list array_to_list(dom::array arr, bool recursive) {
     return result;
 }
 
-inline py::object element_to_primitive(dom::element e, bool recursive = false) {
+static inline py::object element_to_primitive(dom::element e, bool recursive = false) {
     switch (e.type()) {
     case dom::element_type::OBJECT:
         if (recursive) return object_to_dict(dom::object(e), recursive);
@@ -78,12 +82,73 @@ inline py::object element_to_primitive(dom::element e, bool recursive = false) {
         // simdjson.cpp/.h were updated with new types that don't match JSON
         // types 1:1 and we missed it.
         throw py::value_error(
-            "Encountered an unknown element_type."
-            " This is an internal pysimdjson error, please report an issue"
-            " at https://github.com/TkTech/pysimdjson with the file that"
-            " failed."
+            "Encountered an unknown element_type.\n"
+            "This is an internal pysimdjson error, please report an issue\n"
+            "at https://github.com/TkTech/pysimdjson with the file that\n"
+            "failed."
         );
     }
+}
+
+template <typename T>
+static void array_to_vector(dom::array src, VecPtr<T> &dst) {
+    for (dom::element field : src) {
+        if (field.type() == dom::element_type::ARRAY) {
+            array_to_vector(field, dst);
+        } else {
+            dst->push_back(field);
+        }
+    }
+}
+
+template <typename T>
+class ArrayContainer {
+    public:
+        ArrayContainer(dom::array src)
+            : m_vec(VecPtr<T>(new std::vector<T>))
+        {
+            // This may over-allocate if the array is not flat, since array
+            // starts and ends each count as a slot on their own. However,
+            // this prevents us from having to grow whenever we find a new
+            // child array.
+            m_vec->reserve((src.slots() - 1) / 2);
+
+            for (dom::element field : src) {
+                if (field.type() == dom::element_type::ARRAY) {
+                    array_to_vector<T>(field, m_vec);
+                } else {
+                    m_vec->push_back(field);
+                }
+            }
+
+            m_vec->shrink_to_fit();
+        }
+
+        VecPtr<T> m_vec;
+};
+
+/**
+ * This class is used to keep the flat arrays that back exported buffers
+ * from `as_buffer()` alive and tied to Python's lifecycles.
+ **/
+template <typename T>
+static void array_container(py::module &m) {
+    py::class_<ArrayContainer<T>>(
+        m,
+        ("ArrayContainer" + py::format_descriptor<T>::format()).c_str(),
+        "Internal lifecycle management class for Array buffers.",
+        py::buffer_protocol()
+    )
+    .def_buffer([](ArrayContainer<T> &self) -> py::buffer_info {
+        return py::buffer_info(
+            self.m_vec->data(),
+            sizeof(T),
+            py::format_descriptor<T>::format(),
+            1,
+            { self.m_vec->size() },
+            { self.m_vec->size() * sizeof(T) }
+        );
+    });
 }
 
 namespace pybind11 { namespace detail {
@@ -176,6 +241,10 @@ PYBIND11_MODULE(csimdjson, m) {
         dom::object::iterator end;
     };
 
+    array_container<double>(m);
+    array_container<int64_t>(m);
+    array_container<uint64_t>(m);
+
     py::class_<PyKeyIterator>(m, "KeyIterator")
         .def("__iter__", [](PyKeyIterator &it) -> PyKeyIterator& { return it; })
         .def("__next__", &PyKeyIterator::next);
@@ -256,12 +325,14 @@ PYBIND11_MODULE(csimdjson, m) {
     py::class_<dom::parser>(
             m,
             "Parser",
-            "A `Parser` instance is used to load a JSON document.\n\n"
+            "A `Parser` instance is used to load a JSON document.\n"
+            "\n"
             "A Parser can be reused to parse multiple documents, in which\n"
             "case it wil reuse its internal buffer, only increasing it if\n"
             "needed.\n"
             "The :class:`~Object` and :class:`~Array` objects returned by\n"
-            "a Parser are invalidated when a new document is parsed.\n\n"
+            "a Parser are invalidated when a new document is parsed.\n"
+            "\n"
             ":param max_capacity: The maximum size the internal buffer can\n"
             "                     grow to. [default: SIMDJSON_MAXSIZE_BYTES]"
         )
@@ -275,7 +346,8 @@ PYBIND11_MODULE(csimdjson, m) {
             },
             py::arg("path"),
             py::arg("recursive") = false,
-            "Load a JSON document from the file system path `path`.\n\n"
+            "Load a JSON document from the file system path `path`.\n"
+            "\n"
             ":param path: A filesystem path.\n"
             ":param recursive: Recursively turn the document into real\n"
             "                  python objects instead of pysimdjson proxies."
@@ -289,7 +361,8 @@ PYBIND11_MODULE(csimdjson, m) {
             },
             py::arg("s"),
             py::arg("recursive") = false,
-            "Parse a JSON document from the byte string `s`.\n\n"
+            "Parse a JSON document from the byte string `s`.\n"
+            "\n"
             ":param s: The document to parse.\n"
             ":param recursive: Recursively turn the document into real\n"
             "                  python objects instead of pysimdjson proxies."
@@ -337,8 +410,8 @@ PYBIND11_MODULE(csimdjson, m) {
             "A proxy object that behaves much like a real `list()`.\n"
             "Python objects are not created until an element in the list\n"
             "is accessed.\n\n"
-            "Complies with the `collections.abc.Sequence` interface, but does"
-            " not inherit from it."
+            "Complies with the `collections.abc.Sequence` interface, but\n"
+            "does not inherit from it."
         )
         .def("__getitem__",
             [](dom::array &self, int64_t i) {
@@ -437,13 +510,49 @@ PYBIND11_MODULE(csimdjson, m) {
             [](dom::array &self) {
                 return array_to_list(self, true);
             },
-            "Convert this Array to a regular python list, recursively"
-            " converting any objects/lists it finds."
+            "Convert this Array to a regular python list, recursively\n"
+            "converting any objects/lists it finds."
+        )
+        .def("as_buffer",
+            [](dom::array &self, char of_type) {
+                switch(of_type) {
+                case 'd':
+                    return py::cast(ArrayContainer<double>(self));
+                case 'i':
+                    return py::cast(ArrayContainer<int64_t>(self));
+                case 'u':
+                    return py::cast(ArrayContainer<uint64_t>(self));
+                default:
+                    throw py::value_error(
+                        "Not a known of_type. Must be one of {d,i,u}."
+                    );
+                }
+            },
+            "**Copies** the contents of a **homogeneous** array to an\n"
+            "object that can be used as a `buffer`. This means it can be\n"
+            "used as input for `numpy.frombuffer`, `bytearray`,\n"
+            "`memoryview`, etc. This object has a lifecycle that is\n"
+            "independent of the array and the parser.\n"
+            "\n"
+            "When n-dimensional arrays are encountered, this method will\n"
+            "recursively flatten them.\n"
+            "\n"
+            ":param of_type: One of 'd' (double), 'i' (signed 64-bit\n"
+            "                integer) or 'u' (unsigned 64-bit integer).",
+            py::kw_only(),
+            py::arg("of_type")
         )
         .def_property_readonly("mini",
             [](dom::array &self) -> std::string { return minify(self); },
-            "Returns the minified JSON representation of this Array as"
-            " a `str`."
+            "Returns the minified JSON representation of this Array as\n"
+            "a `str`."
+        )
+        .def_property_readonly("slots",
+            [](dom::array &self) -> size_t { return self.slots(); },
+            "Returns the number of 'slots' consumed by this array.\n"
+            "This is not the same thing as `len(array)`, but the number of\n"
+            "64bit elements consumed by this Array and all of its children\n"
+            "on the simdjson structure tape."
         );
 
     py::class_<dom::object>(
@@ -452,8 +561,8 @@ PYBIND11_MODULE(csimdjson, m) {
             "A proxy object that behaves much like a real `dict()`.\n"
             "Python objects are not created until an element in the Object\n"
             "is accessed.\n\n"
-            "Complies with the `collections.abc.Mapping` interface, but does"
-            " not inherit from it."
+            "Complies with the `collections.abc.Mapping` interface, but\n"
+            "does not inherit from it."
         )
         .def("__len__", &dom::object::size)
         .def("__getitem__",
@@ -494,8 +603,8 @@ PYBIND11_MODULE(csimdjson, m) {
             py::arg("key"),
             py::arg("default") = py::none(),
             py::return_value_policy::reference_internal,
-            "Return the value of `key`, or `default` if the key does"
-            " not exist."
+            "Return the value of `key`, or `default` if the key does\n"
+            "not exist."
         )
         .def("keys",
             [](dom::object &self) { return PyKeyIterator(self); },
@@ -509,19 +618,19 @@ PYBIND11_MODULE(csimdjson, m) {
             [](dom::object &self) { return PyKeyValueIterator(self); },
             py::return_value_policy::reference_internal,
             py::keep_alive<0, 1>(),
-            "Returns an iterator over all the (key, value) pairs in this"
-            " `Object`."
+            "Returns an iterator over all the (key, value) pairs in this\n"
+            "`Object`."
         )
         .def("as_dict",
             [](dom::object &self) {
                 return object_to_dict(self, true);
             },
             "Convert this `Object` to a regular python dictionary,\n"
-            " recursively converting any objects or lists it finds."
+            "recursively converting any objects or lists it finds."
         )
         .def_property_readonly("mini",
             [](dom::object &self) -> std::string { return minify(self); },
-            "Returns the minified JSON representation of this Object as"
-            " a `str`."
+            "Returns the minified JSON representation of this Object as\n"
+            "a `str`."
         );
 }

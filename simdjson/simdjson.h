@@ -1,4 +1,4 @@
-/* auto-generated on Fri 23 Oct 2020 09:30:48 EDT. Do not edit! */
+/* auto-generated on Sun Oct 25 19:17:26 EDT 2020. Do not edit! */
 /* begin file include/simdjson.h */
 #ifndef SIMDJSON_H
 #define SIMDJSON_H
@@ -3276,6 +3276,17 @@ public:
    */
   inline size_t size() const noexcept;
   /**
+   * Get the total number of slots used by this array on the tape.
+   *
+   * Note that this is not the same thing as `size()`, which reports the
+   * number of actual elements within an array (not counting its children).
+   *
+   * Since an element can use 1 or 2 slots on the tape, you can only use this
+   * to figure out the total size of an array (including its children,
+   * recursively) if you know its structure ahead of time.
+   **/
+  inline size_t slots() const noexcept;
+  /**
    * Get the value associated with the given JSON pointer.  We use the RFC 6901
    * https://tools.ietf.org/html/rfc6901 standard, interpreting the current node
    * as the root of its own JSON document.
@@ -5816,6 +5827,9 @@ inline array::iterator array::end() const noexcept {
 }
 inline size_t array::size() const noexcept {
   return tape.scope_count();
+}
+inline size_t array::slots() const noexcept {
+  return tape.matching_brace_index() - tape.json_index;
 }
 inline simdjson_result<element> array::at_pointer(std::string_view json_pointer) const noexcept {
   if(json_pointer.empty()) { // an empty string means that we return the current node

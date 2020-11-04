@@ -102,7 +102,8 @@ setup(
             'python-rapidjson',
             'simplejson',
             'ujson',
-            'yyjson'
+            'yyjson',
+            'numpy'
         ]
     },
     ext_modules=[
