@@ -4,8 +4,8 @@ Native API
 .. currentmodule:: simdjson
 
 The native simdjson API offers significant performance improvements over the
-builtin-compatible API if only part of a document is of interest. Objects
-and arrays are returned as fake dicts (:class:`~Object`) and lists
+builtin-compatible API, especially if only part of a document is of interest.
+Objects and arrays are returned as fake dicts (:class:`~Object`) and lists
 (:class:`~Array`) that delay the creation of Python objects until they are
 accessed.
 

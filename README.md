@@ -39,7 +39,7 @@ C++11-capable compiler to compile the sources:
 
     pip install 'pysimdjson[dev]' --no-binary :all:
 
-Both simddjson and pysimdjson support FreeBSD and Linux on ARM when built
+Both simdjson and pysimdjson support FreeBSD and Linux on ARM when built
 from source.
 
 ## ⚗ Development and Testing
