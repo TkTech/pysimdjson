@@ -86,8 +86,8 @@ perform significantly better.
 creation of Python objects, not the actual parsing of the document. You can
 avoid all of this overhead by ignoring parts of the document you don't want.
 
-pysimdjson supports this in two ways - the use of JSON pointers via `at()`,
-or proxies for objects and lists.
+pysimdjson supports this in two ways - the use of JSON pointers via
+`at_pointer()`, or proxies for objects and lists.
 
 ```python
 import simdjson
@@ -100,7 +100,7 @@ don't care about anything else. We can do this two ways:
 
 ```python
 assert doc['res'][1]['name'] == 'second' # True
-assert doc.at('res/1/name') == 'second' # True
+assert doc.at_pointer('res/1/name') == 'second' # True
 ```
 
 Both of these approaches will be much faster than using `load/s()`, since
