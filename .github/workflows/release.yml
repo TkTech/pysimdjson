@@ -58,7 +58,7 @@ jobs:
     - name: Build (manylinux2014)
       uses: RalfG/python-wheels-manylinux-build@v0.3-manylinux2014_x86_64
       with:
-        python-versions: 'cp35-cp35m cp36-cp36m cp37-cp37m cp38-cp38'
+        python-versions: 'cp35-cp35m cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39'
         build-requirements: 'pybind11'
 
     - name: Set up Python
