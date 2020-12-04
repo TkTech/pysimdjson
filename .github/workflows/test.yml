@@ -39,7 +39,6 @@ jobs:
     - name: Installing python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e '.[dev]'
         pip install -e '.[test]'
 
     - name: Running tests
