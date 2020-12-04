@@ -78,9 +78,6 @@ setup(
         'Intended Audience :: Developers',
     ],
     python_requires='>3.4',
-    install_requires=[
-        "pybind11"
-    ],
     setup_requires=[
         "pybind11"
     ],
