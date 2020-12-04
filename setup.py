@@ -85,10 +85,6 @@ setup(
         "pybind11"
     ],
     extras_require={
-        # Dependencies for building from source.
-        'dev': [
-            'pybind11'
-        ],
         # Dependencies for package release.
         'release': [
             'm2r',
