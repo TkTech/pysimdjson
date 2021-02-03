@@ -78,11 +78,10 @@ setup(
         'Intended Audience :: Developers',
     ],
     python_requires='>3.4',
+    setup_requires=[
+        "pybind11"
+    ],
     extras_require={
-        # Dependencies for building from source.
-        'dev': [
-            'pybind11'
-        ],
         # Dependencies for package release.
         'release': [
             'm2r',

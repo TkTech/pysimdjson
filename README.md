@@ -37,7 +37,7 @@ Binary wheels are available for the following:
 If binary wheels are not available for your platform, you'll need a
 C++11-capable compiler to compile the sources:
 
-    pip install 'pysimdjson[dev]' --no-binary :all:
+    pip install pysimdjson --no-binary :all:
 
 Both simdjson and pysimdjson support FreeBSD and Linux on ARM when built
 from source.
@@ -47,7 +47,7 @@ from source.
 This project comes with a full test suite. To install development and testing
 dependencies, use:
 
-    pip install -e ".[dev]"
+    pip install -e ".[test]"
 
 To also install 3rd party JSON libraries used for running benchmarks, use:
 
@@ -290,4 +290,3 @@ each file. The second approach avoids all unnecessary object creation.
 [simdjson]: https://github.com/lemire/simdjson
 [pybind11]: https://pybind11.readthedocs.io/en/stable/
 [devprompt]: https://docs.microsoft.com/en-us/dotnet/framework/tools/developer-command-prompt-for-vs
-
