@@ -34,4 +34,4 @@ def test_implementation():
 
     # The generic, always-available implementation.
     parser.implementation = 'fallback'
-    parser.parse('{"hello": "world"}')
+    parser.parse(b'{"hello": "world"}')

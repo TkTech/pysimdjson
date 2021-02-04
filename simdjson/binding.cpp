@@ -20,9 +20,11 @@ static inline py::object sv_to_unicode(std::string_view sv) {
     /* pybind11 doesn't build in its string_view support if you're
      * targeting c++11, even if string_view is available. So we do it
      * ourselves. */
-    return py::reinterpret_steal<py::object>(
-        PyUnicode_FromStringAndSize(sv.data(), sv.size())
-    );
+    PyObject *obj = PyUnicode_FromStringAndSize(sv.data(), sv.size());
+    if (!obj) {
+        throw py::error_already_set();
+    }
+    return py::reinterpret_steal<py::object>(obj);
 }
 
 static inline py::dict object_to_dict(dom::object obj, bool recursive) {
@@ -353,9 +355,30 @@ PYBIND11_MODULE(csimdjson, m) {
             "                  python objects instead of pysimdjson proxies."
         )
         .def("parse",
-            [](dom::parser &self, const std::string &s, bool recursive = false) {
+            [](dom::parser &self, py::buffer src, bool recursive = false) {
+                py::buffer_info info = src.request();
+
+                if (info.format != py::format_descriptor<uint8_t>::format()) {
+                    throw py::value_error(
+                        "buffer passed to parse() is an invalid format"
+                    );
+                }
+
+                if (info.ndim != 1) {
+                    throw py::value_error(
+                        "buffer passed to parse() must be flat."
+                    );
+                }
+
                 return element_to_primitive(
-                    self.parse(padded_string(s)),
+                    self.parse(
+                        padded_string(
+                            std::string_view(
+                                (const char *)info.ptr,
+                                info.itemsize * info.size
+                            )
+                        )
+                    ),
                     recursive
                 );
             },
@@ -363,7 +386,7 @@ PYBIND11_MODULE(csimdjson, m) {
             py::arg("recursive") = false,
             "Parse a JSON document from the byte string `s`.\n"
             "\n"
-            ":param s: The document to parse.\n"
+            ":param buff: The document to parse.\n"
             ":param recursive: Recursively turn the document into real\n"
             "                  python objects instead of pysimdjson proxies."
         )

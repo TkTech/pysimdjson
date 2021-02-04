@@ -57,6 +57,10 @@ if system in ('Linux', 'Darwin', 'FreeBSD'):
         '-std=c++11'
     ])
 
+    if 'DEBUG' in os.environ:
+        extra_compile_args.append('-g')
+        extra_link_args.append('-g')
+
 
 setup(
     name='pysimdjson',
