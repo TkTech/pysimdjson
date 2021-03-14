@@ -372,12 +372,9 @@ PYBIND11_MODULE(csimdjson, m) {
 
                 return element_to_primitive(
                     self.parse(
-                        padded_string(
-                            std::string_view(
-                                (const char *)info.ptr,
-                                info.itemsize * info.size
-                            )
-                        )
+                        (const char *)info.ptr,
+                        info.itemsize * info.size,
+                        true
                     ),
                     recursive
                 );
