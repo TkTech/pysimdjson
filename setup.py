@@ -88,8 +88,8 @@ setup(
     extras_require={
         # Dependencies for package release.
         'release': [
-            'm2r',
             'sphinx',
+            'furo',
             'ghp-import',
             'bumpversion'
         ],

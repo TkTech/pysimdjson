@@ -12,13 +12,11 @@
 #
 # import os
 # import sys
-# sys.path.insert(0, '/mnt/c/Users/Tyler/Documents/Projects/pysimdjson/simdjson')
-
 
 # -- Project information -----------------------------------------------------
 
 project = 'pysimdjson'
-copyright = '2020, Tyler Kennedy'
+copyright = '2021, Tyler Kennedy'
 author = 'Tyler Kennedy'
 
 
@@ -30,8 +28,7 @@ author = 'Tyler Kennedy'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'sphinx.ext.todo',
-    'm2r'
+    'sphinx.ext.todo'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -55,7 +52,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'furo'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
