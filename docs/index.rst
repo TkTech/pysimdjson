@@ -2,16 +2,22 @@ pysimdjson
 ==========
 
 .. toctree::
+   :caption: Contents:
    :hidden:
    :maxdepth: 4
    :titlesonly:
-   :caption: Contents:
 
    self
    performance
-   dev
    dropin
    native
+
+.. toctree::
+   :caption: Development:
+   :hidden:
+
+   contrib/index.rst
+   license
 
 
 Python bindings for the `simdjson`_ project, a SIMD-accelerated JSON parser.
