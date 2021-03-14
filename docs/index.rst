@@ -69,13 +69,6 @@ License
 pysimdjson is made available under the MIT License. For more details, see
 `LICENSE`_.
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
 
 .. _simdjson: https://github.com/simdjson/simdjson
 .. _LICENSE: https://github.com/tktech/pysimdjson/blob/master/LICENSE
