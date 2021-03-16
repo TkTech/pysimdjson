@@ -1642,6 +1642,7 @@ static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_simdjson_csimdjson[] = "simdjson.csimdjson";
+static const char __pyx_k_Unknown_implementation[] = "Unknown implementation";
 static const char __pyx_k_Encountered_an_unknown_element_t[] = "Encountered an unknown element_type.";
 static const char __pyx_k_no_default___reduce___due_to_non[] = "no default __reduce__ due to non-trivial __cinit__";
 static const char __pyx_k_self_c_element_cannot_be_convert[] = "self.c_element cannot be converted to a Python object for pickling";
@@ -1659,6 +1660,7 @@ static PyObject *__pyx_n_s_Parser;
 static PyObject *__pyx_n_s_Parser___get;
 static PyObject *__pyx_n_s_Path;
 static PyObject *__pyx_n_s_TypeError;
+static PyObject *__pyx_kp_u_Unknown_implementation;
 static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_args;
 static PyObject *__pyx_n_s_cline_in_traceback;
@@ -1720,6 +1722,7 @@ static PyObject *__pyx_pf_8simdjson_9csimdjson_6Parser_4parse(struct __pyx_obj_8
 static PyObject *__pyx_pf_8simdjson_9csimdjson_6Parser_6load(struct __pyx_obj_8simdjson_9csimdjson_Parser *__pyx_v_self, PyObject *__pyx_v_path, int __pyx_v_recursive); /* proto */
 static PyObject *__pyx_pf_8simdjson_9csimdjson_6Parser_15implementations___get__(CYTHON_UNUSED struct __pyx_obj_8simdjson_9csimdjson_Parser *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8simdjson_9csimdjson_6Parser_14implementation___get__(CYTHON_UNUSED struct __pyx_obj_8simdjson_9csimdjson_Parser *__pyx_v_self); /* proto */
+static int __pyx_pf_8simdjson_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED struct __pyx_obj_8simdjson_9csimdjson_Parser *__pyx_v_self, PyObject *__pyx_v_name); /* proto */
 static PyObject *__pyx_pf_8simdjson_9csimdjson_6Parser_8__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_8simdjson_9csimdjson_Parser *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_8simdjson_9csimdjson_6Parser_10__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_8simdjson_9csimdjson_Parser *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static PyObject *__pyx_tp_new_8simdjson_9csimdjson_Array(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -1738,6 +1741,7 @@ static PyObject *__pyx_tuple__4;
 static PyObject *__pyx_tuple__5;
 static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__8;
+static PyObject *__pyx_tuple__9;
 /* Late includes */
 
 /* "simdjson/csimdjson.pyx":18
@@ -5767,6 +5771,7 @@ static PyObject *__pyx_pf_8simdjson_9csimdjson_6Parser_14implementation___get__(
  *             active_implementation.name(),
  *             active_implementation.description()             # <<<<<<<<<<<<<<
  *         )
+ * 
  */
   __pyx_t_2 = __pyx_convert_PyBytes_string_to_py_std__in_string(simdjson::active_implementation->description()); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 349, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
@@ -5811,6 +5816,139 @@ static PyObject *__pyx_pf_8simdjson_9csimdjson_6Parser_14implementation___get__(
   return __pyx_r;
 }
 
+/* "simdjson/csimdjson.pyx":353
+ * 
+ *     @implementation.setter
+ *     def implementation(self, name):             # <<<<<<<<<<<<<<
+ *         global active_implementation
+ * 
+ */
+
+/* Python wrapper */
+static int __pyx_pw_8simdjson_9csimdjson_6Parser_14implementation_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_name); /*proto*/
+static int __pyx_pw_8simdjson_9csimdjson_6Parser_14implementation_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_name) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
+  __pyx_r = __pyx_pf_8simdjson_9csimdjson_6Parser_14implementation_2__set__(((struct __pyx_obj_8simdjson_9csimdjson_Parser *)__pyx_v_self), ((PyObject *)__pyx_v_name));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static int __pyx_pf_8simdjson_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED struct __pyx_obj_8simdjson_9csimdjson_Parser *__pyx_v_self, PyObject *__pyx_v_name) {
+  simdjson::implementation const *__pyx_v_implementation;
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  simdjson::implementation const *const *__pyx_t_1;
+  simdjson::implementation const *__pyx_t_2;
+  PyObject *__pyx_t_3 = NULL;
+  char const *__pyx_t_4;
+  int __pyx_t_5;
+  int __pyx_lineno = 0;
+  const char *__pyx_filename = NULL;
+  int __pyx_clineno = 0;
+  __Pyx_RefNannySetupContext("__set__", 0);
+
+  /* "simdjson/csimdjson.pyx":356
+ *         global active_implementation
+ * 
+ *         for implementation in available_implementations:             # <<<<<<<<<<<<<<
+ *             if implementation.name() == str_as_bytes(name):
+ *                 active_implementation = implementation
+ */
+  __pyx_t_1 = simdjson::available_implementations.begin();
+  for (;;) {
+    if (!(__pyx_t_1 != simdjson::available_implementations.end())) break;
+    __pyx_t_2 = *__pyx_t_1;
+    ++__pyx_t_1;
+    __pyx_v_implementation = __pyx_t_2;
+
+    /* "simdjson/csimdjson.pyx":357
+ * 
+ *         for implementation in available_implementations:
+ *             if implementation.name() == str_as_bytes(name):             # <<<<<<<<<<<<<<
+ *                 active_implementation = implementation
+ *                 return
+ */
+    __pyx_t_3 = __pyx_f_8simdjson_9csimdjson_str_as_bytes(__pyx_v_name); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 357, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    if (unlikely(__pyx_t_3 == Py_None)) {
+      PyErr_SetString(PyExc_TypeError, "expected bytes, NoneType found");
+      __PYX_ERR(0, 357, __pyx_L1_error)
+    }
+    __pyx_t_4 = __Pyx_PyBytes_AsString(__pyx_t_3); if (unlikely((!__pyx_t_4) && PyErr_Occurred())) __PYX_ERR(0, 357, __pyx_L1_error)
+    __pyx_t_5 = ((__pyx_v_implementation->name() == __pyx_t_4) != 0);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    if (__pyx_t_5) {
+
+      /* "simdjson/csimdjson.pyx":358
+ *         for implementation in available_implementations:
+ *             if implementation.name() == str_as_bytes(name):
+ *                 active_implementation = implementation             # <<<<<<<<<<<<<<
+ *                 return
+ * 
+ */
+      simdjson::active_implementation = __pyx_v_implementation;
+
+      /* "simdjson/csimdjson.pyx":359
+ *             if implementation.name() == str_as_bytes(name):
+ *                 active_implementation = implementation
+ *                 return             # <<<<<<<<<<<<<<
+ * 
+ *         raise ValueError('Unknown implementation')
+ */
+      __pyx_r = 0;
+      goto __pyx_L0;
+
+      /* "simdjson/csimdjson.pyx":357
+ * 
+ *         for implementation in available_implementations:
+ *             if implementation.name() == str_as_bytes(name):             # <<<<<<<<<<<<<<
+ *                 active_implementation = implementation
+ *                 return
+ */
+    }
+
+    /* "simdjson/csimdjson.pyx":356
+ *         global active_implementation
+ * 
+ *         for implementation in available_implementations:             # <<<<<<<<<<<<<<
+ *             if implementation.name() == str_as_bytes(name):
+ *                 active_implementation = implementation
+ */
+  }
+
+  /* "simdjson/csimdjson.pyx":361
+ *                 return
+ * 
+ *         raise ValueError('Unknown implementation')             # <<<<<<<<<<<<<<
+ */
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 361, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_3);
+  __Pyx_Raise(__pyx_t_3, 0, 0, 0);
+  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+  __PYX_ERR(0, 361, __pyx_L1_error)
+
+  /* "simdjson/csimdjson.pyx":353
+ * 
+ *     @implementation.setter
+ *     def implementation(self, name):             # <<<<<<<<<<<<<<
+ *         global active_implementation
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_AddTraceback("simdjson.csimdjson.Parser.implementation.__set__", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = -1;
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
 /* "(tree fragment)":1
  * def __reduce_cython__(self):             # <<<<<<<<<<<<<<
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
@@ -5845,7 +5983,7 @@ static PyObject *__pyx_pf_8simdjson_9csimdjson_6Parser_8__reduce_cython__(CYTHON
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__7, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -5901,7 +6039,7 @@ static PyObject *__pyx_pf_8simdjson_9csimdjson_6Parser_10__setstate_cython__(CYT
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__8, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__9, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -6551,6 +6689,16 @@ static PyObject *__pyx_getprop_8simdjson_9csimdjson_6Parser_implementation(PyObj
   return __pyx_pw_8simdjson_9csimdjson_6Parser_14implementation_1__get__(o);
 }
 
+static int __pyx_setprop_8simdjson_9csimdjson_6Parser_implementation(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
+  if (v) {
+    return __pyx_pw_8simdjson_9csimdjson_6Parser_14implementation_3__set__(o, v);
+  }
+  else {
+    PyErr_SetString(PyExc_NotImplementedError, "__del__");
+    return -1;
+  }
+}
+
 static PyMethodDef __pyx_methods_8simdjson_9csimdjson_Parser[] = {
   {"parse", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_8simdjson_9csimdjson_6Parser_5parse, METH_VARARGS|METH_KEYWORDS, __pyx_doc_8simdjson_9csimdjson_6Parser_4parse},
   {"load", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_8simdjson_9csimdjson_6Parser_7load, METH_VARARGS|METH_KEYWORDS, __pyx_doc_8simdjson_9csimdjson_6Parser_6load},
@@ -6561,7 +6709,7 @@ static PyMethodDef __pyx_methods_8simdjson_9csimdjson_Parser[] = {
 
 static struct PyGetSetDef __pyx_getsets_8simdjson_9csimdjson_Parser[] = {
   {(char *)"implementations", __pyx_getprop_8simdjson_9csimdjson_6Parser_implementations, 0, (char *)"\n        A list of available parser implementations in the form of [(name,\n        description),\342\200\246].\n        ", 0},
-  {(char *)"implementation", __pyx_getprop_8simdjson_9csimdjson_6Parser_implementation, 0, (char *)"\n        The active parser implementation as (name, description). Can be\n        any value from :py:attr:`implementations`. The best implementation\n        for your current platform will be picked by default.\n\n        Can be set to the name of any valid implementation to globally\n        change the Parser implementation.\n\n        .. warning::\n            Setting this to an implementation inappropriate for your platform\n            WILL cause illegal instructions or segfaults at best. It's up to\n            you to ensure an implementation is valid for your CPU.\n        ", 0},
+  {(char *)"implementation", __pyx_getprop_8simdjson_9csimdjson_6Parser_implementation, __pyx_setprop_8simdjson_9csimdjson_6Parser_implementation, (char *)"\n        The active parser implementation as (name, description). Can be\n        any value from :py:attr:`implementations`. The best implementation\n        for your current platform will be picked by default.\n\n        Can be set to the name of any valid implementation to globally\n        change the Parser implementation.\n\n        .. warning::\n            Setting this to an implementation inappropriate for your platform\n            WILL cause illegal instructions or segfaults at best. It's up to\n            you to ensure an implementation is valid for your CPU.\n        ", 0},
   {0, 0, 0, 0, 0}
 };
 
@@ -7240,6 +7388,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_Parser___get, __pyx_k_Parser___get, sizeof(__pyx_k_Parser___get), 0, 0, 1, 1},
   {&__pyx_n_s_Path, __pyx_k_Path, sizeof(__pyx_k_Path), 0, 0, 1, 1},
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
+  {&__pyx_kp_u_Unknown_implementation, __pyx_k_Unknown_implementation, sizeof(__pyx_k_Unknown_implementation), 0, 1, 0, 0},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_args, __pyx_k_args, sizeof(__pyx_k_args), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
@@ -7336,24 +7485,33 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
+  /* "simdjson/csimdjson.pyx":361
+ *                 return
+ * 
+ *         raise ValueError('Unknown implementation')             # <<<<<<<<<<<<<<
+ */
+  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_u_Unknown_implementation); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(0, 361, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__7);
+  __Pyx_GIVEREF(__pyx_tuple__7);
+
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__7 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__7)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__7);
-  __Pyx_GIVEREF(__pyx_tuple__7);
+  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__8);
+  __Pyx_GIVEREF(__pyx_tuple__8);
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__8 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__8)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__8);
-  __Pyx_GIVEREF(__pyx_tuple__8);
+  __pyx_tuple__9 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__9)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__9);
+  __Pyx_GIVEREF(__pyx_tuple__9);
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;

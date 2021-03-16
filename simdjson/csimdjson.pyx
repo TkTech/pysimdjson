@@ -348,3 +348,14 @@ cdef class Parser:
             active_implementation.name(),
             active_implementation.description()
         )
+
+    @implementation.setter
+    def implementation(self, name):
+        global active_implementation
+
+        for implementation in available_implementations:
+            if implementation.name() == str_as_bytes(name):
+                active_implementation = implementation
+                return
+
+        raise ValueError('Unknown implementation')
