@@ -1,5 +1,5 @@
 #cython: language_level=3
-# distutils: language = c++
+#distutils: language=c++
 import pathlib
 
 from libc.stdint cimport uint64_t, int64_t
@@ -9,7 +9,7 @@ from cython.operator cimport preincrement, dereference
 from cpython.list cimport PyList_New, PyList_SET_ITEM
 from cpython.bytes cimport PyBytes_AsStringAndSize
 
-from csimdjson cimport *
+from simdjson.csimdjson cimport *
 
 MAXSIZE_BYTES = SIMDJSON_MAXSIZE_BYTES
 PADDING = SIMDJSON_PADDING

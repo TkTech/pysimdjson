@@ -1,12 +1,7 @@
 #cython: language_level=3
+#distutils: language=c++
 from libc.stdint cimport uint32_t
 from libcpp.string cimport string
-
-cdef extern from "simdjson.cpp":
-    pass
-
-cdef extern from "errors.cpp":
-    pass
 
 cdef extern from "errors.h":
     cdef void simdjson_error_handler()

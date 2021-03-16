@@ -3,11 +3,41 @@ import os.path
 
 from setuptools import setup, find_packages, Extension
 
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    CYTHON_AVAILABLE = False
+else:
+    CYTHON_AVAILABLE = True
+
 
 root = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(root, 'README.md'), 'rb') as readme:
     long_description = readme.read().decode('utf-8')
 
+if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
+    print(
+        'BUILD_WITH_CYTHON environment variable is set, but cython'
+        ' is not available. Falling back to pre-cythonized version if'
+        ' available.'
+    )
+
+if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
+    extensions = cythonize([
+        Extension('csimdjson', [
+            'simdjson/simdjson.cpp',
+            'simdjson/errors.cpp',
+            'simdjson/csimdjson.pyx'
+        ])
+    ])
+else:
+    extensions = [
+        Extension('csimdjson', [
+            'simdjson/simdjson.cpp',
+            'simdjson/errors.cpp',
+            'simdjson/csimdjson.cpp'
+        ], language='c++')
+    ]
 
 setup(
     name='pysimdjson',
@@ -53,11 +83,8 @@ setup(
             'numpy'
         ]
     },
-    ext_modules=[
-        Extension(
-            'csimdjson',
-            ['simdjson/csimdjson.cpp'],
-            language='c++'
-        )
-    ]
+    ext_modules=extensions,
+    package_data={
+        'simdjson': ['simdjson/*.pxd']
+    }
 )
