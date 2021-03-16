@@ -9,8 +9,7 @@ try:
         Object,
         # Constants
         MAXSIZE_BYTES,
-        PADDING,
-        DEFAULT_MAX_DEPTH
+        PADDING
     )
 except ImportError:
     raise RuntimeError('Unable to import low-level simdjson bindings.')
@@ -21,8 +20,7 @@ _ALL_IMPORTS = [
     Array,
     Object,
     MAXSIZE_BYTES,
-    PADDING,
-    DEFAULT_MAX_DEPTH
+    PADDING
 ]
 
 

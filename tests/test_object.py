@@ -60,4 +60,4 @@ def test_object_uplift(parser):
 def test_object_mini(parser):
     """Test JSON minifier."""
     doc = parser.parse(b'{"a" : "z" }')
-    assert doc.mini == '{"a":"z"}'
+    assert doc.mini == b'{"a":"z"}'

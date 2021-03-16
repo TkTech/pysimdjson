@@ -1,6 +1,4 @@
 """Tests for the csimdjson.Array proxy object."""
-import collections.abc
-
 import pytest
 
 import simdjson
@@ -67,7 +65,7 @@ def test_array_uplift(parser):
 def test_array_mini(parser):
     """Test JSON minifier."""
     doc = parser.parse(b'[ 0, 1, 2,    3, 4, 5]')
-    assert doc.mini == '[0,1,2,3,4,5]'
+    assert doc.mini == b'[0,1,2,3,4,5]'
 
 
 def test_array_as_buffer(parser):
