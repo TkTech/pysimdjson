@@ -45,15 +45,14 @@ cdef list array_to_list(Parser p, simd_array arr, bint recursive):
     cdef list result = PyList_New(arr.size())
     cdef size_t i = 0
 
-    cdef simd_array.iterator it = arr.begin()
-    while it != arr.end():
+    # enumerate() doesn't work since it takes a PyObject.
+    for element in arr:
         PyList_SET_ITEM(
             result,
             i,
-            element_to_primitive(p, dereference(it), recursive)
+            element_to_primitive(p, element, recursive)
         )
         i += 1
-        preincrement(it)
 
     return result
 
