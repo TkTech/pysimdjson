@@ -34,12 +34,8 @@ def load(fp, *, cls=None, object_hook=None, parse_float=None, parse_int=None,
         - object_pairs_hook is ignored.
         - cls is ignored.
     """
-    content = fp.read()
-    if isinstance(content, str):
-        content = content.encode('utf-8')
-
     parser = Parser()
-    return parser.parse(content, True)
+    return parser.parse(fp.read(), True)
 
 
 def loads(s, *, cls=None, object_hook=None, parse_float=None, parse_int=None,
@@ -52,9 +48,6 @@ def loads(s, *, cls=None, object_hook=None, parse_float=None, parse_int=None,
         - object_pairs_hook is ignored.
         - cls is ignored.
     """
-    if isinstance(s, str):
-        s = s.encode('utf-8')
-
     parser = Parser()
     return parser.parse(s, True)
 

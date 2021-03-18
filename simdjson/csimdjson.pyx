@@ -6,8 +6,10 @@ from libc.stdint cimport uint64_t, int64_t
 from libcpp cimport bool
 from libcpp.string cimport string
 from cython.operator cimport preincrement, dereference
+from cpython.ref cimport Py_INCREF
 from cpython.list cimport PyList_New, PyList_SET_ITEM
 from cpython.bytes cimport PyBytes_AsStringAndSize
+from cpython.slice cimport PySlice_GetIndicesEx
 
 from simdjson.csimdjson cimport *
 
@@ -42,15 +44,17 @@ cdef dict object_to_dict(Parser p, simd_object obj, bint recursive):
 
 
 cdef list array_to_list(Parser p, simd_array arr, bint recursive):
-    cdef list result = PyList_New(arr.size())
-    cdef size_t i = 0
+    cdef:
+        list result = PyList_New(arr.size())
+        size_t i = 0
 
-    # enumerate() doesn't work since it takes a PyObject.
     for element in arr:
+        primitive = element_to_primitive(p, element, recursive)
+        Py_INCREF(primitive)
         PyList_SET_ITEM(
             result,
             i,
-            element_to_primitive(p, element, recursive)
+            primitive
         )
         i += 1
 
@@ -59,17 +63,18 @@ cdef list array_to_list(Parser p, simd_array arr, bint recursive):
 
 cdef inline element_to_primitive(Parser p, simd_element e,
                                  bint recursive = False):
-    cdef const char *data
-    cdef size_t size
-    cdef element_type type_ = e.type()
+    cdef:
+        const char *data
+        size_t size
+        element_type type_ = e.type()
 
     if type_ == element_type.OBJECT:
         if recursive:
-            return object_to_dict(p, <simd_object>e, recursive)
+            return object_to_dict(p, e.get_object(), recursive)
         return Object.from_element(p, e)
     elif type_ == element_type.ARRAY:
         if recursive:
-            return array_to_list(p, <simd_array>e, recursive)
+            return array_to_list(p, e.get_array(), recursive)
         return Array.from_element(p, e)
     elif type_ == element_type.STRING:
         data = e.get_c_str()
@@ -100,7 +105,42 @@ cdef class Array:
         self.c_element = src.get_array()
         return self
 
-    def __getitem__(self, int key):
+    def __getitem__(self, key):
+        cdef:
+            Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0
+            Py_ssize_t dst, src
+            list result
+
+        if isinstance(key, slice):
+            PySlice_GetIndicesEx(
+                key,
+                self.c_element.size(),
+                &start,
+                &stop,
+                &step,
+                &slice_length
+            )
+
+            result = PyList_New(slice_length)
+            for dst, src in enumerate(range(start, stop, step)):
+                primitive = element_to_primitive(
+                    self.parser,
+                    self.c_element.at(src),
+                    True
+                )
+                Py_INCREF(primitive)
+                PyList_SET_ITEM(
+                    result,
+                    dst,
+                    primitive
+                )
+
+            return result
+        elif isinstance(key, int):
+            # Wrap around negative indexes.
+            if key < 0:
+                key += self.c_element.size()
+
         return element_to_primitive(self.parser, self.c_element.at(key))
 
     def __len__(self):
