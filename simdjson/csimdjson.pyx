@@ -189,7 +189,7 @@ cdef class Array:
         64bit elements consumed by this Array and all of its children
         on the simdjson structure tape.
         """
-        return self.c_element.slots()
+        return self.c_element.number_of_slots()
 
 
 cdef class Object:

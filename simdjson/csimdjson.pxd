@@ -56,7 +56,7 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
         iterator end()
 
         size_t size()
-        size_t slots()
+        size_t number_of_slots()
 
         simd_element at(int) except +simdjson_error_handler
         simd_element at_pointer(const char*) except +simdjson_error_handler
