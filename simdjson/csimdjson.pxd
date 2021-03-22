@@ -5,6 +5,9 @@ from libcpp.string cimport string
 
 cdef extern from "errors.h":
     cdef void simdjson_error_handler()
+    cdef void * flatten_array[T](simd_array src) \
+        except +simdjson_error_handler
+
 
 cdef extern from "simdjson.h" namespace "simdjson":
     cdef size_t SIMDJSON_MAXSIZE_BYTES

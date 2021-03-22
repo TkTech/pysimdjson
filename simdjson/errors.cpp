@@ -1,3 +1,4 @@
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "simdjson.h"
 #include "errors.h"
@@ -10,7 +11,8 @@
  *
  *      simd_element at(int) except +simdjson_error_handler
  */
-void simdjson_error_handler() {
+void
+simdjson_error_handler() {
     using namespace simdjson;
 
     try {

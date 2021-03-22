@@ -9,7 +9,9 @@ from cython.operator cimport preincrement, dereference
 from cpython.ref cimport Py_INCREF
 from cpython.list cimport PyList_New, PyList_SET_ITEM
 from cpython.bytes cimport PyBytes_AsStringAndSize
-from cpython.slice cimport PySlice_GetIndicesEx
+from cpython.slice cimport PySlice_GetIndicesEx, PySlice_New
+from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
+from cpython.buffer cimport PyBuffer_FillInfo
 
 from simdjson.csimdjson cimport *
 
@@ -94,7 +96,66 @@ cdef inline element_to_primitive(Parser p, simd_element e,
         raise ValueError("Encountered an unknown element_type.")
 
 
+cdef class ArrayBuffer:
+    """
+    A container for the flattened data of a homogeneous :class:`Array`.
+
+    .. note::
+
+        This object is responsible for keeping the contents of an Array alive
+        even after the simdjson Parser has been reused or destroyed.
+
+    .. admonishment::
+       :class: warning
+
+       You should never create this class on your own. It is created and
+       returned for you by :func:`Array.as_buffer`.
+    """
+    cdef void *buffer
+    cdef readonly size_t size
+
+    def __cinit__(self):
+        self.buffer = NULL
+        self.size = 0
+
+    def __dealloc__(self):
+        if self.buffer != NULL:
+            PyMem_Free(self.buffer)
+
+    @staticmethod
+    cdef inline from_element(simd_array src, of_type):
+        cdef:
+            ArrayBuffer self = ArrayBuffer.__new__(ArrayBuffer)
+
+        if of_type == 'd':
+            self.buffer = flatten_array[double](src, &self.size)
+        elif of_type == 'i':
+            self.buffer = flatten_array[int64_t](src, &self.size)
+        elif of_type == 'u':
+            self.buffer = flatten_array[uint64_t](src, &self.size)
+        else:
+            raise ValueError('of_type must be one of {d,i,u}.')
+
+        if not self.buffer:
+            raise MemoryError()
+
+        return self
+
+    def __getbuffer__(self, Py_buffer *buffer, int flags):
+        PyBuffer_FillInfo(buffer, self, self.buffer, self.size, 0, flags)
+
+    def __releasebuffer__(self, Py_buffer *buffer):
+        pass
+
+
 cdef class Array:
+    """A proxy object that behaves much like a real `list()`.
+
+    Python objects are not created until an element in the list is accessed.
+    When you only need a subset of an Array, this can be much faster than
+    converting an entire array (and all of its children) into real Python
+    objects.
+    """
     cdef readonly Parser parser
     cdef simd_array c_element
 
@@ -172,6 +233,28 @@ cdef class Array:
         """
         return array_to_list(self.parser, self.c_element, True)
 
+    def as_buffer(self, *, of_type):
+        """
+        **Copies** the contents of a **homogeneous** array to an
+        object that can be used as a `buffer`. This means it can be
+        used as input for `numpy.frombuffer`, `bytearray`,
+        `memoryview`, etc.
+
+        When n-dimensional arrays are encountered, this method will recursively
+        flatten them.
+
+        .. note::
+
+            The object returned by this method contains a *copy* of the Array's
+            data. Thus, it's safe to use even after the Array or Paser are
+            destroyed or reused.
+
+        :param of_type: One of 'd' (double), 'i' (signed 64-bit integer) or 'u'
+                        (unsigned 64-bit integer).
+        """
+        return ArrayBuffer.from_element(self.c_element, of_type)
+
+
     @property
     def mini(self):
         """
@@ -193,6 +276,13 @@ cdef class Array:
 
 
 cdef class Object:
+    """A proxy object that behaves much like a real `dict()`.
+
+    Python objects are not created until an element in the Object"
+    is accessed. When you only need a subset of an Object, this can be much
+    faster than converting an entire Object (and all of its children) into real
+    Python objects.
+    """
     cdef readonly Parser parser
     cdef simd_object c_element
 
