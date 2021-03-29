@@ -78,6 +78,7 @@ else:
 setup(
     name='pysimdjson',
     packages=find_packages(),
+    package_data={'simdjson': ['__init__.pyi', 'py.typed']},
     version='3.2.0',
     description='simdjson bindings for python',
     long_description=long_description,
