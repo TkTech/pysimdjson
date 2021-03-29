@@ -17,6 +17,11 @@ from simdjson.csimdjson cimport *
 
 MAXSIZE_BYTES = SIMDJSON_MAXSIZE_BYTES
 PADDING = SIMDJSON_PADDING
+VERSION = (
+    f'{SIMDJSON_VERSION_MAJOR}.'
+    f'{SIMDJSON_VERSION_MINOR}.'
+    f'{SIMDJSON_VERSION_REVISION}'
+)
 
 
 cdef bytes str_as_bytes(s):
@@ -259,8 +264,6 @@ cdef class Array:
     def mini(self):
         """
         Returns the minified JSON representation of this Array.
-
-        :rtype: bytes
         """
         return minify(self.c_element)
 
@@ -278,7 +281,7 @@ cdef class Array:
 cdef class Object:
     """A proxy object that behaves much like a real `dict()`.
 
-    Python objects are not created until an element in the Object"
+    Python objects are not created until an element in the Object
     is accessed. When you only need a subset of an Object, this can be much
     faster than converting an entire Object (and all of its children) into real
     Python objects.
@@ -384,8 +387,6 @@ cdef class Object:
     def mini(self):
         """
         Returns the minified JSON representation of this Object.
-
-        :rtype: bytes
         """
         return minify(self.c_element)
 

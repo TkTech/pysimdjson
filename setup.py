@@ -29,7 +29,7 @@ if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
             'simdjson/errors.cpp',
             'simdjson/csimdjson.pyx'
         ])
-    ])
+    ], compiler_directives={'embedsignature': True})
 else:
     extensions = [
         Extension('csimdjson', [

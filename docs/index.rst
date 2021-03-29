@@ -33,6 +33,8 @@ Installation
 If binary wheels are available for your platform, you can install from pip
 with no further requirements:
 
+.. code::
+
     pip install pysimdjson
 
 Binary wheels are available for the following:
@@ -61,13 +63,9 @@ when installing.
 To ensure you're getting the best optimizations available for your platform,
 you can force a build from source:
 
+.. code::
+
     pip install pysimdjson --no-binary :all:
-
-License
--------
-
-pysimdjson is made available under the MIT License. For more details, see
-`LICENSE`_.
 
 
 .. _simdjson: https://github.com/simdjson/simdjson

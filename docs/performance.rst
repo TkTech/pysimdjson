@@ -1,17 +1,19 @@
 Performance
 ===========
 
-pysimdjson provides an api compatible with the built-in json module for
-convenience, and this API is pretty fast (beating or tying all other Python
-JSON libraries). However, it also provides a simdjson-specific API that can
-perform significantly better.
+pysimdjson is fast, typically tying or beating all other Python JSON libraries
+when simply using :func:`simdjson.loads()` or :func:`simdjson.load()`.
+
+However, 95% of the time spent loading a JSON document into Python is spent in
+the creation of Python objects, not the actual parsing of the document. You can
+avoid all of this overhead by ignoring parts of the document you don't want.
+
+pysimdjson also has optimizations for loading homogeneous arrays into tools
+like `numpy`_ via :func:`simdjson.Array.as_buffer()`. This is typically at
+least 8x faster than other methods.
 
 Don't load the entire document
 ------------------------------
-
-95% of the time spent loading a JSON document into Python is spent in the
-creation of Python objects, not the actual parsing of the document. You can
-avoid all of this overhead by ignoring parts of the document you don't want.
 
 pysimdjson supports this in two ways - the use of JSON pointers via
 `at_pointer()`, or proxies for objects and lists.
@@ -68,3 +70,5 @@ to re-use the parser.
 
 This will drastically reduce the number of allocations being made, as it will
 reuse the existing buffer when possible. If it's too small, it'll grow to fit.
+
+.. _numpy: https://numpy.org/
