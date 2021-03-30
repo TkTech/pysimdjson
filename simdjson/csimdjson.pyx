@@ -1,5 +1,5 @@
-#cython: language_level=3
-#distutils: language=c++
+# cython: language_level=3
+# distutils: language=c++
 import pathlib
 
 from libc.stdint cimport uint64_t, int64_t
@@ -69,7 +69,7 @@ cdef list array_to_list(Parser p, simd_array arr, bint recursive):
 
 
 cdef inline element_to_primitive(Parser p, simd_element e,
-                                 bint recursive = False):
+                                 bint recursive=False):
     cdef:
         const char *data
         size_t size
@@ -259,7 +259,6 @@ cdef class Array:
         """
         return ArrayBuffer.from_element(self.c_element, of_type)
 
-
     @property
     def mini(self):
         """
@@ -302,7 +301,7 @@ cdef class Object:
             self.c_element[str_as_bytes(key)]
         )
 
-    def get(self, key, default = None):
+    def get(self, key, default=None):
         """
         Return the value of `key`, or `default` if the key does
         not exist.
@@ -412,7 +411,7 @@ cdef class Parser:
     def __dealloc__(self):
         del self.c_parser
 
-    def parse(self, src not None, bint recursive = False):
+    def parse(self, src not None, bint recursive=False):
         """Parse the given JSON document.
 
         :param src: The document to parse.
@@ -435,7 +434,7 @@ cdef class Parser:
                 recursive
             )
 
-    def load(self, path, bint recursive = False):
+    def load(self, path, bint recursive=False):
         """Load a JSON document from the file system path `path`.
 
         :param path: A filesystem path.

@@ -1,5 +1,5 @@
-#cython: language_level=3
-#distutils: language=c++
+# cython: language_level=3
+# distutils: language=c++
 from libc.stdint cimport uint32_t
 from libcpp.string cimport string
 
@@ -99,4 +99,3 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
         simd_element parse(const char *, size_t, bool) \
             except +simdjson_error_handler
         simd_element load(const char *) except +simdjson_error_handler
-

@@ -23,13 +23,31 @@ if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
     )
 
 if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
+    macros = []
+    compiler_directives = {
+        'embedsignature': True
+    }
+
+    if os.getenv('BUILD_FOR_DEBUG'):
+        # Enable line tracing, which also enables support for coverage
+        # reporting.
+        macros = [
+            ('CYTHON_TRACE', 1),
+            ('CYTHON_TRACE_NOGIL', 1)
+        ]
+        compiler_directives['linetrace'] = True
+
     extensions = cythonize([
-        Extension('csimdjson', [
-            'simdjson/simdjson.cpp',
-            'simdjson/errors.cpp',
-            'simdjson/csimdjson.pyx'
-        ])
-    ], compiler_directives={'embedsignature': True})
+        Extension(
+            'csimdjson',
+            [
+                'simdjson/simdjson.cpp',
+                'simdjson/errors.cpp',
+                'simdjson/csimdjson.pyx'
+            ],
+            define_macros=macros
+        )
+    ], compiler_directives=compiler_directives)
 else:
     extensions = [
         Extension('csimdjson', [
@@ -69,12 +87,13 @@ setup(
         ],
         # Dependencies for running tests.
         'test': [
-            'pytest'
+            'pytest',
+            'pytest-benchmark',
+            'flake8',
+            'coverage'
         ],
         # Dependencies for running benchmarks.
         'benchmark': [
-            'pytest',
-            'pytest-benchmark',
             'orjson',
             'python-rapidjson',
             'simplejson',
