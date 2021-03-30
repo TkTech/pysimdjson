@@ -1,10 +1,8 @@
 import os
 import os.path
-import sysconfig
 import platform
 
 from setuptools import setup, find_packages, Extension
-from distutils.version import LooseVersion
 
 try:
     from Cython.Build import cythonize
@@ -18,19 +16,16 @@ root = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(root, 'README.md'), 'rb') as readme:
     long_description = readme.read().decode('utf-8')
 
-if (platform.system() == 'Darwin' and
-        'MACOSX_DEPLOYMENT_TARGET' not in os.environ):
-    # CPython targets the version of OS X it was built with by default,
-    # which can be very, very old. So old, it doesn't support C++11, which
-    # only came around in OS X 10.9 (Mavericks)
-    current_version = platform.mac_ver()[0]
-    target_version = sysconfig.get_config_var(
-        'MACOSX_DEPLOYMENT_TARGET',
-        current_version
-    )
-    if (LooseVersion(target_version) < '10.9'
-            and LooseVersion(current_version) >= '10.9'):
-        os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
+system = platform.system()
+
+extra_compile_args = []
+
+if system == 'Darwin':
+    # Annoyingly, Github's setup-python action is wrongly building CPython
+    # with 10.14 as a target, forcing us to use this as our minimum without
+    # rebuilding a dozen combinations of CPython and OS X.
+    os.environ.setdefault('MACOSX_DEPLOYMENT_TARGET', '10.14')
+    extra_compile_args.append('-std=c++11')
 
 if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
     print(
@@ -62,16 +57,22 @@ if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
                 'simdjson/errors.cpp',
                 'simdjson/csimdjson.pyx'
             ],
-            define_macros=macros
+            define_macros=macros,
+            extra_compile_args=extra_compile_args
         )
     ], compiler_directives=compiler_directives)
 else:
     extensions = [
-        Extension('csimdjson', [
-            'simdjson/simdjson.cpp',
-            'simdjson/errors.cpp',
-            'simdjson/csimdjson.cpp'
-        ], language='c++')
+        Extension(
+            'csimdjson',
+            [
+                'simdjson/simdjson.cpp',
+                'simdjson/errors.cpp',
+                'simdjson/csimdjson.cpp'
+            ],
+            extra_compile_args=extra_compile_args,
+            language='c++'
+        )
     ]
 
 setup(
