@@ -1,7 +1,10 @@
 import os
 import os.path
+import sysconfig
+import platform
 
 from setuptools import setup, find_packages, Extension
+from distutils.version import LooseVersion
 
 try:
     from Cython.Build import cythonize
@@ -14,6 +17,20 @@ else:
 root = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(root, 'README.md'), 'rb') as readme:
     long_description = readme.read().decode('utf-8')
+
+if (platform.system() == 'Darwin' and
+        'MACOSX_DEPLOYMENT_TARGET' not in os.environ):
+    # CPython targets the version of OS X it was built with by default,
+    # which can be very, very old. So old, it doesn't support C++11, which
+    # only came around in OS X 10.9 (Mavericks)
+    current_version = platform.mac_ver()[0]
+    target_version = sysconfig.get_config_var(
+        'MACOSX_DEPLOYMENT_TARGET',
+        current_version
+    )
+    if (LooseVersion(target_version) < '10.9'
+            and LooseVersion(current_version) >= '10.9'):
+        os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 
 if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
     print(
