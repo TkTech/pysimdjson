@@ -12,9 +12,16 @@ def test_load(parser):
     doc.at_pointer('/Image/Width')
 
 
-def test_parse(parser):
+def test_parse_bytes(parser):
+    """Ensure we can load from byte string fragments."""
+    doc = parser.parse(b'{"hello": "world"}')
+    assert doc.as_dict() == {'hello': 'world'}
+
+
+def test_parse_str(parser):
     """Ensure we can load from string fragments."""
-    parser.parse(b'{"hello": "world"}')
+    doc = parser.parse('{"hello": "world"}')
+    assert doc.as_dict() == {'hello': 'world'}
 
 
 def test_unicode_decode_error(parser):
