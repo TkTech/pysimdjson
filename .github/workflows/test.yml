@@ -76,9 +76,14 @@ jobs:
         clang-6.0
 
     - name: Installing python dependencies
+      env:
+        BUILD_WITH_CYTHON: 1
+        BUILD_FOR_DEBUG: 1
       run: |
         python -m pip install --upgrade pip wheel
         pip install -e '.[test]'
+        rm simdjson/csimdjson.cpp
+        python setup.py develop
 
     - name: Running tests with pytest
       run: |
