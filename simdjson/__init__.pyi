@@ -16,38 +16,38 @@ from typing import (
 )
 
 
-class Object(MutableMapping[Any, Any]):
-    def __delitem__(self, key: Any) -> None:
+Primitives = Union[int, float, str, boolean]
+K = str
+V = Union['Object', 'Array', Primitives]
+
+
+class Object(Mapping[K, V]):
+  
+    def __getitem__(self, key: K) -> V:
         ...
 
-    def __getitem__(self, key: Any) -> Any:
-        ...
-
-    def __setitem__(self, key: Any, value: Any) -> None:
-        ...
-
-    def __iter__(self) -> Iterator[Any]:
+    def __iter__(self) -> Iterator[V]:
         ...
 
     def __len__(self) -> int:
         ...
 
-    def as_dict(self) -> Dict[Any, Any]:
+    def as_dict(self) -> Dict[K, V]:
         ...
 
-    def at_pointer(self, key: str) -> Any:
+    def at_pointer(self, key: str) -> V:
         ...
 
-    def get(self, key: str, default: Any = None) -> Any:
+    def get(self, key: K, default: Optional[V] = None) -> V:
         ...
 
-    def keys(self) -> AbstractSet[Any]:
+    def keys(self) -> AbstractSet[K]:
         ...
 
-    def values(self) -> ValuesView[Any]:
+    def values(self) -> ValuesView[V]:
         ...
 
-    def items(self) -> AbstractSet[Tuple[Any, Any]]:
+    def items(self) -> AbstractSet[Tuple[K, V]]:
         ...
 
     @property
@@ -58,22 +58,22 @@ class Object(MutableMapping[Any, Any]):
 Buffer = NewType('Buffer', bytes)
 
 
-class Array(List[Any]):
-    def count(self, v: Any) -> int:
+class Array(Sequence[V]):
+    def count(self, v: V) -> int:
         ...
 
-    def as_list(self) -> List[Any]:
+    def as_list(self) -> List[V]:
         ...
 
     def as_buffer(self, *, of_type: Literal['d', 'i', 'u']) -> Buffer:
         ...
 
-    def at_pointer(self, key: str) -> Any:
+    def at_pointer(self, key: str) -> V:
         ...
 
     def index(
         self,
-        x: Any,
+        x: V,
         start: Optional[int] = None,
         end: Optional[int] = None,
     ) -> int:
