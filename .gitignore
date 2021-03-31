@@ -1,3 +1,4 @@
+# Python cruft
 *.pyc
 *.pyd
 venv
@@ -6,3 +7,9 @@ cython_debug/*
 build/
 _build/
 *.egg-info
+
+# Extension building cruft
+*.so
+
+# coverage.py default output file
+.coverage

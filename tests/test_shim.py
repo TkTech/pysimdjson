@@ -2,7 +2,7 @@ import json
 import simdjson
 
 
-def test_load():
+def _test_load():
     """Ensure basic usage of load is the same."""
     # We don't use a binary file here because pre-py3.6 the built-in couldn't
     # handle bytes.
@@ -15,7 +15,7 @@ def test_load():
     assert builtin_json == simd_json
 
 
-def test_loads():
+def _test_loads():
     """Ensure basic usage of loads is the same."""
     # We don't use a binary file here because pre-py3.6 the built-in couldn't
     # handle bytes.
