@@ -1,3 +1,5 @@
+import pathlib
+
 import pytest
 
 import simdjson
@@ -9,6 +11,9 @@ def test_load(parser):
         parser.load('jsonexamples/invalid.json')
 
     doc = parser.load("jsonexamples/small/demo.json")
+    doc.at_pointer('/Image/Width')
+
+    doc = parser.load(pathlib.Path('jsonexamples') / 'small' / 'demo.json')
     doc.at_pointer('/Image/Width')
 
 
@@ -31,7 +36,7 @@ def test_unicode_decode_error(parser):
 
 
 def test_implementation():
-    """Ensure we can set the implementation."""
+    """Ensure we can set, get, and list the implementation."""
     parser = simdjson.Parser()
     # Ensure a rubbish implementation does not get set - simdjson does not do
     # a safety check, buy pysimdjson does. A break in this check will cause
@@ -42,3 +47,8 @@ def test_implementation():
     # The generic, always-available implementation.
     parser.implementation = 'fallback'
     parser.parse(b'{"hello": "world"}')
+
+    assert parser.implementation[0] == 'fallback'
+
+    implementations = [imp[0] for imp in parser.implementations]
+    assert 'fallback' in implementations

@@ -94,3 +94,9 @@ def test_array_slots(parser):
     """Esure we're getting the correct number of tape slots."""
     doc = parser.parse(b'[0, 1, 2, 3, 4, 5]')
     assert doc.slots == 14
+
+
+def test_array_pointer(parser):
+    """Ensure we can access an array element by pointer."""
+    doc = parser.parse(b'[0, 1, 2, 3, 4, 5]')
+    assert doc.at_pointer('/1') == 1

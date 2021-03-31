@@ -98,7 +98,9 @@ cdef inline element_to_primitive(Parser p, simd_element e,
     elif type_ == element_type.NULL_VALUE:
         return None
     else:
-        raise ValueError("Encountered an unknown element_type.")
+        raise ValueError(  # pragma: no cover
+            'Encountered an unknown element_type.'
+        )
 
 
 cdef class ArrayBuffer:
@@ -142,7 +144,7 @@ cdef class ArrayBuffer:
             raise ValueError('of_type must be one of {d,i,u}.')
 
         if not self.buffer:
-            raise MemoryError()
+            raise MemoryError()  # pragma: no cover
 
         return self
 
