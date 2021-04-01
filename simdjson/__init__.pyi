@@ -6,48 +6,48 @@ from typing import (
     Final,
     Iterator,
     List,
-    Literal,
-    MutableMapping,
-    NewType,
+    Mapping,
     Optional,
+    Sequence,
     Tuple,
     Union,
     ValuesView,
+    overload,
 )
 
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal  # type: ignore
 
-Primitives = Union[int, float, str, boolean]
-K = str
-V = Union['Object', 'Array', Primitives]
+Primitives = Union[int, float, str, bool]
+SimValue = Optional[Union['Object', 'Array', Primitives]]
+UnboxedValue = Optional[Union[Primitives, Dict[str, Any], List[Any]]]
 
 
-class Object(Mapping[K, V]):
-  
-    def __getitem__(self, key: K) -> V:
+class Object(Mapping[str, SimValue]):
+    def __getitem__(self, key: str) -> SimValue:
         ...
 
-    def __iter__(self) -> Iterator[V]:
+    def __iter__(self) -> Iterator[str]:
         ...
 
     def __len__(self) -> int:
         ...
 
-    def as_dict(self) -> Dict[K, V]:
+    def as_dict(self) -> Dict[str, UnboxedValue]:
         ...
 
-    def at_pointer(self, key: str) -> V:
+    def at_pointer(self, key: str) -> SimValue:
         ...
 
-    def get(self, key: K, default: Optional[V] = None) -> V:
+    def keys(self) -> AbstractSet[str]:
         ...
 
-    def keys(self) -> AbstractSet[K]:
+    def values(self) -> ValuesView[SimValue]:
         ...
 
-    def values(self) -> ValuesView[V]:
-        ...
-
-    def items(self) -> AbstractSet[Tuple[K, V]]:
+    def items(self) -> AbstractSet[Tuple[str, SimValue]]:
         ...
 
     @property
@@ -55,25 +55,28 @@ class Object(Mapping[K, V]):
         ...
 
 
-Buffer = NewType('Buffer', bytes)
-
-
-class Array(Sequence[V]):
-    def count(self, v: V) -> int:
+class Array(Sequence[SimValue]):
+    def __len__(self) -> int:
         ...
 
-    def as_list(self) -> List[V]:
+    def __getitem__(self, idx: Union[int, slice]) -> 'Array':
         ...
 
-    def as_buffer(self, *, of_type: Literal['d', 'i', 'u']) -> Buffer:
+    def count(self, v: SimValue) -> int:
         ...
 
-    def at_pointer(self, key: str) -> V:
+    def as_list(self) -> List[Optional[Union[Primitives, dict, list]]]:
+        ...
+
+    def as_buffer(self, *, of_type: Literal['d', 'i', 'u']) -> bytes:
+        ...
+
+    def at_pointer(self, key: str) -> SimValue:
         ...
 
     def index(
         self,
-        x: V,
+        x: SimValue,
         start: Optional[int] = None,
         end: Optional[int] = None,
     ) -> int:
@@ -92,10 +95,36 @@ class Parser:
     def __init__(self, max_capacity: int = ...) -> None:
         ...
 
-    def load(self, path: str, recursive: bool = False) -> Union[Array, Object]:
+    @overload
+    def load(
+        self,
+        path: str,
+        recursive: Literal[False],
+    ) -> Union[Array, Object, Primitives]:
         ...
 
-    def parse(self, data: bytes, recursive: bool = False) -> Union[Array, Object]:
+    @overload
+    def load(
+        self,
+        path: str,
+        recursive: Literal[True],
+    ) -> Primitives:
+        ...
+
+    @overload
+    def parse(
+        self,
+        data: bytes,
+        recursive: Literal[False],
+    ) -> Union[Array, Object, Primitives]:
+        ...
+
+    @overload
+    def parse(
+        self,
+        data: bytes,
+        recursive: Literal[True],
+    ) -> Primitives:
         ...
 
 
