@@ -100,7 +100,7 @@ class Parser:
         self,
         path: str,
         recursive: Literal[False],
-    ) -> Union[Array, Object, Primitives]:
+    ) -> SimValue:
         ...
 
     @overload
@@ -108,7 +108,7 @@ class Parser:
         self,
         path: str,
         recursive: Literal[True],
-    ) -> Primitives:
+    ) -> UnboxedValue:
         ...
 
     @overload
@@ -116,7 +116,7 @@ class Parser:
         self,
         data: bytes,
         recursive: Literal[False],
-    ) -> Union[Array, Object, Primitives]:
+    ) -> SimValue:
         ...
 
     @overload
@@ -124,7 +124,7 @@ class Parser:
         self,
         data: bytes,
         recursive: Literal[True],
-    ) -> Primitives:
+    ) -> UnboxedValue:
         ...
 
 
