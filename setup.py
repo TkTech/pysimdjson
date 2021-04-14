@@ -107,8 +107,10 @@ setup(
         'test': [
             'pytest',
             'pytest-benchmark',
+            'pytest-mypy-plugins',
             'flake8',
-            'coverage'
+            'coverage',
+            'mypy',
         ],
         # Dependencies for running benchmarks.
         'benchmark': [
@@ -122,6 +124,6 @@ setup(
     },
     ext_modules=extensions,
     package_data={
-        'simdjson': ['simdjson/*.pxd']
+        'simdjson': ['simdjson/*.pxd', '__init__.pyi', 'py.typed']
     }
 )
