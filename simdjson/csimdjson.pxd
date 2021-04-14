@@ -1,7 +1,11 @@
-#cython: language_level=3
-#distutils: language=c++
+# cython: language_level=3
+# distutils: language=c++
 from libc.stdint cimport uint32_t
 from libcpp.string cimport string
+
+cdef extern from "Python.h":
+    # Correct signature is const, but this was only fixed in Py3.7+
+    cdef char* PyUnicode_AsUTF8AndSize(object, Py_ssize_t *)
 
 cdef extern from "errors.h":
     cdef void simdjson_error_handler()
@@ -99,4 +103,3 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
         simd_element parse(const char *, size_t, bool) \
             except +simdjson_error_handler
         simd_element load(const char *) except +simdjson_error_handler
-

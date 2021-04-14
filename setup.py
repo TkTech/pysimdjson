@@ -1,5 +1,6 @@
 import os
 import os.path
+import platform
 
 from setuptools import setup, find_packages, Extension
 
@@ -15,6 +16,17 @@ root = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(root, 'README.md'), 'rb') as readme:
     long_description = readme.read().decode('utf-8')
 
+system = platform.system()
+
+extra_compile_args = []
+
+if system == 'Darwin':
+    # Annoyingly, Github's setup-python action is wrongly building CPython
+    # with 10.14 as a target, forcing us to use this as our minimum without
+    # rebuilding a dozen combinations of CPython and OS X.
+    os.environ.setdefault('MACOSX_DEPLOYMENT_TARGET', '10.14')
+    extra_compile_args.append('-std=c++11')
+
 if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
     print(
         'BUILD_WITH_CYTHON environment variable is set, but cython'
@@ -23,20 +35,44 @@ if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
     )
 
 if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
+    macros = []
+    compiler_directives = {
+        'embedsignature': True
+    }
+
+    if os.getenv('BUILD_FOR_DEBUG'):
+        # Enable line tracing, which also enables support for coverage
+        # reporting.
+        macros = [
+            ('CYTHON_TRACE', 1),
+            ('CYTHON_TRACE_NOGIL', 1)
+        ]
+        compiler_directives['linetrace'] = True
+
     extensions = cythonize([
-        Extension('csimdjson', [
-            'simdjson/simdjson.cpp',
-            'simdjson/errors.cpp',
-            'simdjson/csimdjson.pyx'
-        ])
-    ])
+        Extension(
+            'csimdjson',
+            [
+                'simdjson/simdjson.cpp',
+                'simdjson/errors.cpp',
+                'simdjson/csimdjson.pyx'
+            ],
+            define_macros=macros,
+            extra_compile_args=extra_compile_args
+        )
+    ], compiler_directives=compiler_directives)
 else:
     extensions = [
-        Extension('csimdjson', [
-            'simdjson/simdjson.cpp',
-            'simdjson/errors.cpp',
-            'simdjson/csimdjson.cpp'
-        ], language='c++')
+        Extension(
+            'csimdjson',
+            [
+                'simdjson/simdjson.cpp',
+                'simdjson/errors.cpp',
+                'simdjson/csimdjson.cpp'
+            ],
+            extra_compile_args=extra_compile_args,
+            language='c++'
+        )
     ]
 
 setup(
@@ -70,13 +106,14 @@ setup(
         # Dependencies for running tests.
         'test': [
             'pytest',
+            'pytest-benchmark',
             'pytest-mypy-plugins',
+            'flake8',
+            'coverage',
             'mypy',
         ],
         # Dependencies for running benchmarks.
         'benchmark': [
-            'pytest',
-            'pytest-benchmark',
             'orjson',
             'python-rapidjson',
             'simplejson',

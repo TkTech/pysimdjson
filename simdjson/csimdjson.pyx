@@ -1,5 +1,5 @@
-#cython: language_level=3
-#distutils: language=c++
+# cython: language_level=3, c_string_type=unicode, c_string_encoding=utf8
+# distutils: language=c++
 import pathlib
 
 from libc.stdint cimport uint64_t, int64_t
@@ -17,6 +17,11 @@ from simdjson.csimdjson cimport *
 
 MAXSIZE_BYTES = SIMDJSON_MAXSIZE_BYTES
 PADDING = SIMDJSON_PADDING
+VERSION = (
+    f'{SIMDJSON_VERSION_MAJOR}.'
+    f'{SIMDJSON_VERSION_MINOR}.'
+    f'{SIMDJSON_VERSION_REVISION}'
+)
 
 
 cdef bytes str_as_bytes(s):
@@ -39,7 +44,7 @@ cdef dict object_to_dict(Parser p, simd_object obj, bint recursive):
         data = it.key_c_str()
         size = it.key_length()
 
-        result[data[:size].decode('utf-8')] = pyobj
+        result[data[:size]] = pyobj
         preincrement(it)
 
     return result
@@ -64,7 +69,7 @@ cdef list array_to_list(Parser p, simd_array arr, bint recursive):
 
 
 cdef inline element_to_primitive(Parser p, simd_element e,
-                                 bint recursive = False):
+                                 bint recursive=False):
     cdef:
         const char *data
         size_t size
@@ -81,7 +86,7 @@ cdef inline element_to_primitive(Parser p, simd_element e,
     elif type_ == element_type.STRING:
         data = e.get_c_str()
         size = e.get_string_length()
-        return data[:size].decode('utf-8')
+        return data[:size]
     elif type_ == element_type.INT64:
         return <int64_t>e
     elif type_ == element_type.UINT64:
@@ -93,7 +98,9 @@ cdef inline element_to_primitive(Parser p, simd_element e,
     elif type_ == element_type.NULL_VALUE:
         return None
     else:
-        raise ValueError("Encountered an unknown element_type.")
+        raise ValueError(  # pragma: no cover
+            'Encountered an unknown element_type.'
+        )
 
 
 cdef class ArrayBuffer:
@@ -137,7 +144,7 @@ cdef class ArrayBuffer:
             raise ValueError('of_type must be one of {d,i,u}.')
 
         if not self.buffer:
-            raise MemoryError()
+            raise MemoryError()  # pragma: no cover
 
         return self
 
@@ -254,7 +261,6 @@ cdef class Array:
         """
         return ArrayBuffer.from_element(self.c_element, of_type)
 
-
     @property
     def mini(self):
         """
@@ -262,7 +268,7 @@ cdef class Array:
 
         :rtype: bytes
         """
-        return minify(self.c_element)
+        return <bytes>minify(self.c_element)
 
     @property
     def slots(self):
@@ -278,7 +284,7 @@ cdef class Array:
 cdef class Object:
     """A proxy object that behaves much like a real `dict()`.
 
-    Python objects are not created until an element in the Object"
+    Python objects are not created until an element in the Object
     is accessed. When you only need a subset of an Object, this can be much
     faster than converting an entire Object (and all of its children) into real
     Python objects.
@@ -299,7 +305,7 @@ cdef class Object:
             self.c_element[str_as_bytes(key)]
         )
 
-    def get(self, key, default = None):
+    def get(self, key, default=None):
         """
         Return the value of `key`, or `default` if the key does
         not exist.
@@ -331,7 +337,7 @@ cdef class Object:
         while it != self.c_element.end():
             data = it.key_c_str()
             size = it.key_length()
-            yield data[:size].decode('utf-8')
+            yield data[:size]
             preincrement(it)
 
     keys = __iter__
@@ -359,7 +365,7 @@ cdef class Object:
             data = it.key_c_str()
             size = it.key_length()
             yield (
-                data[:size].decode('utf-8'),
+                data[:size],
                 element_to_primitive(self.parser, it.value(), True)
             )
             preincrement(it)
@@ -387,7 +393,7 @@ cdef class Object:
 
         :rtype: bytes
         """
-        return minify(self.c_element)
+        return <bytes>minify(self.c_element)
 
 
 cdef class Parser:
@@ -411,30 +417,52 @@ cdef class Parser:
     def __dealloc__(self):
         del self.c_parser
 
-    def parse(self, src not None, bint recursive = False):
+    def parse(self, src not None, bint recursive=False):
         """Parse the given JSON document.
+
+        This method will accept either a ``str``, or any object supporting the
+        buffer protocol. This means ``bytes``, ``bytearray``, ``memoryview``,
+        etc...
 
         :param src: The document to parse.
         :param recursive: Recursively turn the document into real
                           python objects instead of pysimdjson proxies.
+                          [default: False]
         """
         cdef:
-            Py_ssize_t size = 0
-            char *data = NULL
+            const unsigned char[::1] data
+            const char* str_data = NULL
+            Py_ssize_t str_size = 0
 
-        if isinstance(src, bytes):
-            PyBytes_AsStringAndSize(src, &data, &size)
+        if isinstance(src, str):
+            # Sadly memoryview(<unicode>) doesn't work as you'd expect it
+            # to even with a default encoding provided.
+            str_data = PyUnicode_AsUTF8AndSize(src, &str_size)
             return element_to_primitive(
                 self,
                 self.c_parser.parse(
-                    data,
-                    size,
+                    str_data,
+                    str_size,
+                    True
+                ),
+                recursive
+            )
+        else:
+            # Handle any type that provides the buffer API (bytes, bytearray,
+            # memoryview, etc)
+            data = src
+
+            return element_to_primitive(
+                self,
+                self.c_parser.parse(
+                    <const char*>&data[0],
+                    data.shape[0],
                     True
                 ),
                 recursive
             )
 
-    def load(self, path, bint recursive = False):
+    def load(self, path, bint recursive=False):
         """Load a JSON document from the file system path `path`.
 
         :param path: A filesystem path.

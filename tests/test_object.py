@@ -24,7 +24,11 @@ def test_object_abc_mapping(parser):
     # Individual key access returns proxy objects.
     assert isinstance(doc['x'], simdjson.Object)
     assert isinstance(doc['c'], simdjson.Array)
+
+    # Key lookup by byte or str
     assert doc['a'] == 'b'
+    assert doc[b'a'] == 'b'
+
     with pytest.raises(KeyError):
         doc['z']
 
@@ -61,3 +65,9 @@ def test_object_mini(parser):
     """Test JSON minifier."""
     doc = parser.parse(b'{"a" : "z" }')
     assert doc.mini == b'{"a":"z"}'
+
+
+def test_object_pointer(parser):
+    """Ensure we can access an object element by pointer."""
+    doc = parser.parse(b'{"a" : "z" }')
+    assert doc.at_pointer('/a') == 'z'
