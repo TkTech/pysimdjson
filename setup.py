@@ -69,7 +69,9 @@ setup(
         ],
         # Dependencies for running tests.
         'test': [
-            'pytest'
+            'pytest',
+            'pytest-mypy-plugins',
+            'mypy',
         ],
         # Dependencies for running benchmarks.
         'benchmark': [

@@ -51,7 +51,7 @@ class Object(Mapping[str, SimValue]):
         ...
 
     @property
-    def mini(self) -> 'Object':
+    def mini(self) -> str:
         ...
 
 
@@ -83,7 +83,7 @@ class Array(Sequence[SimValue]):
         ...
 
     @property
-    def mini(self) -> 'Array':
+    def mini(self) -> str:
         ...
 
     @property
@@ -95,11 +95,19 @@ class Parser:
     def __init__(self, max_capacity: int = ...) -> None:
         ...
 
+    @property
+    def implementations(self) -> Sequence[Tuple[str, str]]:
+        ...
+
+    @property
+    def implementation(self) -> Tuple[str, str]:
+        ...
+
     @overload
     def load(
         self,
         path: str,
-        recursive: Literal[False],
+        recursive: Literal[False] = ...,
     ) -> SimValue:
         ...
 
@@ -115,7 +123,7 @@ class Parser:
     def parse(
         self,
         data: bytes,
-        recursive: Literal[False],
+        recursive: Literal[False] = ...,
     ) -> SimValue:
         ...
 
@@ -131,7 +139,7 @@ class Parser:
 dumps = json.dumps
 dump = json.dump
 
-MAXSIZE_BYTES: Final[int]
-PADDING: Final[int]
-DEFAULT_MAX_DEPTH: Final[int]
-VERSION: Final[str]
+MAXSIZE_BYTES: Final[int] = ...
+PADDING: Final[int] = ...
+DEFAULT_MAX_DEPTH: Final[int] = ...
+VERSION: Final[str] = ...

@@ -1,0 +1,142 @@
+---
+- case: test_parser_instance
+  main: |
+    import simdjson
+    parser = simdjson.Parser()
+    reveal_type(parser)  # N: Revealed type is 'simdjson.Parser'
+  mypy_config: |
+    show_column_numbers: false
+- case: test_load_correct
+  main: |
+    import simdjson
+    parser = simdjson.Parser()
+    reveal_type(parser.load(''))
+    reveal_type(parser.load('', recursive=False))
+    reveal_type(parser.load('', recursive=True))
+  out: |
+    main:3:13: note: Revealed type is 'Union[simdjson.Object, simdjson.Array, builtins.int, builtins.float, builtins.str, builtins.bool, None]'
+    main:4:13: note: Revealed type is 'Union[simdjson.Object, simdjson.Array, builtins.int, builtins.float, builtins.str, builtins.bool, None]'
+    main:5:13: note: Revealed type is 'Union[builtins.int, builtins.float, builtins.str, builtins.bool, builtins.dict[builtins.str, Any], builtins.list[Any], None]'
+- case: test_load_error
+  parametrized:
+    - val: 1
+      typ: int
+    - val: 1.0
+      typ: float
+  main: |
+    import simdjson
+    parser = simdjson.Parser()
+    parser.load({{ val }})
+  out: |
+    main:3: error: No overload variant of "load" of "Parser" matches argument type "{{ typ }}"
+    main:3: note:     <1 more non-matching overload not shown>
+    main:3: note:     def load(self, path: str, recursive: Literal[False] = ...) -> Union[Object, Array, int, float, str, bool, None]
+    main:3: note: Possible overload variant:
+  mypy_config: |
+    show_column_numbers: false
+- case: test_parse_error
+  parametrized:
+    - val: 1
+      typ: int
+    - val: 1.0
+      typ: float
+  main: |
+    import simdjson
+    parser = simdjson.Parser()
+    parser.parse({{ val }})
+  out: |
+    main:3: error: No overload variant of "parse" of "Parser" matches argument type "{{ typ }}"
+    main:3: note:     <1 more non-matching overload not shown>
+    main:3: note:     def parse(self, data: bytes, recursive: Literal[False] = ...) -> Union[Object, Array, int, float, str, bool, None]
+    main:3: note: Possible overload variant:
+  mypy_config: |
+    show_column_numbers: false
+- case: test_parse_correct
+  main: |
+    import simdjson
+    parser = simdjson.Parser()
+    reveal_type(parser.parse(b''))
+    reveal_type(parser.parse(b'', recursive=False))
+    reveal_type(parser.parse(b'', recursive=True))
+  out: |
+    main:3: note: Revealed type is 'Union[simdjson.Object, simdjson.Array, builtins.int, builtins.float, builtins.str, builtins.bool, None]'
+    main:4: note: Revealed type is 'Union[simdjson.Object, simdjson.Array, builtins.int, builtins.float, builtins.str, builtins.bool, None]'
+    main:5: note: Revealed type is 'Union[builtins.int, builtins.float, builtins.str, builtins.bool, builtins.dict[builtins.str, Any], builtins.list[Any], None]'
+  mypy_config: |
+    show_column_numbers: false
+- case: test_native_api_dict
+  main: |
+    import simdjson
+    import typing as t
+
+    parser = simdjson.Parser()
+    doc = t.cast(simdjson.Object, parser.parse(b''))
+    reveal_type(doc)
+
+    reveal_type(doc.as_dict())
+    reveal_type(doc.at_pointer(''))
+    reveal_type(doc.get(''))
+
+    reveal_type(doc.keys())
+    reveal_type(doc.items())
+    reveal_type(doc.values())
+
+    reveal_type(doc.mini)
+  out: |
+    main:6: note: Revealed type is 'simdjson.Object'
+    main:8: note: Revealed type is 'builtins.dict[builtins.str, Union[builtins.int, builtins.float, builtins.str, builtins.bool, builtins.dict[builtins.str, Any], builtins.list[Any], None]]'
+    main:9: note: Revealed type is 'Union[simdjson.Object, simdjson.Array, builtins.int, builtins.float, builtins.str, builtins.bool, None]'
+    main:10: note: Revealed type is 'Union[simdjson.Object, simdjson.Array, builtins.float, builtins.str, None]'
+    main:12: note: Revealed type is 'typing.AbstractSet[builtins.str]'
+    main:13: note: Revealed type is 'typing.AbstractSet[Tuple[builtins.str, Union[simdjson.Object, simdjson.Array, builtins.int, builtins.float, builtins.str, builtins.bool, None]]]'
+    main:14: note: Revealed type is 'typing.ValuesView[Union[simdjson.Object, simdjson.Array, builtins.int, builtins.float, builtins.str, builtins.bool, None]]'
+    main:16: note: Revealed type is 'builtins.str'
+  mypy_config: |
+    show_column_numbers: false
+- case: test_native_api_array
+  main: |
+    import simdjson
+    import typing as t
+
+    parser = simdjson.Parser()
+    doc = t.cast(simdjson.Array, parser.parse(b''))
+    reveal_type(doc)
+
+    reveal_type(doc.as_list())
+    reveal_type(doc.as_buffer(of_type='d'))
+    reveal_type(doc.as_buffer(of_type='i'))
+    reveal_type(doc.as_buffer(of_type='u'))
+    reveal_type(doc.as_buffer(of_type='x'))
+    reveal_type(doc.as_buffer('x'))
+    reveal_type(doc.as_buffer())
+    reveal_type(doc.at_pointer(''))
+
+    reveal_type(doc.count(5))
+    reveal_type(doc.index(5))
+    reveal_type(doc.index(5, 1))
+    reveal_type(doc.index(5, 1, 3))
+
+    reveal_type(doc.mini)
+    reveal_type(doc.slots)
+  out: |
+    main:6: note: Revealed type is 'simdjson.Array'
+    main:8: note: Revealed type is 'builtins.list[Union[builtins.int, builtins.float, builtins.str, builtins.bool, builtins.dict[Any, Any], builtins.list[Any], None]]'
+    main:9: note: Revealed type is 'builtins.bytes'
+    main:10: note: Revealed type is 'builtins.bytes'
+    main:11: note: Revealed type is 'builtins.bytes'
+    main:12: note: Revealed type is 'builtins.bytes'
+    main:12: error: Argument "of_type" to "as_buffer" of "Array" has incompatible type "Literal['x']"; expected "Union[Literal['d'], Literal['i'], Literal['u']]"
+    main:13: error: Too many positional arguments for "as_buffer" of "Array"
+    main:13: note: Revealed type is 'builtins.bytes'
+    main:13: error: Argument 1 to "as_buffer" of "Array" has incompatible type "Literal['x']"; expected "Union[Literal['d'], Literal['i'], Literal['u']]"
+    main:14: error: Missing named argument "of_type" for "as_buffer" of "Array"
+    main:14: note: Revealed type is 'builtins.bytes'
+    main:15: note: Revealed type is 'Union[simdjson.Object, simdjson.Array, builtins.int, builtins.float, builtins.str, builtins.bool, None]'
+    main:17: note: Revealed type is 'builtins.int'
+    main:18: note: Revealed type is 'builtins.int'
+    main:19: note: Revealed type is 'builtins.int'
+    main:20: note: Revealed type is 'builtins.int'
+    main:22: note: Revealed type is 'builtins.str'
+    main:23: note: Revealed type is 'builtins.int'
+  mypy_config: |
+    show_column_numbers: false
