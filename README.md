@@ -100,7 +100,7 @@ don't care about anything else. We can do this two ways:
 
 ```python
 assert doc['res'][1]['name'] == 'second' # True
-assert doc.at_pointer('res/1/name') == 'second' # True
+assert doc.at_pointer('/res/1/name') == 'second' # True
 ```
 
 Both of these approaches will be much faster than using `load/s()`, since
