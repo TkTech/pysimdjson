@@ -13,6 +13,8 @@ def test_load(parser):
     doc = parser.load("jsonexamples/small/demo.json")
     doc.at_pointer('/Image/Width')
 
+    del doc
+
     doc = parser.load(pathlib.Path('jsonexamples') / 'small' / 'demo.json')
     doc.at_pointer('/Image/Width')
 

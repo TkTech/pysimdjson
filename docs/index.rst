@@ -17,6 +17,7 @@ pysimdjson
    :hidden:
 
    contrib/index.rst
+   contrib/changelog.rst
    license
 
 
@@ -25,7 +26,7 @@ If SIMD instructions are unavailable a fallback parser is used, making
 pysimdjson safe to use anywhere.
 
 Bindings are currently tested on OS X, Linux, and Windows for Python version
-3.5 to 3.9.
+3.6 to 3.9.
 
 Installation
 ------------
@@ -44,8 +45,6 @@ Binary wheels are available for the following:
 +-------------+-------+-------+-------+-------+
 | Interpreter | OS X  |  Win  | Linux | Linux |
 +=============+=======+=======+=======+=======+
-| CPython 3.5 | Yes   | Yes   | Yes   | Yes   |
-+-------------+-------+-------+-------+-------+
 | CPython 3.6 | Yes   | Yes   | Yes   | Yes   |
 +-------------+-------+-------+-------+-------+
 | CPython 3.7 | Yes   | Yes   | Yes   | Yes   |
@@ -60,8 +59,8 @@ Binary wheels are available for the following:
 When binary wheels are not available, a C++11 (or better) compiler is required
 when installing.
 
-To ensure you're getting the best optimizations available for your platform,
-you can force a build from source:
+If you would prefer to always install pysimdjson from source even when
+pre-compiled binaries are available, use:
 
 .. code::
 

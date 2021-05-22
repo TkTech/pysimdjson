@@ -5,6 +5,7 @@ import pathlib
 from libc.stdint cimport uint64_t, int64_t
 from libcpp cimport bool
 from libcpp.string cimport string
+from libcpp.memory cimport shared_ptr, weak_ptr, make_shared
 from cython.operator cimport preincrement, dereference
 from cpython.ref cimport Py_INCREF
 from cpython.list cimport PyList_New, PyList_SET_ITEM
@@ -165,12 +166,14 @@ cdef class Array:
     """
     cdef readonly Parser parser
     cdef simd_array c_element
+    cdef shared_ptr[simd_parser] c_parser
 
     @staticmethod
     cdef inline from_element(Parser parser, simd_element src):
         cdef Array self = Array.__new__(Array)
         self.parser = parser
         self.c_element = src.get_array()
+        self.c_parser = parser.c_parser
         return self
 
     def __getitem__(self, key):
@@ -291,12 +294,14 @@ cdef class Object:
     """
     cdef readonly Parser parser
     cdef simd_object c_element
+    cdef shared_ptr[simd_parser] c_parser
 
     @staticmethod
     cdef inline from_element(Parser parser, simd_element src):
         cdef Object self = Object.__new__(Object)
         self.parser = parser
         self.c_element = src.get_object()
+        self.c_parser = parser.c_parser
         return self
 
     def __getitem__(self, key):
@@ -400,22 +405,22 @@ cdef class Parser:
     """
     A `Parser` instance is used to load a JSON document.
 
-    A Parser can be reused to parse multiple documents, in which
-    case it wil reuse its internal buffer, only increasing it if
-    needed.
-    The :class:`~Object` and :class:`~Array` objects returned by
-    a Parser are invalidated when a new document is parsed.
+    .. note::
+
+        A Parser can be reused to parse multiple documents, in which case it
+        wil reuse its internal buffer, only increasing it if needed.
 
     :param max_capacity: The maximum size the internal buffer can
                          grow to. [default: SIMDJSON_MAXSIZE_BYTES]
     """
-    cdef simd_parser *c_parser
+    # cdef simd_parser *c_parser
+    cdef shared_ptr[simd_parser] c_parser
 
     def __cinit__(self, size_t max_capacity=SIMDJSON_MAXSIZE_BYTES):
-        self.c_parser = new simd_parser(max_capacity)
+        self.c_parser = make_shared[simd_parser](max_capacity)
 
     def __dealloc__(self):
-        del self.c_parser
+        self.c_parser.reset()
 
     def parse(self, src not None, bint recursive=False):
         """Parse the given JSON document.
@@ -424,11 +429,25 @@ cdef class Parser:
         buffer protocol. This means ``bytes``, ``bytearray``, ``memoryview``,
         etc...
 
+        The source document may be a `str`, `bytes`, `bytearray`, or any other
+        object that implements the buffer protocol.
+
+        If any :class:`~Object` or :class:`~Array` proxies still pointing to
+        a previously-parsed document exist when this method is called, a
+        `RuntimeError` may be raised.
+
         :param src: The document to parse.
         :param recursive: Recursively turn the document into real
                           python objects instead of pysimdjson proxies.
                           [default: False]
         """
+        if self.c_parser.use_count() > 1:
+            raise RuntimeError(
+                'Tried to re-use a parser while simdjson.Object and/or'
+                ' simdjson.Array objects still exist referencing the old'
+                ' parser.'
+            )
+
         cdef:
             const unsigned char[::1] data
             const char* str_data = NULL
@@ -440,7 +459,7 @@ cdef class Parser:
             str_data = PyUnicode_AsUTF8AndSize(src, &str_size)
             return element_to_primitive(
                 self,
-                self.c_parser.parse(
+                dereference(self.c_parser).parse(
                     str_data,
                     str_size,
                     True
@@ -454,7 +473,7 @@ cdef class Parser:
 
             return element_to_primitive(
                 self,
-                self.c_parser.parse(
+                dereference(self.c_parser).parse(
                     <const char*>&data[0],
                     data.shape[0],
                     True
@@ -469,12 +488,19 @@ cdef class Parser:
         :param recursive: Recursively turn the document into real
                           python objects instead of pysimdjson proxies.
         """
+        if self.c_parser.use_count() > 1:
+            raise RuntimeError(
+                'Tried to re-use a parser while simdjson.Object and/or'
+                ' simdjson.Array objects still exist referencing the old'
+                ' parser.'
+            )
+
         if isinstance(path, unicode):
             path = (<unicode>path).encode('utf-8')
         elif isinstance(path, pathlib.Path):
             path = str(path).encode('utf-8')
 
-        cdef simd_element document = self.c_parser.load(path)
+        cdef simd_element document = dereference(self.c_parser).load(path)
         return element_to_primitive(self, document, recursive)
 
     @property
@@ -499,7 +525,8 @@ cdef class Parser:
         .. warning::
             Setting this to an implementation inappropriate for your platform
             WILL cause illegal instructions or segfaults at best. It's up to
-            you to ensure an implementation is valid for your CPU.
+            you to ensure an implementation is valid for your CPU if you
+            choose to override the automatic choice.
         """
         return (
             active_implementation.name(),

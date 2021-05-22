@@ -81,6 +81,8 @@ def test_array_as_buffer(parser):
     with pytest.raises(ValueError):
         doc['i'].as_buffer(of_type='u')
 
+    del doc
+
     # Ensure n-dimensional arrays are flattened.
     doc = parser.parse(b'''[[
         [1.0, 2.0],
