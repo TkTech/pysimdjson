@@ -20,7 +20,6 @@ pysimdjson
    contrib/changelog.rst
    license
 
-
 Python bindings for the `simdjson`_ project, a SIMD-accelerated JSON parser.
 If SIMD instructions are unavailable a fallback parser is used, making
 pysimdjson safe to use anywhere.
