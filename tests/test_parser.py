@@ -1,10 +1,12 @@
+import pathlib
+
 import pytest
 
 import simdjson
 
 
-def test_load(parser):
-    """Ensure we can load from disk."""
+def test_load_str(parser):
+    """Ensure we can load a file from disk using a string."""
     with pytest.raises(ValueError):
         parser.load('jsonexamples/invalid.json')
 
@@ -12,9 +14,22 @@ def test_load(parser):
     doc.at_pointer('/Image/Width')
 
 
-def test_parse(parser):
+def test_load_path(parser):
+    """Ensure we can load a file using a Path object."""
+    doc = parser.load(pathlib.Path('jsonexamples') / 'small' / 'demo.json')
+    doc.at_pointer('/Image/Width')
+
+
+def test_parse_bytes(parser):
+    """Ensure we can load from byte string fragments."""
+    doc = parser.parse(b'{"hello": "world"}')
+    assert doc.as_dict() == {'hello': 'world'}
+
+
+def test_parse_str(parser):
     """Ensure we can load from string fragments."""
-    parser.parse(b'{"hello": "world"}')
+    doc = parser.parse('{"hello": "world"}')
+    assert doc.as_dict() == {'hello': 'world'}
 
 
 def test_unicode_decode_error(parser):
@@ -24,7 +39,7 @@ def test_unicode_decode_error(parser):
 
 
 def test_implementation():
-    """Ensure we can set the implementation."""
+    """Ensure we can set, get, and list the implementation."""
     parser = simdjson.Parser()
     # Ensure a rubbish implementation does not get set - simdjson does not do
     # a safety check, buy pysimdjson does. A break in this check will cause
@@ -35,3 +50,8 @@ def test_implementation():
     # The generic, always-available implementation.
     parser.implementation = 'fallback'
     parser.parse(b'{"hello": "world"}')
+
+    assert parser.implementation[0] == 'fallback'
+
+    implementations = [imp[0] for imp in parser.implementations]
+    assert 'fallback' in implementations

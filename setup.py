@@ -1,71 +1,84 @@
 import os
 import os.path
 import platform
-from sysconfig import get_config_vars
 
 from setuptools import setup, find_packages, Extension
-from distutils.version import LooseVersion
+
+try:
+    from Cython.Build import cythonize
+except ImportError:
+    CYTHON_AVAILABLE = False
+else:
+    CYTHON_AVAILABLE = True
 
 
 root = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(root, 'README.md'), 'rb') as readme:
     long_description = readme.read().decode('utf-8')
 
-
-class DelayedInclude:
-    """We don't know where pybind will get installed, and we can't call it
-    until *after* our dependencies are installed (which includes pybind)"""
-    def __str__(self):
-        import pybind11
-        return pybind11.get_include()
-
+system = platform.system()
 
 extra_compile_args = []
-extra_link_args = []
 
-system = platform.system()
 if system == 'Darwin':
-    # A trick picked up from a PyTorch ticket. On OS X 10.9, the C++ stdlib was
-    # changed. distutils will try to use the same one that CPython was compiled
-    # for, which won't build at all with a recent XCode. We set
-    # MACOSX_DEPLOYMENT_TARGET ourselves to force it to use the right stdlib.
-    if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
-        current_version = platform.mac_ver()[0]
-        target_version = get_config_vars().get(
-            'MACOSX_DEPLOYMENT_TARGET',
-            current_version
+    # Annoyingly, Github's setup-python action is wrongly building CPython
+    # with 10.14 as a target, forcing us to use this as our minimum without
+    # rebuilding a dozen combinations of CPython and OS X.
+    os.environ.setdefault('MACOSX_DEPLOYMENT_TARGET', '10.14')
+    extra_compile_args.append('-std=c++11')
+
+if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
+    print(
+        'BUILD_WITH_CYTHON environment variable is set, but cython'
+        ' is not available. Falling back to pre-cythonized version if'
+        ' available.'
+    )
+
+if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
+    macros = []
+    compiler_directives = {
+        'embedsignature': True
+    }
+
+    if os.getenv('BUILD_FOR_DEBUG'):
+        # Enable line tracing, which also enables support for coverage
+        # reporting.
+        macros = [
+            ('CYTHON_TRACE', 1),
+            ('CYTHON_TRACE_NOGIL', 1)
+        ]
+        compiler_directives['linetrace'] = True
+
+    extensions = cythonize([
+        Extension(
+            'csimdjson',
+            [
+                'simdjson/simdjson.cpp',
+                'simdjson/errors.cpp',
+                'simdjson/csimdjson.pyx'
+            ],
+            define_macros=macros,
+            extra_compile_args=extra_compile_args
         )
-        if (LooseVersion(target_version) < '10.9'
-                and LooseVersion(current_version) >= '10.9'):
-            os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
-elif system == 'Windows':
-    extra_compile_args.extend([
-        # /Ob3 is only available on MSVC2019+ but will be safely ignored
-        # on earlier platforms.
-        '/Ob3'
-    ])
-
-    if 'DEBUG' in os.environ:
-        extra_compile_args.extend([
-            '/DEBUG:FULL',
-            '/Z7'
-        ])
-        extra_link_args.extend(['/DEBUG:FULL'])
-
-if system in ('Linux', 'Darwin', 'FreeBSD'):
-    extra_compile_args.extend([
-        '-std=c++11'
-    ])
-
-    if 'DEBUG' in os.environ:
-        extra_compile_args.append('-g')
-        extra_link_args.append('-g')
-
+    ], compiler_directives=compiler_directives)
+else:
+    extensions = [
+        Extension(
+            'csimdjson',
+            [
+                'simdjson/simdjson.cpp',
+                'simdjson/errors.cpp',
+                'simdjson/csimdjson.cpp'
+            ],
+            extra_compile_args=extra_compile_args,
+            language='c++'
+        )
+    ]
 
 setup(
     name='pysimdjson',
     packages=find_packages(),
-    version='3.2.0',
+    version='4.0.0',
     description='simdjson bindings for python',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -82,25 +95,24 @@ setup(
         'Intended Audience :: Developers',
     ],
     python_requires='>3.4',
-    setup_requires=[
-        "pybind11"
-    ],
     extras_require={
         # Dependencies for package release.
         'release': [
-            'm2r',
             'sphinx',
+            'furo',
             'ghp-import',
             'bumpversion'
         ],
         # Dependencies for running tests.
         'test': [
-            'pytest'
+            'pytest',
+            'pytest-benchmark',
+            'flake8',
+            'coverage',
+            'mypy'
         ],
         # Dependencies for running benchmarks.
         'benchmark': [
-            'pytest',
-            'pytest-benchmark',
             'orjson',
             'python-rapidjson',
             'simplejson',
@@ -109,19 +121,12 @@ setup(
             'numpy'
         ]
     },
-    ext_modules=[
-        Extension(
-            'csimdjson',
-            [
-                'simdjson/binding.cpp',
-                'simdjson/simdjson.cpp'
-            ],
-            include_dirs=[
-                DelayedInclude()
-            ],
-            language='c++',
-            extra_compile_args=extra_compile_args,
-            extra_link_args=extra_link_args
-        )
-    ]
+    ext_modules=extensions,
+    package_data={
+        'simdjson': [
+            'simdjson/*.pxd',
+            '__init__.pyi',
+            'py.typed'
+        ]
+    }
 )
