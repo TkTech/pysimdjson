@@ -1,3 +1,4 @@
+import gc
 import pytest
 
 
@@ -20,6 +21,8 @@ def test_parser_reuse(parser):
 
     # Explicitly delete the existing object pointing into the parser.
     del p
+    # ... and force a garbage collection for PyPy.
+    gc.collect()
 
     # ... and try re-using the parser again.
     parser.parse(b'{"deep": {"lifecycle": "object"}}')

@@ -53,8 +53,6 @@ Binary wheels are available for the following:
 +-------------+-------+-------+-------+-------+
 | CPython 3.9 | Yes   | Yes   | Yes   | Yes   |
 +-------------+-------+-------+-------+-------+
-| pypy3       | Yes   | No    | No    | No    |
-+-------------+-------+-------+-------+-------+
 
 When binary wheels are not available, a C++11 (or better) compiler is required
 when installing.

@@ -9,7 +9,7 @@ def test_parsing(parser, parsing_tests):
     for expected_result, files in parsing_tests.items():
         for file in files:
             try:
-                parser.load(str(file))
+                parser.load(file)
             except ValueError:
                 # The source document was not expected to fail.
                 if expected_result == 'y':

@@ -11,6 +11,10 @@ Changes:
 - New project logo!
 - Typings (thanks kornicameister!)
 - Python 3.5 support has been removed (here we come f-strings!)
+- Official pypy3 support has been temporarily removed (due to memory safety
+  concerns with PyPy's delayed __del__). Still works if you build yourself
+  and re-use the Parser with care. Are you a pypy expert? We could use your
+  help!
 - Using `as_buffer()` will now always return a buffer typed as a flat array
   of bytes.
 - Array.slots() has been removed. As we prepare to support the simdjson

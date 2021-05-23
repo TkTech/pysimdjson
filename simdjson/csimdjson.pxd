@@ -1,6 +1,6 @@
 # cython: language_level=3
 # distutils: language=c++
-from libc.stdint cimport uint32_t
+from libc.stdint cimport uint32_t, uint64_t, int64_t
 from libcpp.string cimport string
 
 cdef extern from "Python.h":
@@ -95,6 +95,10 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
 
         simd_array get_array() except +simdjson_error_handler
         simd_object get_object() except +simdjson_error_handler
+        int64_t get_int64() except +simdjson_error_handler
+        uint64_t get_uint64() except +simdjson_error_handler
+        double get_double() except +simdjson_error_handler
+        bint get_bool() except +simdjson_error_handler
 
     cdef cppclass simd_parser "simdjson::dom::parser":
         simd_parser() except +simdjson_error_handler

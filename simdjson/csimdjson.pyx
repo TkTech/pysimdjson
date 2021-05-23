@@ -69,8 +69,8 @@ cdef list array_to_list(Parser p, simd_array arr, bint recursive):
     return result
 
 
-cdef inline element_to_primitive(Parser p, simd_element e,
-                                 bint recursive=False):
+cdef inline object element_to_primitive(Parser p, simd_element e,
+                                        bint recursive=False):
     cdef:
         const char *data
         size_t size
@@ -89,13 +89,13 @@ cdef inline element_to_primitive(Parser p, simd_element e,
         size = e.get_string_length()
         return data[:size]
     elif type_ == element_type.INT64:
-        return <int64_t>e
+        return e.get_int64()
     elif type_ == element_type.UINT64:
-        return <uint64_t>e
+        return e.get_uint64()
     elif type_ == element_type.DOUBLE:
-        return <double>e
+        return e.get_double()
     elif type_ == element_type.BOOL:
-        return <bool>e
+        return e.get_bool()
     elif type_ == element_type.NULL_VALUE:
         return None
     else:
@@ -108,12 +108,13 @@ cdef class ArrayBuffer:
     """
     A container for the flattened data of a homogeneous :class:`Array`.
 
-    .. note::
+    .. admonition::
+        :class: note
 
         This object is responsible for keeping the contents of an Array alive
         even after the simdjson Parser has been reused or destroyed.
 
-    .. admonishment::
+    .. admonition::
        :class: warning
 
        You should never create this class on your own. It is created and
@@ -412,16 +413,18 @@ cdef class Parser:
     def parse(self, src not None, bint recursive=False):
         """Parse the given JSON document.
 
-        This method will accept either a ``str``, or any object supporting the
-        buffer protocol. This means ``bytes``, ``bytearray``, ``memoryview``,
-        etc...
-
         The source document may be a `str`, `bytes`, `bytearray`, or any other
         object that implements the buffer protocol.
 
+        .. admonition:: Performance
+            :class: tip
+
+            While you can pass quite a few things to this method to be parsed,
+            simple ``bytes`` will almost always be the fastest.
+
         If any :class:`~Object` or :class:`~Array` proxies still pointing to
         a previously-parsed document exist when this method is called, a
-        `RuntimeError` may be raised.
+        ``RuntimeError`` may be raised.
 
         :param src: The document to parse.
         :param recursive: Recursively turn the document into real
@@ -440,12 +443,25 @@ cdef class Parser:
 
         cdef:
             const unsigned char[::1] data
-            const char* str_data = NULL
+            const char * str_data = NULL
+            char * bytes_data = NULL
             Py_ssize_t str_size = 0
 
-        if isinstance(src, str):
-            # Sadly memoryview(<unicode>) doesn't work as you'd expect it
-            # to even with a default encoding provided.
+        if isinstance(src, bytes):
+            # Handling bytes is drastically faster than using the buffer API.
+            PyBytes_AsStringAndSize(src, &bytes_data, &str_size)
+            return element_to_primitive(
+                self,
+                dereference(self.c_parser).parse(
+                    bytes_data,
+                    str_size,
+                    True
+                ),
+                recursive
+            )
+        elif isinstance(src, str):
+            # str can't be handled using the buffer API, oddly, even if you
+            # know the encoding.
             str_data = PyUnicode_AsUTF8AndSize(src, &str_size)
             return element_to_primitive(
                 self,
@@ -458,7 +474,8 @@ cdef class Parser:
             )
         else:
             # Handle any type that provides the buffer API (bytes, bytearray,
-            # memoryview, etc)
+            # memoryview, etc). This is significantly slower than the
+            # type-specific APIs, but gives much greater compatibility.
             data = src
 
             return element_to_primitive(
