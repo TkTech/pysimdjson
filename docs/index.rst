@@ -66,6 +66,12 @@ pre-compiled binaries are available, use:
 
     pip install pysimdjson --no-binary :all:
 
+.. admonition:: Packages
+   :class: tip
+
+   pysimdjson is also available from unofficial packages contributed by the
+   community. You can currently get it from Gentoo and conda-forge. Note these
+   may lag behind in releases.
 
 .. _simdjson: https://github.com/simdjson/simdjson
 .. _LICENSE: https://github.com/tktech/pysimdjson/blob/master/LICENSE

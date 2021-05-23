@@ -5,16 +5,17 @@ import pytest
 import simdjson
 
 
-def test_load(parser):
-    """Ensure we can load from disk."""
+def test_load_str(parser):
+    """Ensure we can load a file from disk using a string."""
     with pytest.raises(ValueError):
         parser.load('jsonexamples/invalid.json')
 
     doc = parser.load("jsonexamples/small/demo.json")
     doc.at_pointer('/Image/Width')
 
-    del doc
 
+def test_load_path(parser):
+    """Ensure we can load a file using a Path object."""
     doc = parser.load(pathlib.Path('jsonexamples') / 'small' / 'demo.json')
     doc.at_pointer('/Image/Width')
 

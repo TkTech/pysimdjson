@@ -13,6 +13,9 @@ Changes:
 - Python 3.5 support has been removed (here we come f-strings!)
 - Using `as_buffer()` will now always return a buffer typed as a flat array
   of bytes.
+- Array.slots() has been removed. As we prepare to support the simdjson
+  On-Demand and future streaming API, details specific to the DOM API will be
+  removed and/or abstracted.
 
 Bugfixes:
 

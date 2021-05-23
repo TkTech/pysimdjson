@@ -81,21 +81,16 @@ def test_array_as_buffer(parser):
     with pytest.raises(ValueError):
         doc['i'].as_buffer(of_type='u')
 
-    del doc
 
-    # Ensure n-dimensional arrays are flattened.
+def test_array_as_buffer_ndim(parser):
+    """Ensure n-dimensional arrays are flattened when converting to a
+    buffer."""
     doc = parser.parse(b'''[[
         [1.0, 2.0],
         [3.0, 4.0]
     ]]''')
     view = memoryview(doc.as_buffer(of_type='d'))
     assert len(view) == 32
-
-
-def test_array_slots(parser):
-    """Esure we're getting the correct number of tape slots."""
-    doc = parser.parse(b'[0, 1, 2, 3, 4, 5]')
-    assert doc.slots == 14
 
 
 def test_array_pointer(parser):

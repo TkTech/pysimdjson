@@ -256,7 +256,7 @@ cdef class Array:
         .. note::
 
             The object returned by this method contains a *copy* of the Array's
-            data. Thus, it's safe to use even after the Array or Paser are
+            data. Thus, it's safe to use even after the Array or Parser are
             destroyed or reused.
 
         :param of_type: One of 'd' (double), 'i' (signed 64-bit integer) or 'u'
@@ -272,16 +272,6 @@ cdef class Array:
         :rtype: bytes
         """
         return <bytes>minify(self.c_element)
-
-    @property
-    def slots(self):
-        """Returns the number of 'slots' consumed by this array.
-
-        This is not the same thing as `len(array)`, but the number of
-        64bit elements consumed by this Array and all of its children
-        on the simdjson structure tape.
-        """
-        return self.c_element.number_of_slots()
 
 
 cdef class Object:
@@ -403,17 +393,14 @@ cdef class Object:
 
 cdef class Parser:
     """
-    A `Parser` instance is used to load a JSON document.
+    A `Parser` instance is used to load and/or parse a JSON document.
 
-    .. note::
-
-        A Parser can be reused to parse multiple documents, in which case it
-        wil reuse its internal buffer, only increasing it if needed.
+    A Parser can be reused to parse multiple documents, in which case it wil
+    reuse its internal buffer, only increasing it if needed.
 
     :param max_capacity: The maximum size the internal buffer can
                          grow to. [default: SIMDJSON_MAXSIZE_BYTES]
     """
-    # cdef simd_parser *c_parser
     cdef shared_ptr[simd_parser] c_parser
 
     def __cinit__(self, size_t max_capacity=SIMDJSON_MAXSIZE_BYTES):
@@ -441,6 +428,9 @@ cdef class Parser:
                           python objects instead of pysimdjson proxies.
                           [default: False]
         """
+        # This may be very non-intuitive on PyPy, where cleanup of references
+        # may not occur until much later than expected by a user. We may need
+        # to recommend against re-use on PyPy.
         if self.c_parser.use_count() > 1:
             raise RuntimeError(
                 'Tried to re-use a parser while simdjson.Object and/or'
@@ -483,6 +473,10 @@ cdef class Parser:
 
     def load(self, path, bint recursive=False):
         """Load a JSON document from the file system path `path`.
+
+        If any :class:`~Object` or :class:`~Array` proxies still pointing to
+        a previously-parsed document exist when this method is called, a
+        `RuntimeError` may be raised.
 
         :param path: A filesystem path.
         :param recursive: Recursively turn the document into real
