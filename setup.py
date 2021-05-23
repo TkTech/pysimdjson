@@ -36,12 +36,20 @@ if build_with_cython and not CYTHON_AVAILABLE:
     )
     build_with_cython = False
 
+build_with_system_lib = os.getenv('BUILD_WITH_SYSTEM_LIB')
+
 macros = []
 compiler_directives = {}
+libraries = []
 sources = [
-    'simdjson/simdjson.cpp',
     'simdjson/errors.cpp',
 ]
+
+if build_with_system_lib:
+    libraries.append('simdjson')
+else:
+    sources.append('simdjson/simdjson.cpp')
+
 if build_with_cython:
     compiler_directives['embedsignature'] = True
 
@@ -65,6 +73,7 @@ extensions = [
         sources,
         define_macros=macros,
         extra_compile_args=extra_compile_args,
+        libraries=libraries,
         language='c++',
     )
 ]
