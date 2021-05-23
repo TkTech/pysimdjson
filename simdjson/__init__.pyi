@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import (
     AbstractSet,
     Any,
@@ -62,9 +63,6 @@ class Array(Sequence[SimValue]):
     def __getitem__(self, idx: Union[int, slice]) -> 'Array':
         ...
 
-    def count(self, v: SimValue) -> int:
-        ...
-
     def as_list(self) -> List[Optional[Union[Primitives, dict, list]]]:
         ...
 
@@ -74,20 +72,8 @@ class Array(Sequence[SimValue]):
     def at_pointer(self, key: str) -> SimValue:
         ...
 
-    def index(
-        self,
-        x: SimValue,
-        start: Optional[int] = None,
-        end: Optional[int] = None,
-    ) -> int:
-        ...
-
     @property
     def mini(self) -> str:
-        ...
-
-    @property
-    def slots(self) -> int:
         ...
 
 
@@ -106,7 +92,7 @@ class Parser:
     @overload
     def load(
         self,
-        path: str,
+        path: Union[str, Path],
         recursive: Literal[False] = ...,
     ) -> SimValue:
         ...
@@ -114,7 +100,7 @@ class Parser:
     @overload
     def load(
         self,
-        path: str,
+        path: Union[str, Path],
         recursive: Literal[True],
     ) -> UnboxedValue:
         ...
@@ -122,7 +108,7 @@ class Parser:
     @overload
     def parse(
         self,
-        data: bytes,
+        data: Union[str, bytes, bytearray, memoryview],
         recursive: Literal[False] = ...,
     ) -> SimValue:
         ...
@@ -130,7 +116,7 @@ class Parser:
     @overload
     def parse(
         self,
-        data: bytes,
+        data: Union[str, bytes, bytearray, memoryview],
         recursive: Literal[True],
     ) -> UnboxedValue:
         ...
@@ -141,5 +127,4 @@ dump = json.dump
 
 MAXSIZE_BYTES: Final[int] = ...
 PADDING: Final[int] = ...
-DEFAULT_MAX_DEPTH: Final[int] = ...
 VERSION: Final[str] = ...

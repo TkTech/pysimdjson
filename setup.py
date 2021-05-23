@@ -123,6 +123,10 @@ setup(
     },
     ext_modules=extensions,
     package_data={
-        'simdjson': ['simdjson/*.pxd', '__init__.pyi', 'py.typed']
+        'simdjson': [
+            'simdjson/*.pxd',
+            '__init__.pyi',
+            'py.typed'
+        ]
     }
 )
