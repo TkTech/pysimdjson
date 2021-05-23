@@ -1125,7 +1125,7 @@ struct __pyx_obj_9csimdjson___pyx_scope_struct_3_items {
 };
 
 
-/* "csimdjson.pyx":518
+/* "csimdjson.pyx":525
  * 
  *     @property
  *     def implementations(self):             # <<<<<<<<<<<<<<
@@ -1517,6 +1517,9 @@ static int __Pyx__GetException(PyThreadState *tstate, PyObject **type, PyObject 
 #else
 static int __Pyx_GetException(PyObject **type, PyObject **value, PyObject **tb);
 #endif
+
+/* PyIntCompare.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_EqObjC(PyObject *op1, PyObject *op2, long intval, long inplace);
 
 /* BufferIndexError.proto */
 static void __Pyx_RaiseBufferIndexError(int axis);
@@ -1946,6 +1949,9 @@ static void __Pyx_CppExn2PyErr() {
 }
 #endif
 
+/* MemviewDtypeToObject.proto */
+static CYTHON_INLINE PyObject *__pyx_memview_get_unsigned_char__const__(const char *itemp);
+
 /* MemviewSliceCopyTemplate.proto */
 static __Pyx_memviewslice
 __pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
@@ -1964,6 +1970,9 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int64_t(int64_t value);
 
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_uint64_t(uint64_t value);
+
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_char(unsigned char value);
 
 /* CIntFromPy.proto */
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
@@ -2227,7 +2236,7 @@ static const char __pyx_k_d[] = "d";
 static const char __pyx_k_i[] = "i";
 static const char __pyx_k_u[] = "u";
 static const char __pyx_k_id[] = "id";
-static const char __pyx_k__32[] = ".";
+static const char __pyx_k__33[] = ".";
 static const char __pyx_k_get[] = "__get__";
 static const char __pyx_k_key[] = "key";
 static const char __pyx_k_new[] = "__new__";
@@ -2319,6 +2328,7 @@ static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_pyx_unpickle_Enum[] = "__pyx_unpickle_Enum";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_strided_and_direct[] = "<strided and direct>";
+static const char __pyx_k_Empty_no_JSON_found[] = "Empty: no JSON found";
 static const char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
 static const char __pyx_k_contiguous_and_direct[] = "<contiguous and direct>";
 static const char __pyx_k_MemoryView_of_r_object[] = "<MemoryView of %r object>";
@@ -2357,6 +2367,7 @@ static PyObject *__pyx_kp_s_Cannot_assign_to_read_only_memor;
 static PyObject *__pyx_kp_s_Cannot_create_writable_memory_vi;
 static PyObject *__pyx_kp_s_Cannot_index_with_type_s;
 static PyObject *__pyx_n_s_Ellipsis;
+static PyObject *__pyx_kp_u_Empty_no_JSON_found;
 static PyObject *__pyx_kp_s_Empty_shape_tuple_for_cython_arr;
 static PyObject *__pyx_kp_u_Encountered_an_unknown_element_t;
 static PyObject *__pyx_kp_s_Incompatible_checksums_s_vs_0xb0;
@@ -2388,7 +2399,7 @@ static PyObject *__pyx_kp_u_Unknown_implementation;
 static PyObject *__pyx_n_s_VERSION;
 static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_View_MemoryView;
-static PyObject *__pyx_kp_u__32;
+static PyObject *__pyx_kp_u__33;
 static PyObject *__pyx_n_s_allocate_buffer;
 static PyObject *__pyx_n_s_args;
 static PyObject *__pyx_n_s_base;
@@ -2582,7 +2593,7 @@ static PyObject *__pyx_tuple__5;
 static PyObject *__pyx_tuple__6;
 static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__8;
-static PyObject *__pyx_slice__28;
+static PyObject *__pyx_slice__29;
 static PyObject *__pyx_tuple__10;
 static PyObject *__pyx_tuple__11;
 static PyObject *__pyx_tuple__12;
@@ -2601,16 +2612,17 @@ static PyObject *__pyx_tuple__24;
 static PyObject *__pyx_tuple__25;
 static PyObject *__pyx_tuple__26;
 static PyObject *__pyx_tuple__27;
-static PyObject *__pyx_tuple__29;
+static PyObject *__pyx_tuple__28;
 static PyObject *__pyx_tuple__30;
 static PyObject *__pyx_tuple__31;
-static PyObject *__pyx_tuple__33;
+static PyObject *__pyx_tuple__32;
 static PyObject *__pyx_tuple__34;
 static PyObject *__pyx_tuple__35;
 static PyObject *__pyx_tuple__36;
 static PyObject *__pyx_tuple__37;
 static PyObject *__pyx_tuple__38;
-static PyObject *__pyx_codeobj__39;
+static PyObject *__pyx_tuple__39;
+static PyObject *__pyx_codeobj__40;
 /* Late includes */
 
 /* "csimdjson.pyx":28
@@ -6979,7 +6991,7 @@ static void __pyx_pf_9csimdjson_6Parser_2__dealloc__(struct __pyx_obj_9csimdjson
 
 /* Python wrapper */
 static PyObject *__pyx_pw_9csimdjson_6Parser_5parse(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_9csimdjson_6Parser_4parse[] = "Parser.parse(self, src, bool recursive=False)\nParse the given JSON document.\n\n        The source document may be a `str`, `bytes`, `bytearray`, or any other\n        object that implements the buffer protocol.\n\n        .. admonition:: Performance\n            :class: tip\n\n            While you can pass quite a few things to this method to be parsed,\n            simple ``bytes`` will almost always be the fastest.\n\n        If any :class:`~Object` or :class:`~Array` proxies still pointing to\n        a previously-parsed document exist when this method is called, a\n        `RuntimeError` may be raised.\n\n        :param src: The document to parse.\n        :param recursive: Recursively turn the document into real\n                          python objects instead of pysimdjson proxies.\n                          [default: False]\n        ";
+static char __pyx_doc_9csimdjson_6Parser_4parse[] = "Parser.parse(self, src, bool recursive=False)\nParse the given JSON document.\n\n        The source document may be a `str`, `bytes`, `bytearray`, or any other\n        object that implements the buffer protocol.\n\n        .. admonition:: Performance\n            :class: tip\n\n            While you can pass quite a few things to this method to be parsed,\n            simple ``bytes`` will almost always be the fastest.\n\n        If any :class:`~Object` or :class:`~Array` proxies still pointing to\n        a previously-parsed document exist when this method is called, a\n        ``RuntimeError`` may be raised.\n\n        :param src: The document to parse.\n        :param recursive: Recursively turn the document into real\n                          python objects instead of pysimdjson proxies.\n                          [default: False]\n        ";
 static PyObject *__pyx_pw_9csimdjson_6Parser_5parse(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_src = 0;
   int __pyx_v_recursive;
@@ -7070,7 +7082,8 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_4parse(struct __pyx_obj_9csimdjson_
   simdjson::dom::element __pyx_t_5;
   struct __pyx_opt_args_9csimdjson_element_to_primitive __pyx_t_6;
   __Pyx_memviewslice __pyx_t_7 = { 0, 0, { 0 }, { 0 }, { 0 } };
-  Py_ssize_t __pyx_t_8;
+  PyObject *__pyx_t_8 = NULL;
+  Py_ssize_t __pyx_t_9;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -7274,7 +7287,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_4parse(struct __pyx_obj_9csimdjson_
  *             # type-specific APIs, but gives much greater compatibility.
  *             data = src             # <<<<<<<<<<<<<<
  * 
- *             return element_to_primitive(
+ *             if data.size == 0:
  */
   /*else*/ {
     __pyx_t_7 = __Pyx_PyObject_to_MemoryviewSlice_dc_unsigned_char__const__(__pyx_v_src, 0); if (unlikely(!__pyx_t_7.memview)) __PYX_ERR(0, 479, __pyx_L1_error)
@@ -7285,31 +7298,72 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_4parse(struct __pyx_obj_9csimdjson_
     /* "csimdjson.pyx":481
  *             data = src
  * 
+ *             if data.size == 0:             # <<<<<<<<<<<<<<
+ *                 # If we were given a completely empty buffer, trying to access
+ *                 # a stride in the next step will cause a (potentially
+ */
+    __pyx_t_2 = __pyx_memoryview_fromslice(__pyx_v_data, 1, (PyObject *(*)(char *)) __pyx_memview_get_unsigned_char__const__, (int (*)(char *, PyObject *)) NULL, 0);; if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 481, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_size); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 481, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_8);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyInt_EqObjC(__pyx_t_8, __pyx_int_0, 0, 0); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 481, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+    __pyx_t_1 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 481, __pyx_L1_error)
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    if (unlikely(__pyx_t_1)) {
+
+      /* "csimdjson.pyx":486
+ *                 # confusing) IndexError. This isn't a very good error message,
+ *                 # but it's identical to the one simdjson would have raised.
+ *                 raise ValueError('Empty: no JSON found')             # <<<<<<<<<<<<<<
+ * 
+ *             return element_to_primitive(
+ */
+      __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 486, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_2);
+      __Pyx_Raise(__pyx_t_2, 0, 0, 0);
+      __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+      __PYX_ERR(0, 486, __pyx_L1_error)
+
+      /* "csimdjson.pyx":481
+ *             data = src
+ * 
+ *             if data.size == 0:             # <<<<<<<<<<<<<<
+ *                 # If we were given a completely empty buffer, trying to access
+ *                 # a stride in the next step will cause a (potentially
+ */
+    }
+
+    /* "csimdjson.pyx":488
+ *                 raise ValueError('Empty: no JSON found')
+ * 
  *             return element_to_primitive(             # <<<<<<<<<<<<<<
  *                 self,
  *                 dereference(self.c_parser).parse(
  */
     __Pyx_XDECREF(__pyx_r);
 
-    /* "csimdjson.pyx":484
+    /* "csimdjson.pyx":491
  *                 self,
  *                 dereference(self.c_parser).parse(
  *                     <const char*>&data[0],             # <<<<<<<<<<<<<<
  *                     data.shape[0],
  *                     True
  */
-    __pyx_t_8 = 0;
+    __pyx_t_9 = 0;
     __pyx_t_4 = -1;
-    if (__pyx_t_8 < 0) {
-      __pyx_t_8 += __pyx_v_data.shape[0];
-      if (unlikely(__pyx_t_8 < 0)) __pyx_t_4 = 0;
-    } else if (unlikely(__pyx_t_8 >= __pyx_v_data.shape[0])) __pyx_t_4 = 0;
+    if (__pyx_t_9 < 0) {
+      __pyx_t_9 += __pyx_v_data.shape[0];
+      if (unlikely(__pyx_t_9 < 0)) __pyx_t_4 = 0;
+    } else if (unlikely(__pyx_t_9 >= __pyx_v_data.shape[0])) __pyx_t_4 = 0;
     if (unlikely(__pyx_t_4 != -1)) {
       __Pyx_RaiseBufferIndexError(__pyx_t_4);
-      __PYX_ERR(0, 484, __pyx_L1_error)
+      __PYX_ERR(0, 491, __pyx_L1_error)
     }
 
-    /* "csimdjson.pyx":483
+    /* "csimdjson.pyx":490
  *             return element_to_primitive(
  *                 self,
  *                 dereference(self.c_parser).parse(             # <<<<<<<<<<<<<<
@@ -7317,14 +7371,14 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_4parse(struct __pyx_obj_9csimdjson_
  *                     data.shape[0],
  */
     try {
-      __pyx_t_5 = (*__pyx_v_self->c_parser).parse(((char const *)(&(*((unsigned char const  *) ( /* dim=0 */ ((char *) (((unsigned char const  *) __pyx_v_data.data) + __pyx_t_8)) ))))), (__pyx_v_data.shape[0]), Py_True);
+      __pyx_t_5 = (*__pyx_v_self->c_parser).parse(((char const *)(&(*((unsigned char const  *) ( /* dim=0 */ ((char *) (((unsigned char const  *) __pyx_v_data.data) + __pyx_t_9)) ))))), (__pyx_v_data.shape[0]), Py_True);
     } catch(...) {
       simdjson_error_handler(); if (!PyErr_Occurred())PyErr_SetString(PyExc_RuntimeError, "Error converting c++ exception.");
-      __PYX_ERR(0, 483, __pyx_L1_error)
+      __PYX_ERR(0, 490, __pyx_L1_error)
     }
 
-    /* "csimdjson.pyx":481
- *             data = src
+    /* "csimdjson.pyx":488
+ *                 raise ValueError('Empty: no JSON found')
  * 
  *             return element_to_primitive(             # <<<<<<<<<<<<<<
  *                 self,
@@ -7332,7 +7386,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_4parse(struct __pyx_obj_9csimdjson_
  */
     __pyx_t_6.__pyx_n = 1;
     __pyx_t_6.recursive = __pyx_v_recursive;
-    __pyx_t_2 = __pyx_f_9csimdjson_element_to_primitive(__pyx_v_self, __pyx_t_5, &__pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 481, __pyx_L1_error)
+    __pyx_t_2 = __pyx_f_9csimdjson_element_to_primitive(__pyx_v_self, __pyx_t_5, &__pyx_t_6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 488, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_r = __pyx_t_2;
     __pyx_t_2 = 0;
@@ -7351,6 +7405,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_4parse(struct __pyx_obj_9csimdjson_
   __pyx_L1_error:;
   __Pyx_XDECREF(__pyx_t_2);
   __PYX_XDEC_MEMVIEW(&__pyx_t_7, 1);
+  __Pyx_XDECREF(__pyx_t_8);
   __Pyx_AddTraceback("csimdjson.Parser.parse", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -7360,7 +7415,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_4parse(struct __pyx_obj_9csimdjson_
   return __pyx_r;
 }
 
-/* "csimdjson.pyx":491
+/* "csimdjson.pyx":498
  *             )
  * 
  *     def load(self, path, bint recursive=False):             # <<<<<<<<<<<<<<
@@ -7407,7 +7462,7 @@ static PyObject *__pyx_pw_9csimdjson_6Parser_7load(PyObject *__pyx_v_self, PyObj
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "load") < 0)) __PYX_ERR(0, 491, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "load") < 0)) __PYX_ERR(0, 498, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -7420,14 +7475,14 @@ static PyObject *__pyx_pw_9csimdjson_6Parser_7load(PyObject *__pyx_v_self, PyObj
     }
     __pyx_v_path = values[0];
     if (values[1]) {
-      __pyx_v_recursive = __Pyx_PyObject_IsTrue(values[1]); if (unlikely((__pyx_v_recursive == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 491, __pyx_L3_error)
+      __pyx_v_recursive = __Pyx_PyObject_IsTrue(values[1]); if (unlikely((__pyx_v_recursive == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 498, __pyx_L3_error)
     } else {
       __pyx_v_recursive = ((int)0);
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("load", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 491, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("load", 0, 1, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 498, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("csimdjson.Parser.load", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -7457,7 +7512,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_6load(struct __pyx_obj_9csimdjson_P
   __Pyx_RefNannySetupContext("load", 0);
   __Pyx_INCREF(__pyx_v_path);
 
-  /* "csimdjson.pyx":502
+  /* "csimdjson.pyx":509
  *                           python objects instead of pysimdjson proxies.
  *         """
  *         if self.c_parser.use_count() > 1:             # <<<<<<<<<<<<<<
@@ -7467,20 +7522,20 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_6load(struct __pyx_obj_9csimdjson_P
   __pyx_t_1 = ((__pyx_v_self->c_parser.use_count() > 1) != 0);
   if (unlikely(__pyx_t_1)) {
 
-    /* "csimdjson.pyx":503
+    /* "csimdjson.pyx":510
  *         """
  *         if self.c_parser.use_count() > 1:
  *             raise RuntimeError(             # <<<<<<<<<<<<<<
  *                 'Tried to re-use a parser while simdjson.Object and/or'
  *                 ' simdjson.Array objects still exist referencing the old'
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_RuntimeError, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 503, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_RuntimeError, __pyx_tuple__10, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 510, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __PYX_ERR(0, 503, __pyx_L1_error)
+    __PYX_ERR(0, 510, __pyx_L1_error)
 
-    /* "csimdjson.pyx":502
+    /* "csimdjson.pyx":509
  *                           python objects instead of pysimdjson proxies.
  *         """
  *         if self.c_parser.use_count() > 1:             # <<<<<<<<<<<<<<
@@ -7489,7 +7544,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_6load(struct __pyx_obj_9csimdjson_P
  */
   }
 
-  /* "csimdjson.pyx":509
+  /* "csimdjson.pyx":516
  *             )
  * 
  *         if isinstance(path, unicode):             # <<<<<<<<<<<<<<
@@ -7500,7 +7555,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_6load(struct __pyx_obj_9csimdjson_P
   __pyx_t_3 = (__pyx_t_1 != 0);
   if (__pyx_t_3) {
 
-    /* "csimdjson.pyx":510
+    /* "csimdjson.pyx":517
  * 
  *         if isinstance(path, unicode):
  *             path = (<unicode>path).encode('utf-8')             # <<<<<<<<<<<<<<
@@ -7509,14 +7564,14 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_6load(struct __pyx_obj_9csimdjson_P
  */
     if (unlikely(__pyx_v_path == Py_None)) {
       PyErr_Format(PyExc_AttributeError, "'NoneType' object has no attribute '%.30s'", "encode");
-      __PYX_ERR(0, 510, __pyx_L1_error)
+      __PYX_ERR(0, 517, __pyx_L1_error)
     }
-    __pyx_t_2 = PyUnicode_AsUTF8String(((PyObject*)__pyx_v_path)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 510, __pyx_L1_error)
+    __pyx_t_2 = PyUnicode_AsUTF8String(((PyObject*)__pyx_v_path)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 517, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF_SET(__pyx_v_path, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "csimdjson.pyx":509
+    /* "csimdjson.pyx":516
  *             )
  * 
  *         if isinstance(path, unicode):             # <<<<<<<<<<<<<<
@@ -7526,39 +7581,39 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_6load(struct __pyx_obj_9csimdjson_P
     goto __pyx_L4;
   }
 
-  /* "csimdjson.pyx":511
+  /* "csimdjson.pyx":518
  *         if isinstance(path, unicode):
  *             path = (<unicode>path).encode('utf-8')
  *         elif isinstance(path, pathlib.Path):             # <<<<<<<<<<<<<<
  *             path = str(path).encode('utf-8')
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pathlib); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 511, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pathlib); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 518, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_Path); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 511, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_Path); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 518, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_3 = PyObject_IsInstance(__pyx_v_path, __pyx_t_4); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(0, 511, __pyx_L1_error)
+  __pyx_t_3 = PyObject_IsInstance(__pyx_v_path, __pyx_t_4); if (unlikely(__pyx_t_3 == ((int)-1))) __PYX_ERR(0, 518, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_1 = (__pyx_t_3 != 0);
   if (__pyx_t_1) {
 
-    /* "csimdjson.pyx":512
+    /* "csimdjson.pyx":519
  *             path = (<unicode>path).encode('utf-8')
  *         elif isinstance(path, pathlib.Path):
  *             path = str(path).encode('utf-8')             # <<<<<<<<<<<<<<
  * 
  *         cdef simd_element document = dereference(self.c_parser).load(path)
  */
-    __pyx_t_4 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyUnicode_Type)), __pyx_v_path); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 512, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyUnicode_Type)), __pyx_v_path); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 519, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_2 = PyUnicode_AsUTF8String(((PyObject*)__pyx_t_4)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 512, __pyx_L1_error)
+    __pyx_t_2 = PyUnicode_AsUTF8String(((PyObject*)__pyx_t_4)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 519, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
     __Pyx_DECREF_SET(__pyx_v_path, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "csimdjson.pyx":511
+    /* "csimdjson.pyx":518
  *         if isinstance(path, unicode):
  *             path = (<unicode>path).encode('utf-8')
  *         elif isinstance(path, pathlib.Path):             # <<<<<<<<<<<<<<
@@ -7568,23 +7623,23 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_6load(struct __pyx_obj_9csimdjson_P
   }
   __pyx_L4:;
 
-  /* "csimdjson.pyx":514
+  /* "csimdjson.pyx":521
  *             path = str(path).encode('utf-8')
  * 
  *         cdef simd_element document = dereference(self.c_parser).load(path)             # <<<<<<<<<<<<<<
  *         return element_to_primitive(self, document, recursive)
  * 
  */
-  __pyx_t_5 = __Pyx_PyObject_AsString(__pyx_v_path); if (unlikely((!__pyx_t_5) && PyErr_Occurred())) __PYX_ERR(0, 514, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_AsString(__pyx_v_path); if (unlikely((!__pyx_t_5) && PyErr_Occurred())) __PYX_ERR(0, 521, __pyx_L1_error)
   try {
     __pyx_t_6 = (*__pyx_v_self->c_parser).load(__pyx_t_5);
   } catch(...) {
     simdjson_error_handler(); if (!PyErr_Occurred())PyErr_SetString(PyExc_RuntimeError, "Error converting c++ exception.");
-    __PYX_ERR(0, 514, __pyx_L1_error)
+    __PYX_ERR(0, 521, __pyx_L1_error)
   }
   __pyx_v_document = __pyx_t_6;
 
-  /* "csimdjson.pyx":515
+  /* "csimdjson.pyx":522
  * 
  *         cdef simd_element document = dereference(self.c_parser).load(path)
  *         return element_to_primitive(self, document, recursive)             # <<<<<<<<<<<<<<
@@ -7594,13 +7649,13 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_6load(struct __pyx_obj_9csimdjson_P
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_7.__pyx_n = 1;
   __pyx_t_7.recursive = __pyx_v_recursive;
-  __pyx_t_2 = __pyx_f_9csimdjson_element_to_primitive(__pyx_v_self, __pyx_v_document, &__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 515, __pyx_L1_error)
+  __pyx_t_2 = __pyx_f_9csimdjson_element_to_primitive(__pyx_v_self, __pyx_v_document, &__pyx_t_7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 522, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "csimdjson.pyx":491
+  /* "csimdjson.pyx":498
  *             )
  * 
  *     def load(self, path, bint recursive=False):             # <<<<<<<<<<<<<<
@@ -7622,7 +7677,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_6load(struct __pyx_obj_9csimdjson_P
 }
 static PyObject *__pyx_gb_9csimdjson_6Parser_15implementations_2generator4(__pyx_CoroutineObject *__pyx_generator, CYTHON_UNUSED PyThreadState *__pyx_tstate, PyObject *__pyx_sent_value); /* proto */
 
-/* "csimdjson.pyx":518
+/* "csimdjson.pyx":525
  * 
  *     @property
  *     def implementations(self):             # <<<<<<<<<<<<<<
@@ -7655,7 +7710,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_15implementations___get__(CYTHON_UN
   if (unlikely(!__pyx_cur_scope)) {
     __pyx_cur_scope = ((struct __pyx_obj_9csimdjson___pyx_scope_struct_4___get__ *)Py_None);
     __Pyx_INCREF(Py_None);
-    __PYX_ERR(0, 518, __pyx_L1_error)
+    __PYX_ERR(0, 525, __pyx_L1_error)
   } else {
     __Pyx_GOTREF(__pyx_cur_scope);
   }
@@ -7663,7 +7718,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_15implementations___get__(CYTHON_UN
   __Pyx_INCREF((PyObject *)__pyx_cur_scope->__pyx_v_self);
   __Pyx_GIVEREF((PyObject *)__pyx_cur_scope->__pyx_v_self);
   {
-    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_9csimdjson_6Parser_15implementations_2generator4, NULL, (PyObject *) __pyx_cur_scope, __pyx_n_s_get, __pyx_n_s_Parser___get, __pyx_n_s_csimdjson); if (unlikely(!gen)) __PYX_ERR(0, 518, __pyx_L1_error)
+    __pyx_CoroutineObject *gen = __Pyx_Generator_New((__pyx_coroutine_body_t) __pyx_gb_9csimdjson_6Parser_15implementations_2generator4, NULL, (PyObject *) __pyx_cur_scope, __pyx_n_s_get, __pyx_n_s_Parser___get, __pyx_n_s_csimdjson); if (unlikely(!gen)) __PYX_ERR(0, 525, __pyx_L1_error)
     __Pyx_DECREF(__pyx_cur_scope);
     __Pyx_RefNannyFinishContext();
     return (PyObject *) gen;
@@ -7701,9 +7756,9 @@ static PyObject *__pyx_gb_9csimdjson_6Parser_15implementations_2generator4(__pyx
     return NULL;
   }
   __pyx_L3_first_run:;
-  if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 518, __pyx_L1_error)
+  if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 525, __pyx_L1_error)
 
-  /* "csimdjson.pyx":523
+  /* "csimdjson.pyx":530
  *         description),].
  *         """
  *         for implementation in available_implementations:             # <<<<<<<<<<<<<<
@@ -7717,18 +7772,18 @@ static PyObject *__pyx_gb_9csimdjson_6Parser_15implementations_2generator4(__pyx
     ++__pyx_t_1;
     __pyx_cur_scope->__pyx_v_implementation = __pyx_t_2;
 
-    /* "csimdjson.pyx":524
+    /* "csimdjson.pyx":531
  *         """
  *         for implementation in available_implementations:
  *             yield (implementation.name(), implementation.description())             # <<<<<<<<<<<<<<
  * 
  *     @property
  */
-    __pyx_t_3 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_cur_scope->__pyx_v_implementation->name()); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 524, __pyx_L1_error)
+    __pyx_t_3 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_cur_scope->__pyx_v_implementation->name()); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 531, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_4 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_cur_scope->__pyx_v_implementation->description()); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 524, __pyx_L1_error)
+    __pyx_t_4 = __pyx_convert_PyUnicode_string_to_py_std__in_string(__pyx_cur_scope->__pyx_v_implementation->description()); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 531, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_4);
-    __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 524, __pyx_L1_error)
+    __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 531, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_3);
@@ -7747,9 +7802,9 @@ static PyObject *__pyx_gb_9csimdjson_6Parser_15implementations_2generator4(__pyx
     return __pyx_r;
     __pyx_L6_resume_from_yield:;
     __pyx_t_1 = __pyx_cur_scope->__pyx_t_0;
-    if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 524, __pyx_L1_error)
+    if (unlikely(!__pyx_sent_value)) __PYX_ERR(0, 531, __pyx_L1_error)
 
-    /* "csimdjson.pyx":523
+    /* "csimdjson.pyx":530
  *         description),].
  *         """
  *         for implementation in available_implementations:             # <<<<<<<<<<<<<<
@@ -7759,7 +7814,7 @@ static PyObject *__pyx_gb_9csimdjson_6Parser_15implementations_2generator4(__pyx
   }
   CYTHON_MAYBE_UNUSED_VAR(__pyx_cur_scope);
 
-  /* "csimdjson.pyx":518
+  /* "csimdjson.pyx":525
  * 
  *     @property
  *     def implementations(self):             # <<<<<<<<<<<<<<
@@ -7786,7 +7841,7 @@ static PyObject *__pyx_gb_9csimdjson_6Parser_15implementations_2generator4(__pyx
   return __pyx_r;
 }
 
-/* "csimdjson.pyx":527
+/* "csimdjson.pyx":534
  * 
  *     @property
  *     def implementation(self):             # <<<<<<<<<<<<<<
@@ -7818,7 +7873,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_14implementation___get__(CYTHON_UNU
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__get__", 0);
 
-  /* "csimdjson.pyx":542
+  /* "csimdjson.pyx":549
  *             choose to override the automatic choice.
  *         """
  *         return (             # <<<<<<<<<<<<<<
@@ -7827,34 +7882,34 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_14implementation___get__(CYTHON_UNU
  */
   __Pyx_XDECREF(__pyx_r);
 
-  /* "csimdjson.pyx":543
+  /* "csimdjson.pyx":550
  *         """
  *         return (
  *             active_implementation.name(),             # <<<<<<<<<<<<<<
  *             active_implementation.description()
  *         )
  */
-  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(simdjson::active_implementation->name()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 543, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_PyUnicode_string_to_py_std__in_string(simdjson::active_implementation->name()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 550, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
 
-  /* "csimdjson.pyx":544
+  /* "csimdjson.pyx":551
  *         return (
  *             active_implementation.name(),
  *             active_implementation.description()             # <<<<<<<<<<<<<<
  *         )
  * 
  */
-  __pyx_t_2 = __pyx_convert_PyUnicode_string_to_py_std__in_string(simdjson::active_implementation->description()); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 544, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_PyUnicode_string_to_py_std__in_string(simdjson::active_implementation->description()); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 551, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "csimdjson.pyx":543
+  /* "csimdjson.pyx":550
  *         """
  *         return (
  *             active_implementation.name(),             # <<<<<<<<<<<<<<
  *             active_implementation.description()
  *         )
  */
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 543, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 550, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
@@ -7866,7 +7921,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_14implementation___get__(CYTHON_UNU
   __pyx_t_3 = 0;
   goto __pyx_L0;
 
-  /* "csimdjson.pyx":527
+  /* "csimdjson.pyx":534
  * 
  *     @property
  *     def implementation(self):             # <<<<<<<<<<<<<<
@@ -7887,7 +7942,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_14implementation___get__(CYTHON_UNU
   return __pyx_r;
 }
 
-/* "csimdjson.pyx":548
+/* "csimdjson.pyx":555
  * 
  *     @implementation.setter
  *     def implementation(self, name):             # <<<<<<<<<<<<<<
@@ -7922,7 +7977,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("__set__", 0);
 
-  /* "csimdjson.pyx":551
+  /* "csimdjson.pyx":558
  *         global active_implementation
  * 
  *         for implementation in available_implementations:             # <<<<<<<<<<<<<<
@@ -7936,25 +7991,25 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
     ++__pyx_t_1;
     __pyx_v_implementation = __pyx_t_2;
 
-    /* "csimdjson.pyx":552
+    /* "csimdjson.pyx":559
  * 
  *         for implementation in available_implementations:
  *             if implementation.name() == str_as_bytes(name):             # <<<<<<<<<<<<<<
  *                 active_implementation = implementation
  *                 return
  */
-    __pyx_t_3 = __pyx_f_9csimdjson_str_as_bytes(__pyx_v_name); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 552, __pyx_L1_error)
+    __pyx_t_3 = __pyx_f_9csimdjson_str_as_bytes(__pyx_v_name); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 559, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     if (unlikely(__pyx_t_3 == Py_None)) {
       PyErr_SetString(PyExc_TypeError, "expected bytes, NoneType found");
-      __PYX_ERR(0, 552, __pyx_L1_error)
+      __PYX_ERR(0, 559, __pyx_L1_error)
     }
-    __pyx_t_4 = __Pyx_PyBytes_AsString(__pyx_t_3); if (unlikely((!__pyx_t_4) && PyErr_Occurred())) __PYX_ERR(0, 552, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyBytes_AsString(__pyx_t_3); if (unlikely((!__pyx_t_4) && PyErr_Occurred())) __PYX_ERR(0, 559, __pyx_L1_error)
     __pyx_t_5 = ((__pyx_v_implementation->name() == __pyx_t_4) != 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     if (__pyx_t_5) {
 
-      /* "csimdjson.pyx":553
+      /* "csimdjson.pyx":560
  *         for implementation in available_implementations:
  *             if implementation.name() == str_as_bytes(name):
  *                 active_implementation = implementation             # <<<<<<<<<<<<<<
@@ -7963,7 +8018,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
  */
       simdjson::active_implementation = __pyx_v_implementation;
 
-      /* "csimdjson.pyx":554
+      /* "csimdjson.pyx":561
  *             if implementation.name() == str_as_bytes(name):
  *                 active_implementation = implementation
  *                 return             # <<<<<<<<<<<<<<
@@ -7973,7 +8028,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
       __pyx_r = 0;
       goto __pyx_L0;
 
-      /* "csimdjson.pyx":552
+      /* "csimdjson.pyx":559
  * 
  *         for implementation in available_implementations:
  *             if implementation.name() == str_as_bytes(name):             # <<<<<<<<<<<<<<
@@ -7982,7 +8037,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
  */
     }
 
-    /* "csimdjson.pyx":551
+    /* "csimdjson.pyx":558
  *         global active_implementation
  * 
  *         for implementation in available_implementations:             # <<<<<<<<<<<<<<
@@ -7991,18 +8046,18 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
  */
   }
 
-  /* "csimdjson.pyx":556
+  /* "csimdjson.pyx":563
  *                 return
  * 
  *         raise ValueError('Unknown implementation')             # <<<<<<<<<<<<<<
  */
-  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__11, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 556, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 563, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_Raise(__pyx_t_3, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __PYX_ERR(0, 556, __pyx_L1_error)
+  __PYX_ERR(0, 563, __pyx_L1_error)
 
-  /* "csimdjson.pyx":548
+  /* "csimdjson.pyx":555
  * 
  *     @implementation.setter
  *     def implementation(self, name):             # <<<<<<<<<<<<<<
@@ -8055,7 +8110,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_8__reduce_cython__(CYTHON_UNUSED st
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -8112,7 +8167,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_10__setstate_cython__(CYTHON_UNUSED
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -8587,7 +8642,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *         if itemsize <= 0:
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__14, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 133, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 133, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -8619,7 +8674,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *         if not isinstance(format, bytes):
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__15, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 136, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 136, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -8746,7 +8801,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  * 
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__16, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 148, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__17, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 148, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -9020,7 +9075,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __
  * 
  *             if self.dtype_is_object:
  */
-      __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__17, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 176, __pyx_L1_error)
+      __pyx_t_10 = __Pyx_PyObject_Call(__pyx_builtin_MemoryError, __pyx_tuple__18, NULL); if (unlikely(!__pyx_t_10)) __PYX_ERR(1, 176, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_10);
       __Pyx_Raise(__pyx_t_10, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_10); __pyx_t_10 = 0;
@@ -9264,7 +9319,7 @@ static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(stru
  *         info.buf = self.data
  *         info.len = self.len
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__18, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 192, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__19, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 192, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -9998,7 +10053,7 @@ static PyObject *__pyx_pf___pyx_array___reduce_cython__(CYTHON_UNUSED struct __p
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__19, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__20, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -10054,7 +10109,7 @@ static PyObject *__pyx_pf___pyx_array_2__setstate_cython__(CYTHON_UNUSED struct 
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__20, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__21, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -11764,7 +11819,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_6__setit
  * 
  *         have_slices, index = _unellipsify(index, self.view.ndim)
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__21, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 418, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 418, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -12812,7 +12867,7 @@ static PyObject *__pyx_memoryview_convert_item_to_object(struct __pyx_memoryview
  *         else:
  *             if len(self.view.format) == 1:
  */
-      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__22, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 495, __pyx_L5_except_error)
+      __pyx_t_6 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_6)) __PYX_ERR(1, 495, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_Raise(__pyx_t_6, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -13174,7 +13229,7 @@ static int __pyx_memoryview___pyx_pf_15View_dot_MemoryView_10memoryview_8__getbu
  * 
  *         if flags & PyBUF_ND:
  */
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__23, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 520, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__24, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 520, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_Raise(__pyx_t_3, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -13723,7 +13778,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_7strides___get__(st
  * 
  *         return tuple([stride for stride in self.view.strides[:self.view.ndim]])
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__24, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 570, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__25, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 570, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_Raise(__pyx_t_2, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -13840,7 +13895,7 @@ static PyObject *__pyx_pf_15View_dot_MemoryView_10memoryview_10suboffsets___get_
     __Pyx_XDECREF(__pyx_r);
     __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_self->view.ndim); if (unlikely(!__pyx_t_2)) __PYX_ERR(1, 577, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyNumber_Multiply(__pyx_tuple__25, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 577, __pyx_L1_error)
+    __pyx_t_3 = PyNumber_Multiply(__pyx_tuple__26, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(1, 577, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_r = __pyx_t_3;
@@ -14878,7 +14933,7 @@ static PyObject *__pyx_pf___pyx_memoryview___reduce_cython__(CYTHON_UNUSED struc
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__26, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__27, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -14934,7 +14989,7 @@ static PyObject *__pyx_pf___pyx_memoryview_2__setstate_cython__(CYTHON_UNUSED st
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__27, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__28, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -15291,9 +15346,9 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
         __Pyx_GOTREF(__pyx_t_7);
         { Py_ssize_t __pyx_temp;
           for (__pyx_temp=0; __pyx_temp < ((__pyx_v_ndim - __pyx_t_8) + 1); __pyx_temp++) {
-            __Pyx_INCREF(__pyx_slice__28);
-            __Pyx_GIVEREF(__pyx_slice__28);
-            PyList_SET_ITEM(__pyx_t_7, __pyx_temp, __pyx_slice__28);
+            __Pyx_INCREF(__pyx_slice__29);
+            __Pyx_GIVEREF(__pyx_slice__29);
+            PyList_SET_ITEM(__pyx_t_7, __pyx_temp, __pyx_slice__29);
           }
         }
         __pyx_t_9 = __Pyx_PyList_Extend(__pyx_v_result, __pyx_t_7); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 682, __pyx_L1_error)
@@ -15326,7 +15381,7 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
  *         else:
  */
       /*else*/ {
-        __pyx_t_9 = __Pyx_PyList_Append(__pyx_v_result, __pyx_slice__28); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 685, __pyx_L1_error)
+        __pyx_t_9 = __Pyx_PyList_Append(__pyx_v_result, __pyx_slice__29); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 685, __pyx_L1_error)
       }
       __pyx_L7:;
 
@@ -15466,9 +15521,9 @@ static PyObject *_unellipsify(PyObject *__pyx_v_index, int __pyx_v_ndim) {
     __Pyx_GOTREF(__pyx_t_3);
     { Py_ssize_t __pyx_temp;
       for (__pyx_temp=0; __pyx_temp < __pyx_v_nslices; __pyx_temp++) {
-        __Pyx_INCREF(__pyx_slice__28);
-        __Pyx_GIVEREF(__pyx_slice__28);
-        PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_slice__28);
+        __Pyx_INCREF(__pyx_slice__29);
+        __Pyx_GIVEREF(__pyx_slice__29);
+        PyList_SET_ITEM(__pyx_t_3, __pyx_temp, __pyx_slice__29);
       }
     }
     __pyx_t_9 = __Pyx_PyList_Extend(__pyx_v_result, __pyx_t_3); if (unlikely(__pyx_t_9 == ((int)-1))) __PYX_ERR(1, 696, __pyx_L1_error)
@@ -15595,7 +15650,7 @@ static PyObject *assert_direct_dimensions(Py_ssize_t *__pyx_v_suboffsets, int __
  * 
  * 
  */
-      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__29, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 703, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__30, NULL); if (unlikely(!__pyx_t_5)) __PYX_ERR(1, 703, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_Raise(__pyx_t_5, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -17779,7 +17834,7 @@ static PyObject *__pyx_pf___pyx_memoryviewslice___reduce_cython__(CYTHON_UNUSED 
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__30, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__31, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 2, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -17835,7 +17890,7 @@ static PyObject *__pyx_pf___pyx_memoryviewslice_2__setstate_cython__(CYTHON_UNUS
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__31, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_TypeError, __pyx_tuple__32, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(1, 4, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_Raise(__pyx_t_1, 0, 0, 0);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
@@ -23332,6 +23387,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_Cannot_create_writable_memory_vi, __pyx_k_Cannot_create_writable_memory_vi, sizeof(__pyx_k_Cannot_create_writable_memory_vi), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_index_with_type_s, __pyx_k_Cannot_index_with_type_s, sizeof(__pyx_k_Cannot_index_with_type_s), 0, 0, 1, 0},
   {&__pyx_n_s_Ellipsis, __pyx_k_Ellipsis, sizeof(__pyx_k_Ellipsis), 0, 0, 1, 1},
+  {&__pyx_kp_u_Empty_no_JSON_found, __pyx_k_Empty_no_JSON_found, sizeof(__pyx_k_Empty_no_JSON_found), 0, 1, 0, 0},
   {&__pyx_kp_s_Empty_shape_tuple_for_cython_arr, __pyx_k_Empty_shape_tuple_for_cython_arr, sizeof(__pyx_k_Empty_shape_tuple_for_cython_arr), 0, 0, 1, 0},
   {&__pyx_kp_u_Encountered_an_unknown_element_t, __pyx_k_Encountered_an_unknown_element_t, sizeof(__pyx_k_Encountered_an_unknown_element_t), 0, 1, 0, 0},
   {&__pyx_kp_s_Incompatible_checksums_s_vs_0xb0, __pyx_k_Incompatible_checksums_s_vs_0xb0, sizeof(__pyx_k_Incompatible_checksums_s_vs_0xb0), 0, 0, 1, 0},
@@ -23363,7 +23419,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_VERSION, __pyx_k_VERSION, sizeof(__pyx_k_VERSION), 0, 0, 1, 1},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_View_MemoryView, __pyx_k_View_MemoryView, sizeof(__pyx_k_View_MemoryView), 0, 0, 1, 1},
-  {&__pyx_kp_u__32, __pyx_k__32, sizeof(__pyx_k__32), 0, 1, 0, 0},
+  {&__pyx_kp_u__33, __pyx_k__33, sizeof(__pyx_k__33), 0, 1, 0, 0},
   {&__pyx_n_s_allocate_buffer, __pyx_k_allocate_buffer, sizeof(__pyx_k_allocate_buffer), 0, 0, 1, 1},
   {&__pyx_n_s_args, __pyx_k_args, sizeof(__pyx_k_args), 0, 0, 1, 1},
   {&__pyx_n_s_base, __pyx_k_base, sizeof(__pyx_k_base), 0, 0, 1, 1},
@@ -23562,14 +23618,25 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__10);
   __Pyx_GIVEREF(__pyx_tuple__10);
 
-  /* "csimdjson.pyx":556
+  /* "csimdjson.pyx":486
+ *                 # confusing) IndexError. This isn't a very good error message,
+ *                 # but it's identical to the one simdjson would have raised.
+ *                 raise ValueError('Empty: no JSON found')             # <<<<<<<<<<<<<<
+ * 
+ *             return element_to_primitive(
+ */
+  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_u_Empty_no_JSON_found); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 486, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__11);
+  __Pyx_GIVEREF(__pyx_tuple__11);
+
+  /* "csimdjson.pyx":563
  *                 return
  * 
  *         raise ValueError('Unknown implementation')             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__11 = PyTuple_Pack(1, __pyx_kp_u_Unknown_implementation); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 556, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__11);
-  __Pyx_GIVEREF(__pyx_tuple__11);
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_u_Unknown_implementation); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 563, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__12);
+  __Pyx_GIVEREF(__pyx_tuple__12);
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -23577,18 +23644,18 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__12);
-  __Pyx_GIVEREF(__pyx_tuple__12);
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__13);
+  __Pyx_GIVEREF(__pyx_tuple__13);
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__13);
-  __Pyx_GIVEREF(__pyx_tuple__13);
+  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__14);
+  __Pyx_GIVEREF(__pyx_tuple__14);
 
   /* "View.MemoryView":133
  * 
@@ -23597,9 +23664,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         if itemsize <= 0:
  */
-  __pyx_tuple__14 = PyTuple_Pack(1, __pyx_kp_s_Empty_shape_tuple_for_cython_arr); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(1, 133, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__14);
-  __Pyx_GIVEREF(__pyx_tuple__14);
+  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_s_Empty_shape_tuple_for_cython_arr); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(1, 133, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__15);
+  __Pyx_GIVEREF(__pyx_tuple__15);
 
   /* "View.MemoryView":136
  * 
@@ -23608,9 +23675,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         if not isinstance(format, bytes):
  */
-  __pyx_tuple__15 = PyTuple_Pack(1, __pyx_kp_s_itemsize_0_for_cython_array); if (unlikely(!__pyx_tuple__15)) __PYX_ERR(1, 136, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__15);
-  __Pyx_GIVEREF(__pyx_tuple__15);
+  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_kp_s_itemsize_0_for_cython_array); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(1, 136, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__16);
+  __Pyx_GIVEREF(__pyx_tuple__16);
 
   /* "View.MemoryView":148
  * 
@@ -23619,9 +23686,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__16 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_shape_and_str); if (unlikely(!__pyx_tuple__16)) __PYX_ERR(1, 148, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__16);
-  __Pyx_GIVEREF(__pyx_tuple__16);
+  __pyx_tuple__17 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_shape_and_str); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(1, 148, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__17);
+  __Pyx_GIVEREF(__pyx_tuple__17);
 
   /* "View.MemoryView":176
  *             self.data = <char *>malloc(self.len)
@@ -23630,9 +23697,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *             if self.dtype_is_object:
  */
-  __pyx_tuple__17 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_array_data); if (unlikely(!__pyx_tuple__17)) __PYX_ERR(1, 176, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__17);
-  __Pyx_GIVEREF(__pyx_tuple__17);
+  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_kp_s_unable_to_allocate_array_data); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(1, 176, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__18);
+  __Pyx_GIVEREF(__pyx_tuple__18);
 
   /* "View.MemoryView":192
  *             bufmode = PyBUF_F_CONTIGUOUS | PyBUF_ANY_CONTIGUOUS
@@ -23641,9 +23708,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         info.buf = self.data
  *         info.len = self.len
  */
-  __pyx_tuple__18 = PyTuple_Pack(1, __pyx_kp_s_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__18)) __PYX_ERR(1, 192, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__18);
-  __Pyx_GIVEREF(__pyx_tuple__18);
+  __pyx_tuple__19 = PyTuple_Pack(1, __pyx_kp_s_Can_only_create_a_buffer_that_is); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(1, 192, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__19);
+  __Pyx_GIVEREF(__pyx_tuple__19);
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -23651,18 +23718,18 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__19 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__19);
-  __Pyx_GIVEREF(__pyx_tuple__19);
+  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__20);
+  __Pyx_GIVEREF(__pyx_tuple__20);
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__20 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__20)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__20);
-  __Pyx_GIVEREF(__pyx_tuple__20);
+  __pyx_tuple__21 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__21);
+  __Pyx_GIVEREF(__pyx_tuple__21);
 
   /* "View.MemoryView":418
  *     def __setitem__(memoryview self, object index, object value):
@@ -23671,9 +23738,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         have_slices, index = _unellipsify(index, self.view.ndim)
  */
-  __pyx_tuple__21 = PyTuple_Pack(1, __pyx_kp_s_Cannot_assign_to_read_only_memor); if (unlikely(!__pyx_tuple__21)) __PYX_ERR(1, 418, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__21);
-  __Pyx_GIVEREF(__pyx_tuple__21);
+  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_kp_s_Cannot_assign_to_read_only_memor); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(1, 418, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__22);
+  __Pyx_GIVEREF(__pyx_tuple__22);
 
   /* "View.MemoryView":495
  *             result = struct.unpack(self.view.format, bytesitem)
@@ -23682,9 +23749,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *         else:
  *             if len(self.view.format) == 1:
  */
-  __pyx_tuple__22 = PyTuple_Pack(1, __pyx_kp_s_Unable_to_convert_item_to_object); if (unlikely(!__pyx_tuple__22)) __PYX_ERR(1, 495, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__22);
-  __Pyx_GIVEREF(__pyx_tuple__22);
+  __pyx_tuple__23 = PyTuple_Pack(1, __pyx_kp_s_Unable_to_convert_item_to_object); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(1, 495, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__23);
+  __Pyx_GIVEREF(__pyx_tuple__23);
 
   /* "View.MemoryView":520
  *     def __getbuffer__(self, Py_buffer *info, int flags):
@@ -23693,9 +23760,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         if flags & PyBUF_ND:
  */
-  __pyx_tuple__23 = PyTuple_Pack(1, __pyx_kp_s_Cannot_create_writable_memory_vi); if (unlikely(!__pyx_tuple__23)) __PYX_ERR(1, 520, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__23);
-  __Pyx_GIVEREF(__pyx_tuple__23);
+  __pyx_tuple__24 = PyTuple_Pack(1, __pyx_kp_s_Cannot_create_writable_memory_vi); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(1, 520, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__24);
+  __Pyx_GIVEREF(__pyx_tuple__24);
 
   /* "View.MemoryView":570
  *         if self.view.strides == NULL:
@@ -23704,9 +23771,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         return tuple([stride for stride in self.view.strides[:self.view.ndim]])
  */
-  __pyx_tuple__24 = PyTuple_Pack(1, __pyx_kp_s_Buffer_view_does_not_expose_stri); if (unlikely(!__pyx_tuple__24)) __PYX_ERR(1, 570, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__24);
-  __Pyx_GIVEREF(__pyx_tuple__24);
+  __pyx_tuple__25 = PyTuple_Pack(1, __pyx_kp_s_Buffer_view_does_not_expose_stri); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(1, 570, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__25);
+  __Pyx_GIVEREF(__pyx_tuple__25);
 
   /* "View.MemoryView":577
  *     def suboffsets(self):
@@ -23715,12 +23782,12 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *         return tuple([suboffset for suboffset in self.view.suboffsets[:self.view.ndim]])
  */
-  __pyx_tuple__25 = PyTuple_New(1); if (unlikely(!__pyx_tuple__25)) __PYX_ERR(1, 577, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__25);
+  __pyx_tuple__26 = PyTuple_New(1); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(1, 577, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__26);
   __Pyx_INCREF(__pyx_int_neg_1);
   __Pyx_GIVEREF(__pyx_int_neg_1);
-  PyTuple_SET_ITEM(__pyx_tuple__25, 0, __pyx_int_neg_1);
-  __Pyx_GIVEREF(__pyx_tuple__25);
+  PyTuple_SET_ITEM(__pyx_tuple__26, 0, __pyx_int_neg_1);
+  __Pyx_GIVEREF(__pyx_tuple__26);
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -23728,18 +23795,18 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__26 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__26);
-  __Pyx_GIVEREF(__pyx_tuple__26);
+  __pyx_tuple__27 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__27);
+  __Pyx_GIVEREF(__pyx_tuple__27);
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__27 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__27)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__27);
-  __Pyx_GIVEREF(__pyx_tuple__27);
+  __pyx_tuple__28 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__28)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__28);
+  __Pyx_GIVEREF(__pyx_tuple__28);
 
   /* "View.MemoryView":682
  *         if item is Ellipsis:
@@ -23748,9 +23815,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  *                 seen_ellipsis = True
  *             else:
  */
-  __pyx_slice__28 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__28)) __PYX_ERR(1, 682, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_slice__28);
-  __Pyx_GIVEREF(__pyx_slice__28);
+  __pyx_slice__29 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__29)) __PYX_ERR(1, 682, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_slice__29);
+  __Pyx_GIVEREF(__pyx_slice__29);
 
   /* "View.MemoryView":703
  *     for suboffset in suboffsets[:ndim]:
@@ -23759,9 +23826,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__29 = PyTuple_Pack(1, __pyx_kp_s_Indirect_dimensions_not_supporte); if (unlikely(!__pyx_tuple__29)) __PYX_ERR(1, 703, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__29);
-  __Pyx_GIVEREF(__pyx_tuple__29);
+  __pyx_tuple__30 = PyTuple_Pack(1, __pyx_kp_s_Indirect_dimensions_not_supporte); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(1, 703, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__30);
+  __Pyx_GIVEREF(__pyx_tuple__30);
 
   /* "(tree fragment)":2
  * def __reduce_cython__(self):
@@ -23769,18 +23836,18 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  */
-  __pyx_tuple__30 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__30)) __PYX_ERR(1, 2, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__30);
-  __Pyx_GIVEREF(__pyx_tuple__30);
+  __pyx_tuple__31 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__31)) __PYX_ERR(1, 2, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__31);
+  __Pyx_GIVEREF(__pyx_tuple__31);
 
   /* "(tree fragment)":4
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")
  * def __setstate_cython__(self, __pyx_state):
  *     raise TypeError("no default __reduce__ due to non-trivial __cinit__")             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__31 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__31)) __PYX_ERR(1, 4, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__31);
-  __Pyx_GIVEREF(__pyx_tuple__31);
+  __pyx_tuple__32 = PyTuple_Pack(1, __pyx_kp_s_no_default___reduce___due_to_non); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(1, 4, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__32);
+  __Pyx_GIVEREF(__pyx_tuple__32);
 
   /* "View.MemoryView":286
  *         return self.name
@@ -23789,9 +23856,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_tuple__33 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__33)) __PYX_ERR(1, 286, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__33);
-  __Pyx_GIVEREF(__pyx_tuple__33);
+  __pyx_tuple__34 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct_or_indirect); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(1, 286, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__34);
+  __Pyx_GIVEREF(__pyx_tuple__34);
 
   /* "View.MemoryView":287
  * 
@@ -23800,9 +23867,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_tuple__34 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(1, 287, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__34);
-  __Pyx_GIVEREF(__pyx_tuple__34);
+  __pyx_tuple__35 = PyTuple_Pack(1, __pyx_kp_s_strided_and_direct); if (unlikely(!__pyx_tuple__35)) __PYX_ERR(1, 287, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__35);
+  __Pyx_GIVEREF(__pyx_tuple__35);
 
   /* "View.MemoryView":288
  * cdef generic = Enum("<strided and direct or indirect>")
@@ -23811,9 +23878,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__35 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__35)) __PYX_ERR(1, 288, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__35);
-  __Pyx_GIVEREF(__pyx_tuple__35);
+  __pyx_tuple__36 = PyTuple_Pack(1, __pyx_kp_s_strided_and_indirect); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(1, 288, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__36);
+  __Pyx_GIVEREF(__pyx_tuple__36);
 
   /* "View.MemoryView":291
  * 
@@ -23822,9 +23889,9 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_tuple__36 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__36)) __PYX_ERR(1, 291, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__36);
-  __Pyx_GIVEREF(__pyx_tuple__36);
+  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_direct); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(1, 291, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__37);
+  __Pyx_GIVEREF(__pyx_tuple__37);
 
   /* "View.MemoryView":292
  * 
@@ -23833,19 +23900,19 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  * 
  */
-  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(1, 292, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__37);
-  __Pyx_GIVEREF(__pyx_tuple__37);
+  __pyx_tuple__38 = PyTuple_Pack(1, __pyx_kp_s_contiguous_and_indirect); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(1, 292, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__38);
+  __Pyx_GIVEREF(__pyx_tuple__38);
 
   /* "(tree fragment)":1
  * def __pyx_unpickle_Enum(__pyx_type, long __pyx_checksum, __pyx_state):             # <<<<<<<<<<<<<<
  *     cdef object __pyx_PickleError
  *     cdef object __pyx_result
  */
-  __pyx_tuple__38 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(1, 1, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_tuple__38);
-  __Pyx_GIVEREF(__pyx_tuple__38);
-  __pyx_codeobj__39 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__38, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__39)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __pyx_tuple__39 = PyTuple_Pack(5, __pyx_n_s_pyx_type, __pyx_n_s_pyx_checksum, __pyx_n_s_pyx_state, __pyx_n_s_pyx_PickleError, __pyx_n_s_pyx_result); if (unlikely(!__pyx_tuple__39)) __PYX_ERR(1, 1, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_tuple__39);
+  __Pyx_GIVEREF(__pyx_tuple__39);
+  __pyx_codeobj__40 = (PyObject*)__Pyx_PyCode_New(3, 0, 5, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__39, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_stringsource, __pyx_n_s_pyx_unpickle_Enum, 1, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__40)) __PYX_ERR(1, 1, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -23999,7 +24066,7 @@ static int __Pyx_modinit_type_init_code(void) {
     __pyx_type_9csimdjson___pyx_scope_struct_3_items.tp_getattro = __Pyx_PyObject_GenericGetAttrNoDict;
   }
   __pyx_ptype_9csimdjson___pyx_scope_struct_3_items = &__pyx_type_9csimdjson___pyx_scope_struct_3_items;
-  if (PyType_Ready(&__pyx_type_9csimdjson___pyx_scope_struct_4___get__) < 0) __PYX_ERR(0, 518, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_9csimdjson___pyx_scope_struct_4___get__) < 0) __PYX_ERR(0, 525, __pyx_L1_error)
   #if PY_VERSION_HEX < 0x030800B1
   __pyx_type_9csimdjson___pyx_scope_struct_4___get__.tp_print = 0;
   #endif
@@ -24367,10 +24434,10 @@ if (!__Pyx_RefNanny) {
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_4);
   __pyx_t_4 = 0;
-  __Pyx_INCREF(__pyx_kp_u__32);
+  __Pyx_INCREF(__pyx_kp_u__33);
   __pyx_t_2 += 1;
-  __Pyx_GIVEREF(__pyx_kp_u__32);
-  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_kp_u__32);
+  __Pyx_GIVEREF(__pyx_kp_u__33);
+  PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_kp_u__33);
 
   /* "csimdjson.pyx":23
  * VERSION = (
@@ -24385,10 +24452,10 @@ if (!__Pyx_RefNanny) {
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_1, 2, __pyx_t_4);
   __pyx_t_4 = 0;
-  __Pyx_INCREF(__pyx_kp_u__32);
+  __Pyx_INCREF(__pyx_kp_u__33);
   __pyx_t_2 += 1;
-  __Pyx_GIVEREF(__pyx_kp_u__32);
-  PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_kp_u__32);
+  __Pyx_GIVEREF(__pyx_kp_u__33);
+  PyTuple_SET_ITEM(__pyx_t_1, 3, __pyx_kp_u__33);
 
   /* "csimdjson.pyx":24
  *     f'{SIMDJSON_VERSION_MAJOR}.'
@@ -24469,7 +24536,7 @@ if (!__Pyx_RefNanny) {
  * cdef strided = Enum("<strided and direct>") # default
  * cdef indirect = Enum("<strided and indirect>")
  */
-  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__33, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 286, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__34, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 286, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_XGOTREF(generic);
   __Pyx_DECREF_SET(generic, __pyx_t_4);
@@ -24483,7 +24550,7 @@ if (!__Pyx_RefNanny) {
  * cdef indirect = Enum("<strided and indirect>")
  * 
  */
-  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__34, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 287, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__35, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 287, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_XGOTREF(strided);
   __Pyx_DECREF_SET(strided, __pyx_t_4);
@@ -24497,7 +24564,7 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__35, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 288, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__36, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 288, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_XGOTREF(indirect);
   __Pyx_DECREF_SET(indirect, __pyx_t_4);
@@ -24511,7 +24578,7 @@ if (!__Pyx_RefNanny) {
  * cdef indirect_contiguous = Enum("<contiguous and indirect>")
  * 
  */
-  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__36, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 291, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 291, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_XGOTREF(contiguous);
   __Pyx_DECREF_SET(contiguous, __pyx_t_4);
@@ -24525,7 +24592,7 @@ if (!__Pyx_RefNanny) {
  * 
  * 
  */
-  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__37, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 292, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(((PyObject *)__pyx_MemviewEnum_type), __pyx_tuple__38, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(1, 292, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_XGOTREF(indirect_contiguous);
   __Pyx_DECREF_SET(indirect_contiguous, __pyx_t_4);
@@ -25487,6 +25554,73 @@ bad:
     Py_XDECREF(local_value);
     Py_XDECREF(local_tb);
     return -1;
+}
+
+/* PyIntCompare */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_EqObjC(PyObject *op1, PyObject *op2, CYTHON_UNUSED long intval, CYTHON_UNUSED long inplace) {
+    if (op1 == op2) {
+        Py_RETURN_TRUE;
+    }
+    #if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_CheckExact(op1))) {
+        const long b = intval;
+        long a = PyInt_AS_LONG(op1);
+        if (a == b) Py_RETURN_TRUE; else Py_RETURN_FALSE;
+    }
+    #endif
+    #if CYTHON_USE_PYLONG_INTERNALS
+    if (likely(PyLong_CheckExact(op1))) {
+        int unequal;
+        unsigned long uintval;
+        Py_ssize_t size = Py_SIZE(op1);
+        const digit* digits = ((PyLongObject*)op1)->ob_digit;
+        if (intval == 0) {
+            if (size == 0) Py_RETURN_TRUE; else Py_RETURN_FALSE;
+        } else if (intval < 0) {
+            if (size >= 0)
+                Py_RETURN_FALSE;
+            intval = -intval;
+            size = -size;
+        } else {
+            if (size <= 0)
+                Py_RETURN_FALSE;
+        }
+        uintval = (unsigned long) intval;
+#if PyLong_SHIFT * 4 < SIZEOF_LONG*8
+        if (uintval >> (PyLong_SHIFT * 4)) {
+            unequal = (size != 5) || (digits[0] != (uintval & (unsigned long) PyLong_MASK))
+                 | (digits[1] != ((uintval >> (1 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[2] != ((uintval >> (2 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[3] != ((uintval >> (3 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[4] != ((uintval >> (4 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK));
+        } else
+#endif
+#if PyLong_SHIFT * 3 < SIZEOF_LONG*8
+        if (uintval >> (PyLong_SHIFT * 3)) {
+            unequal = (size != 4) || (digits[0] != (uintval & (unsigned long) PyLong_MASK))
+                 | (digits[1] != ((uintval >> (1 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[2] != ((uintval >> (2 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[3] != ((uintval >> (3 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK));
+        } else
+#endif
+#if PyLong_SHIFT * 2 < SIZEOF_LONG*8
+        if (uintval >> (PyLong_SHIFT * 2)) {
+            unequal = (size != 3) || (digits[0] != (uintval & (unsigned long) PyLong_MASK))
+                 | (digits[1] != ((uintval >> (1 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK)) | (digits[2] != ((uintval >> (2 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK));
+        } else
+#endif
+#if PyLong_SHIFT * 1 < SIZEOF_LONG*8
+        if (uintval >> (PyLong_SHIFT * 1)) {
+            unequal = (size != 2) || (digits[0] != (uintval & (unsigned long) PyLong_MASK))
+                 | (digits[1] != ((uintval >> (1 * PyLong_SHIFT)) & (unsigned long) PyLong_MASK));
+        } else
+#endif
+            unequal = (size != 1) || (((unsigned long) digits[0]) != (uintval & (unsigned long) PyLong_MASK));
+        if (unequal == 0) Py_RETURN_TRUE; else Py_RETURN_FALSE;
+    }
+    #endif
+    if (PyFloat_CheckExact(op1)) {
+        const long b = intval;
+        double a = PyFloat_AS_DOUBLE(op1);
+        if ((double)a == (double)b) Py_RETURN_TRUE; else Py_RETURN_FALSE;
+    }
+    return (
+        PyObject_RichCompare(op1, op2, Py_EQ));
 }
 
 /* BufferIndexError */
@@ -27238,6 +27372,11 @@ __pyx_capsule_create(void *p, CYTHON_UNUSED const char *sig)
         return (target_type) value;\
     }
 
+/* MemviewDtypeToObject */
+static CYTHON_INLINE PyObject *__pyx_memview_get_unsigned_char__const__(const char *itemp) {
+    return (PyObject *) __Pyx_PyInt_From_unsigned_char(*(unsigned char const  *) itemp);
+}
+
 /* MemviewSliceCopyTemplate */
 static __Pyx_memviewslice
 __pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
@@ -27769,6 +27908,44 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_uint64_t(uint64_t value) {
         int one = 1; int little = (int)*(unsigned char *)&one;
         unsigned char *bytes = (unsigned char *)&value;
         return _PyLong_FromByteArray(bytes, sizeof(uint64_t),
+                                     little, !is_unsigned);
+    }
+}
+
+/* CIntToPy */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_char(unsigned char value) {
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wconversion"
+#endif
+    const unsigned char neg_one = (unsigned char) -1, const_zero = (unsigned char) 0;
+#ifdef __Pyx_HAS_GCC_DIAGNOSTIC
+#pragma GCC diagnostic pop
+#endif
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(unsigned char) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(unsigned char) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(unsigned char) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(unsigned char) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(unsigned char) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(unsigned char),
                                      little, !is_unsigned);
     }
 }

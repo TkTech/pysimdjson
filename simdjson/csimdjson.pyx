@@ -478,6 +478,13 @@ cdef class Parser:
             # type-specific APIs, but gives much greater compatibility.
             data = src
 
+            if data.size == 0:
+                # If we were given a completely empty buffer, trying to access
+                # a stride in the next step will cause a (potentially
+                # confusing) IndexError. This isn't a very good error message,
+                # but it's identical to the one simdjson would have raised.
+                raise ValueError('Empty: no JSON found')
+
             return element_to_primitive(
                 self,
                 dereference(self.c_parser).parse(

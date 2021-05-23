@@ -1,3 +1,4 @@
+import io
 import pathlib
 
 import pytest
@@ -30,6 +31,19 @@ def test_parse_str(parser):
     """Ensure we can load from string fragments."""
     doc = parser.parse('{"hello": "world"}')
     assert doc.as_dict() == {'hello': 'world'}
+
+
+def test_parse_empty_buffer(parser):
+    """Ensure trying to parse an empty buffer returns an error consistent
+    with attempting to parse an empty bytestring."""
+    # Issue #81
+    with pytest.raises(ValueError) as bytes_exc:
+        parser.parse(b'')
+
+    with pytest.raises(ValueError) as buffer_exc:
+        parser.parse(io.BytesIO(b'').getbuffer())
+
+    assert str(bytes_exc.value) == str(buffer_exc.value)
 
 
 def test_unicode_decode_error(parser):
