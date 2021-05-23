@@ -27,53 +27,50 @@ if system == 'Darwin':
     os.environ.setdefault('MACOSX_DEPLOYMENT_TARGET', '10.14')
     extra_compile_args.append('-std=c++11')
 
-if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
+build_with_cython = os.getenv('BUILD_WITH_CYTHON')
+if build_with_cython and not CYTHON_AVAILABLE:
     print(
         'BUILD_WITH_CYTHON environment variable is set, but cython'
         ' is not available. Falling back to pre-cythonized version if'
         ' available.'
     )
+    build_with_cython = False
 
-if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
-    macros = []
-    compiler_directives = {
-        'embedsignature': True
-    }
+macros = []
+compiler_directives = {}
+sources = [
+    'simdjson/simdjson.cpp',
+    'simdjson/errors.cpp',
+]
+if build_with_cython:
+    compiler_directives['embedsignature'] = True
 
     if os.getenv('BUILD_FOR_DEBUG'):
         # Enable line tracing, which also enables support for coverage
         # reporting.
-        macros = [
+        macros += [
             ('CYTHON_TRACE', 1),
             ('CYTHON_TRACE_NOGIL', 1)
         ]
         compiler_directives['linetrace'] = True
 
-    extensions = cythonize([
-        Extension(
-            'csimdjson',
-            [
-                'simdjson/simdjson.cpp',
-                'simdjson/errors.cpp',
-                'simdjson/csimdjson.pyx'
-            ],
-            define_macros=macros,
-            extra_compile_args=extra_compile_args
-        )
-    ], compiler_directives=compiler_directives)
+    sources.append('simdjson/csimdjson.pyx')
 else:
-    extensions = [
-        Extension(
-            'csimdjson',
-            [
-                'simdjson/simdjson.cpp',
-                'simdjson/errors.cpp',
-                'simdjson/csimdjson.cpp'
-            ],
-            extra_compile_args=extra_compile_args,
-            language='c++'
-        )
-    ]
+    sources.append('simdjson/csimdjson.cpp')
+
+
+extensions = [
+    Extension(
+        'csimdjson',
+        sources,
+        define_macros=macros,
+        extra_compile_args=extra_compile_args,
+        language='c++',
+    )
+]
+
+if build_with_cython:
+    extensions = cythonize(extensions, compiler_directives=compiler_directives)
 
 setup(
     name='pysimdjson',
