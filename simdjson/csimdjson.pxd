@@ -7,7 +7,7 @@ cdef extern from "Python.h":
     # Correct signature is const, but this was only fixed in Py3.7+
     cdef char* PyUnicode_AsUTF8AndSize(object, Py_ssize_t *)
 
-cdef extern from "errors.h":
+cdef extern from "util.h":
     cdef void simdjson_error_handler()
     cdef void * flatten_array[T](simd_array src) \
         except +simdjson_error_handler

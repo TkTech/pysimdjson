@@ -54,7 +54,7 @@ if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
             'csimdjson',
             [
                 'simdjson/simdjson.cpp',
-                'simdjson/errors.cpp',
+                'simdjson/util.cpp',
                 'simdjson/csimdjson.pyx'
             ],
             define_macros=macros,
@@ -67,7 +67,7 @@ else:
             'csimdjson',
             [
                 'simdjson/simdjson.cpp',
-                'simdjson/errors.cpp',
+                'simdjson/util.cpp',
                 'simdjson/csimdjson.cpp'
             ],
             extra_compile_args=extra_compile_args,

@@ -4,8 +4,8 @@
 {
     "distutils": {
         "depends": [
-            "simdjson/errors.h",
-            "simdjson/simdjson.h"
+            "simdjson/simdjson.h",
+            "simdjson/util.h"
         ],
         "include_dirs": [
             "simdjson",
@@ -16,7 +16,7 @@
         "sources": [
             "simdjson/csimdjson.pyx",
             "simdjson/simdjson.cpp",
-            "simdjson/errors.cpp"
+            "simdjson/util.cpp"
         ]
     },
     "module_name": "csimdjson"
@@ -651,7 +651,7 @@ static CYTHON_INLINE float __PYX_NAN() {
 #include <string>
 #include <memory>
 #include <stdio.h>
-#include "errors.h"
+#include "util.h"
 #include "simdjson.h"
 #include "pythread.h"
 #include <stdlib.h>

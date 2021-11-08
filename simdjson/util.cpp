@@ -1,7 +1,7 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include "simdjson.h"
-#include "errors.h"
+#include "util.h"
 
 /**
  * Error translator, converting simdjson C++ exceptions into sensible Python
