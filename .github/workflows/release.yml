@@ -72,6 +72,40 @@ jobs:
       run: |
         twine upload dist/*-manylinux*.whl
 
+  build_manylinux2014_aarch64:
+    name: Creating manylinux aarch64 releases
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: docker/setup-qemu-action@v1
+      name: Set up QEMU
+
+    - name: Build (manylinux2014aarch64)
+      uses: RalfG/python-wheels-manylinux-build@v0.3.4-manylinux2014_aarch64
+      with:
+        python-versions: 'cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39'
+        build-requirements: 'cython'
+
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Install python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        pip install wheel twine
+    - name: Publishing to PyPi
+      env:
+        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      run: |
+        twine upload dist/*-manylinux*.whl
+
   sdist:
     name: Creating source release
 
