@@ -1,4 +1,3 @@
-include simdjson/binding.cpp
 include simdjson/simdjson.h
 include simdjson/simdjson.cpp
 include simdjson/util.h
