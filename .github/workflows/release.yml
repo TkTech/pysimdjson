@@ -1,109 +1,118 @@
 on:
+  workflow_dispatch:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
-name: Create release
+name: Creating release
+
+env:
+  CIBW_TEST_EXTRAS: test
+  CIBW_TEST_COMMAND: "pytest {project}/tests"
+  CIBW_ARCHS_MACOS: "x86_64 universal2"
+  CIBW_TEST_SKIP: "*_arm64 *_universal2:arm64"
+
 
 jobs:
-  build:
-    name: Creating Windows and OSX wheels
-
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        os: [ubuntu-20.04, windows-2019, macos-10.15]
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/setup-python@v2
+        name: Setting up Python
+        with:
+          python-version: '3.8'
 
-    - name: Install python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        pip install wheel twine
-        pip install -e .
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
 
-    - name: Publishing to PyPi
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        python setup.py bdist_wheel
-        twine upload dist/*
+      - name: Build & test wheels
+        uses: pypa/cibuildwheel@v2.2.2
+        env:
+          CIBW_ARCHS_LINUX: auto aarch64 ppc64le
 
-  build_manylinux2010:
-    name: Creating manylinux releases
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Build (manylinux2014)
-      uses: RalfG/python-wheels-manylinux-build@v0.3-manylinux2014_x86_64
-      with:
-        python-versions: 'cp36-cp36m cp37-cp37m cp38-cp38 cp39-cp39'
-        build-requirements: 'cython'
-
-    - name: Set up Python
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
-
-    - name: Install python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        pip install wheel twine
-
-    - name: Publishing to PyPi
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        twine upload dist/*-manylinux*.whl
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./wheelhouse/*.whl
 
   sdist:
     name: Creating source release
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v1
+      - name: Setting up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Installing python build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade setuptools
+
+      - name: Building source distribution
+        run: |
+          pip install -e ".[release]"
+          python setup.py sdist
+
+      - name: Ensuring documentation builds
+        run: |
+          cd docs && make clean && make html
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: dist/*.tar.gz
+
+  upload_all:
+    needs: [build_wheels, sdist]
+    name: Uploading built packages to pypi for release.
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v2
       with:
-        python-version: 3.8
+        name: artifact
+        path: dist
 
-    - name: Install python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install --upgrade setuptools
-        pip install wheel twine
+    # - uses: pypa/gh-action-pypi-publish@v1.4.2
+    #   with:
+    #     user: ${{ secrets.PYPI_USERNAME }}
+    #     password: ${{ secrets.PYPI_PASSWORD }}
 
-    - name: Publishing to PyPi
-      env:
-        TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: |
-        pip install -e ".[release]"
-        python setup.py sdist
-        twine upload dist/*
+  build_documentation:
+    name: Building & uploading documentation.
+    needs: [upload_all]
+    steps:
+      - uses: actions/checkout@v2
 
-    - name: Building documentation
-      run: |
-        cd docs && make clean && make html
+      - name: Setting up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
 
-    - name: Publishing documentation
-      run: |
-        ghp-import -f -n -c pysimdjson.tkte.ch -p docs/_build/html
+      - name: Installing python build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade setuptools
+
+      - name: Installing release dependencies.
+        run: |
+          pip install -e ".[release]"
+
+      - name: Building documentation
+        run: |
+          cd docs && make clean && make html
+
+      # - name: Publishing documentation
+      #   run: |
+      #     ghp-import -f -n -c pysimdjson.tkte.ch -p docs/_build/html
