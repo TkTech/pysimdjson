@@ -1,3 +1,4 @@
+import os.path
 from pathlib import Path
 
 import pytest
@@ -54,3 +55,14 @@ def parsing_tests():
         'n': (Path('jsonexamples') / 'test_parsing').glob('n_*.json'),
         'i': (Path('jsonexamples') / 'test_parsing').glob('i_*.json')
     }
+
+
+@pytest.fixture
+def jsonexamples():
+    return os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            'jsonexamples'
+        )
+    )

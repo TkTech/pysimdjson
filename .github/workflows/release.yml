@@ -2,23 +2,23 @@ on:
   workflow_dispatch:
   push:
     # Sequence of patterns matched against refs/tags
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    # tags:
+    #   - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 name: Creating release
 
 env:
   CIBW_TEST_EXTRAS: test
   CIBW_TEST_COMMAND: "pytest {project}/tests"
-  CIBW_ARCHS_MACOS: "x86_64 universal2"
   CIBW_TEST_SKIP: "*_arm64 *_universal2:arm64"
-
+  CIBW_ARCHS_MACOS: "x86_64 universal2"
 
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
 
@@ -92,6 +92,7 @@ jobs:
   build_documentation:
     name: Building & uploading documentation.
     needs: [upload_all]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 

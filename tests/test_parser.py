@@ -1,23 +1,24 @@
 import io
 import pathlib
+import os.path
 
 import pytest
 
 import simdjson
 
 
-def test_load_str(parser):
+def test_load_str(parser, jsonexamples):
     """Ensure we can load a file from disk using a string."""
     with pytest.raises(ValueError):
-        parser.load('jsonexamples/invalid.json')
+        parser.load(os.path.join(jsonexamples, 'invalid.json'))
 
-    doc = parser.load("jsonexamples/small/demo.json")
+    doc = parser.load(os.path.join(jsonexamples, 'small', 'demo.json'))
     doc.at_pointer('/Image/Width')
 
 
-def test_load_path(parser):
+def test_load_path(parser, jsonexamples):
     """Ensure we can load a file using a Path object."""
-    doc = parser.load(pathlib.Path('jsonexamples') / 'small' / 'demo.json')
+    doc = parser.load(pathlib.Path(jsonexamples) / 'small' / 'demo.json')
     doc.at_pointer('/Image/Width')
 
 
@@ -46,10 +47,16 @@ def test_parse_empty_buffer(parser):
     assert str(bytes_exc.value) == str(buffer_exc.value)
 
 
-def test_unicode_decode_error(parser):
+def test_unicode_decode_error(parser, jsonexamples):
     """Ensure the parser raises encoding issues."""
     with pytest.raises(UnicodeDecodeError):
-        parser.load('jsonexamples/test_parsing/n_array_invalid_utf8.json')
+        parser.load(
+            os.path.join(
+                jsonexamples,
+                'test_parsing',
+                'n_array_invalid_utf8.json'
+            )
+        )
 
 
 def test_implementation():
