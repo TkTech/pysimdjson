@@ -108,8 +108,7 @@ setup(
             'pytest',
             'pytest-benchmark',
             'flake8',
-            'coverage',
-            'mypy'
+            'coverage'
         ],
         # Dependencies for running benchmarks.
         'benchmark': [
