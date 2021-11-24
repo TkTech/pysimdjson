@@ -49,7 +49,11 @@ def test_parse_empty_buffer(parser):
 
 def test_unicode_decode_error(parser, jsonexamples):
     """Ensure the parser raises encoding issues."""
-    with pytest.raises(UnicodeDecodeError):
+    # Not all implementations are equal. When using the byte-by-byte fallback
+    # implementation, a ValueError will be raise for improper tape structure.
+    # When using most (all?) other implementations, the expected
+    # UnicodeDecodeError will be raised instead.
+    with pytest.raises((UnicodeDecodeError, ValueError)):
         parser.load(
             os.path.join(
                 jsonexamples,
