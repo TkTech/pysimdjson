@@ -1,9 +1,8 @@
 on:
   workflow_dispatch:
   push:
-    # Sequence of patterns matched against refs/tags
-    # tags:
-    #   - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 name: Creating release
 
@@ -14,37 +13,8 @@ env:
   CIBW_ARCHS_MACOS: "x86_64 universal2"
 
 jobs:
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-20.04, windows-2019, macos-10.15]
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-python@v2
-        name: Setting up Python
-        with:
-          python-version: '3.8'
-
-      - name: Set up QEMU
-        if: runner.os == 'Linux'
-        uses: docker/setup-qemu-action@v1
-        with:
-          platforms: all
-
-      - name: Build & test wheels
-        uses: pypa/cibuildwheel@v2.2.2
-        env:
-          CIBW_ARCHS_LINUX: auto aarch64 ppc64le
-
-      - uses: actions/upload-artifact@v2
-        with:
-          path: ./wheelhouse/*.whl
-
+  # Build & test simple source release before wasting hours building and
+  # testing the binary build matrix.
   sdist:
     name: Creating source release
     runs-on: ubuntu-latest
@@ -74,6 +44,42 @@ jobs:
         with:
           path: dist/*.tar.gz
 
+  build_wheels:
+    needs: [sdist]
+    name: "[${{ strategy.job-index }}/${{ strategy.job-total }}] py${{ matrix.py }} on ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-20.04, windows-2019, macos-10.15]
+        # cp - CPython
+        # pp - PyPy
+        py: ["cp36", "cp37", "cp38", "cp39", "cp310", "pp37"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        name: Setting up Python
+        with:
+          python-version: '3.8'
+
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
+
+      - name: Build & test wheels
+        uses: pypa/cibuildwheel@v2.2.2
+        env:
+          CIBW_ARCHS_LINUX: auto aarch64 ppc64le
+          CIBW_BUILD: "${{ matrix.py }}-*"
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./wheelhouse/*.whl
+
   upload_all:
     needs: [build_wheels, sdist]
     name: Uploading built packages to pypi for release.
@@ -84,10 +90,10 @@ jobs:
         name: artifact
         path: dist
 
-    # - uses: pypa/gh-action-pypi-publish@v1.4.2
-    #   with:
-    #     user: ${{ secrets.PYPI_USERNAME }}
-    #     password: ${{ secrets.PYPI_PASSWORD }}
+    - uses: pypa/gh-action-pypi-publish@v1.4.2
+      with:
+        user: ${{ secrets.PYPI_USERNAME }}
+        password: ${{ secrets.PYPI_PASSWORD }}
 
   build_documentation:
     name: Building & uploading documentation.
@@ -114,6 +120,6 @@ jobs:
         run: |
           cd docs && make clean && make html
 
-      # - name: Publishing documentation
-      #   run: |
-      #     ghp-import -f -n -c pysimdjson.tkte.ch -p docs/_build/html
+      - name: Publishing documentation
+        run: |
+          ghp-import -f -n -c pysimdjson.tkte.ch -p docs/_build/html

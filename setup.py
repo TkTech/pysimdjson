@@ -78,7 +78,7 @@ else:
 setup(
     name='pysimdjson',
     packages=find_packages(),
-    version='4.0.2',
+    version='4.0.3',
     description='simdjson bindings for python',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -94,7 +94,7 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
     ],
-    python_requires='>3.4',
+    python_requires='>3.5',
     extras_require={
         # Dependencies for package release.
         'release': [

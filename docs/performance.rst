@@ -67,6 +67,7 @@ to re-use the parser.
 
     for i in range(0, 100):
         doc = parser.parse(b'{"a": "b"}')
+        del doc
 
 This will drastically reduce the number of allocations being made, as it will
 reuse the existing buffer when possible. If it's too small, it'll grow to fit.
