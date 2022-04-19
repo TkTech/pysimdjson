@@ -49,6 +49,10 @@ if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
         ]
         compiler_directives['linetrace'] = True
 
+    force = False
+    if os.getenv('FORCE_REBUILD'):
+        force = True
+
     extensions = cythonize([
         Extension(
             'csimdjson',
@@ -60,7 +64,7 @@ if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
             define_macros=macros,
             extra_compile_args=extra_compile_args
         )
-    ], compiler_directives=compiler_directives)
+    ], compiler_directives=compiler_directives, force=force)
 else:
     extensions = [
         Extension(
