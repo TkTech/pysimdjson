@@ -6,6 +6,7 @@ venv
 cython_debug/*
 build/
 _build/
+.benchmarks/
 *.egg-info
 
 # Extension building cruft
