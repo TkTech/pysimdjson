@@ -38,6 +38,19 @@ To force the usage of Cython, use ``BUILD_WITH_CYTHON``:
 This will cause Cython to regenerate the ``csimdjson.cpp`` from the
 ``csimdjson.pyx`` and ``csimdjson.pxd`` files.
 
+To build pysimdjson with support for linetracing and coverage, use ``BUILD_FOR_DEBUG``:
+
+.. code::
+
+    BUILD_WITH_CYTHON=1 BUILD_FOR_DEBUG=1 python setup.py develop
+
+pysimdjson will also reuse the generated .so file if you build it more than
+once, so to force Cython to rebuild it, use ``FORCE_REBUILD``:
+
+.. code::
+
+    BUILD_WITH_CYTHON=1 FORCE_REBUILD=1 python setup.py develop
+
 .. _Developer Command Prompt: https://docs.microsoft.com/en-us/dotnet/
    framework/tools/developer-command-prompt-for-vs
 .. _Cython: https://cython.readthedocs.io/en/latest/
