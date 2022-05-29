@@ -2438,7 +2438,7 @@ static const char __pyx_k_strided_and_indirect[] = "<strided and indirect>";
 static const char __pyx_k_supported_by_runtime[] = "supported_by_runtime";
 static const char __pyx_k_contiguous_and_direct[] = "<contiguous and direct>";
 static const char __pyx_k_MemoryView_of_r_object[] = "<MemoryView of %r object>";
-static const char __pyx_k_Unknown_implementation[] = "Unknown implementation";
+static const char __pyx_k_Unknown_Implementation[] = "Unknown Implementation";
 static const char __pyx_k_MemoryView_of_r_at_0x_x[] = "<MemoryView of %r at 0x%x>";
 static const char __pyx_k_contiguous_and_indirect[] = "<contiguous and indirect>";
 static const char __pyx_k_Cannot_index_with_type_s[] = "Cannot index with type '%s'";
@@ -2448,7 +2448,7 @@ static const char __pyx_k_itemsize_0_for_cython_array[] = "itemsize <= 0 for cyt
 static const char __pyx_k_of_type_must_be_one_of_d_i_u[] = "of_type must be one of {d,i,u}.";
 static const char __pyx_k_unable_to_allocate_array_data[] = "unable to allocate array data.";
 static const char __pyx_k_strided_and_direct_or_indirect[] = "<strided and direct or indirect>";
-static const char __pyx_k_Attempted_to_set_a_runtime_imple[] = "Attempted to set a runtime implementation that is notsupported on the current host.";
+static const char __pyx_k_Attempted_to_set_a_runtime_Imple[] = "Attempted to set a runtime Implementation that is notsupported on the current host.";
 static const char __pyx_k_Buffer_view_does_not_expose_stri[] = "Buffer view does not expose strides";
 static const char __pyx_k_Can_only_create_a_buffer_that_is[] = "Can only create a buffer that is contiguous in memory.";
 static const char __pyx_k_Cannot_assign_to_read_only_memor[] = "Cannot assign to read-only memoryview";
@@ -2469,7 +2469,7 @@ static PyObject *__pyx_n_s_ASCII;
 static PyObject *__pyx_n_s_Array;
 static PyObject *__pyx_n_s_ArrayBuffer;
 static PyObject *__pyx_n_s_Array___iter;
-static PyObject *__pyx_kp_u_Attempted_to_set_a_runtime_imple;
+static PyObject *__pyx_kp_u_Attempted_to_set_a_runtime_Imple;
 static PyObject *__pyx_kp_s_Buffer_view_does_not_expose_stri;
 static PyObject *__pyx_kp_s_Can_only_create_a_buffer_that_is;
 static PyObject *__pyx_kp_s_Cannot_assign_to_read_only_memor;
@@ -2504,7 +2504,7 @@ static PyObject *__pyx_n_s_RuntimeError;
 static PyObject *__pyx_kp_u_Tried_to_re_use_a_parser_while_s;
 static PyObject *__pyx_n_s_TypeError;
 static PyObject *__pyx_kp_s_Unable_to_convert_item_to_object;
-static PyObject *__pyx_kp_u_Unknown_implementation;
+static PyObject *__pyx_kp_u_Unknown_Implementation;
 static PyObject *__pyx_n_s_VERSION;
 static PyObject *__pyx_n_s_ValueError;
 static PyObject *__pyx_n_s_View_MemoryView;
@@ -7299,7 +7299,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_4parse(struct __pyx_obj_9csimdjson_
  *                     str_size,
  */
     try {
-      __pyx_t_5 = (*__pyx_v_self->c_parser).parse(__pyx_v_bytes_data, __pyx_v_str_size, Py_True);
+      __pyx_t_5 = (*__pyx_v_self->c_parser).parse(__pyx_v_bytes_data, __pyx_v_str_size, 1);
     } catch(...) {
       simdjson_error_handler(); if (!PyErr_Occurred())PyErr_SetString(PyExc_RuntimeError, "Error converting c++ exception.");
       __PYX_ERR(0, 452, __pyx_L1_error)
@@ -7366,7 +7366,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_4parse(struct __pyx_obj_9csimdjson_
  *                     str_size,
  */
     try {
-      __pyx_t_5 = (*__pyx_v_self->c_parser).parse(__pyx_v_str_data, __pyx_v_str_size, Py_True);
+      __pyx_t_5 = (*__pyx_v_self->c_parser).parse(__pyx_v_str_data, __pyx_v_str_size, 1);
     } catch(...) {
       simdjson_error_handler(); if (!PyErr_Occurred())PyErr_SetString(PyExc_RuntimeError, "Error converting c++ exception.");
       __PYX_ERR(0, 465, __pyx_L1_error)
@@ -7485,7 +7485,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_4parse(struct __pyx_obj_9csimdjson_
  *                     data.shape[0],
  */
     try {
-      __pyx_t_5 = (*__pyx_v_self->c_parser).parse(((char const *)(&(*((unsigned char const  *) ( /* dim=0 */ ((char *) (((unsigned char const  *) __pyx_v_data.data) + __pyx_t_9)) ))))), (__pyx_v_data.shape[0]), Py_True);
+      __pyx_t_5 = (*__pyx_v_self->c_parser).parse(((char const *)(&(*((unsigned char const  *) ( /* dim=0 */ ((char *) (((unsigned char const  *) __pyx_v_data.data) + __pyx_t_9)) ))))), (__pyx_v_data.shape[0]), 1);
     } catch(...) {
       simdjson_error_handler(); if (!PyErr_Occurred())PyErr_SetString(PyExc_RuntimeError, "Error converting c++ exception.");
       __PYX_ERR(0, 487, __pyx_L1_error)
@@ -8053,7 +8053,7 @@ static PyObject *__pyx_gb_9csimdjson_6Parser_10generator4(__pyx_CoroutineObject 
  *     @property
  *     def implementation(self):             # <<<<<<<<<<<<<<
  *         """
- *         The active parser implementation as (name, description). Can be
+ *         The active parser Implementation as (name, description). Can be
  */
 
 /* Python wrapper */
@@ -8083,15 +8083,15 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_14implementation___get__(CYTHON_UNU
 
   /* "csimdjson.pyx":549
  *         """
- *         cdef const implementation * impl = (
- *             <const implementation *>get_active_implementation()             # <<<<<<<<<<<<<<
+ *         cdef const Implementation * impl = (
+ *             <const Implementation *>get_active_implementation()             # <<<<<<<<<<<<<<
  *         )
  *         return impl.name(), impl.description()
  */
   __pyx_v_impl = ((simdjson::implementation const *)simdjson::get_active_implementation());
 
   /* "csimdjson.pyx":551
- *             <const implementation *>get_active_implementation()
+ *             <const Implementation *>get_active_implementation()
  *         )
  *         return impl.name(), impl.description()             # <<<<<<<<<<<<<<
  * 
@@ -8119,7 +8119,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_14implementation___get__(CYTHON_UNU
  *     @property
  *     def implementation(self):             # <<<<<<<<<<<<<<
  *         """
- *         The active parser implementation as (name, description). Can be
+ *         The active parser Implementation as (name, description). Can be
  */
 
   /* function exit code */
@@ -8139,7 +8139,7 @@ static PyObject *__pyx_pf_9csimdjson_6Parser_14implementation___get__(CYTHON_UNU
  * 
  *     @implementation.setter
  *     def implementation(self, name):             # <<<<<<<<<<<<<<
- *         for impl  in get_available_implementations():
+ *         for impl in get_available_implementations():
  *             if impl.name() != str_as_bytes(name):
  */
 
@@ -8174,7 +8174,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
   /* "csimdjson.pyx":555
  *     @implementation.setter
  *     def implementation(self, name):
- *         for impl  in get_available_implementations():             # <<<<<<<<<<<<<<
+ *         for impl in get_available_implementations():             # <<<<<<<<<<<<<<
  *             if impl.name() != str_as_bytes(name):
  *                 continue
  */
@@ -8188,7 +8188,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
 
     /* "csimdjson.pyx":556
  *     def implementation(self, name):
- *         for impl  in get_available_implementations():
+ *         for impl in get_available_implementations():
  *             if impl.name() != str_as_bytes(name):             # <<<<<<<<<<<<<<
  *                 continue
  * 
@@ -8205,7 +8205,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
     if (__pyx_t_6) {
 
       /* "csimdjson.pyx":557
- *         for impl  in get_available_implementations():
+ *         for impl in get_available_implementations():
  *             if impl.name() != str_as_bytes(name):
  *                 continue             # <<<<<<<<<<<<<<
  * 
@@ -8215,7 +8215,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
 
       /* "csimdjson.pyx":556
  *     def implementation(self, name):
- *         for impl  in get_available_implementations():
+ *         for impl in get_available_implementations():
  *             if impl.name() != str_as_bytes(name):             # <<<<<<<<<<<<<<
  *                 continue
  * 
@@ -8227,7 +8227,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
  * 
  *             if not impl.supported_by_runtime_system():             # <<<<<<<<<<<<<<
  *                 raise RuntimeError(
- *                     'Attempted to set a runtime implementation that is not'
+ *                     'Attempted to set a runtime Implementation that is not'
  */
     __pyx_t_6 = ((!(__pyx_v_impl->supported_by_runtime_system() != 0)) != 0);
     if (unlikely(__pyx_t_6)) {
@@ -8236,7 +8236,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
  * 
  *             if not impl.supported_by_runtime_system():
  *                 raise RuntimeError(             # <<<<<<<<<<<<<<
- *                     'Attempted to set a runtime implementation that is not'
+ *                     'Attempted to set a runtime Implementation that is not'
  *                     'supported on the current host.'
  */
       __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_RuntimeError, __pyx_tuple__12, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 560, __pyx_L1_error)
@@ -8250,7 +8250,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
  * 
  *             if not impl.supported_by_runtime_system():             # <<<<<<<<<<<<<<
  *                 raise RuntimeError(
- *                     'Attempted to set a runtime implementation that is not'
+ *                     'Attempted to set a runtime Implementation that is not'
  */
     }
 
@@ -8268,7 +8268,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
  *             set_active_implementation(impl)
  *             return             # <<<<<<<<<<<<<<
  * 
- *         raise ValueError('Unknown implementation')
+ *         raise ValueError('Unknown Implementation')
  */
     __pyx_r = 0;
     goto __pyx_L0;
@@ -8276,7 +8276,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
     /* "csimdjson.pyx":555
  *     @implementation.setter
  *     def implementation(self, name):
- *         for impl  in get_available_implementations():             # <<<<<<<<<<<<<<
+ *         for impl in get_available_implementations():             # <<<<<<<<<<<<<<
  *             if impl.name() != str_as_bytes(name):
  *                 continue
  */
@@ -8286,7 +8286,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
   /* "csimdjson.pyx":568
  *             return
  * 
- *         raise ValueError('Unknown implementation')             # <<<<<<<<<<<<<<
+ *         raise ValueError('Unknown Implementation')             # <<<<<<<<<<<<<<
  */
   __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__13, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 568, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
@@ -8298,7 +8298,7 @@ static int __pyx_pf_9csimdjson_6Parser_14implementation_2__set__(CYTHON_UNUSED s
  * 
  *     @implementation.setter
  *     def implementation(self, name):             # <<<<<<<<<<<<<<
- *         for impl  in get_available_implementations():
+ *         for impl in get_available_implementations():
  *             if impl.name() != str_as_bytes(name):
  */
 
@@ -22243,7 +22243,7 @@ static PyMethodDef __pyx_methods_9csimdjson_Parser[] = {
 };
 
 static struct PyGetSetDef __pyx_getsets_9csimdjson_Parser[] = {
-  {(char *)"implementation", __pyx_getprop_9csimdjson_6Parser_implementation, __pyx_setprop_9csimdjson_6Parser_implementation, (char *)"\n        The active parser implementation as (name, description). Can be\n        any value from :py:attr:`implementations`. The best implementation\n        for your current platform will be picked by default.\n\n        Can be set to the name of any valid implementation to globally\n        change underlying Parser implementation, such as to disable AVX-512\n        if it is causing down-clocking.\n        ", 0},
+  {(char *)"implementation", __pyx_getprop_9csimdjson_6Parser_implementation, __pyx_setprop_9csimdjson_6Parser_implementation, (char *)"\n        The active parser Implementation as (name, description). Can be\n        any value from :py:attr:`implementations`. The best Implementation\n        for your current platform will be picked by default.\n\n        Can be set to the name of any valid Implementation to globally\n        change underlying Parser Implementation, such as to disable AVX-512\n        if it is causing down-clocking.\n        ", 0},
   {0, 0, 0, 0, 0}
 };
 
@@ -23661,7 +23661,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_Array, __pyx_k_Array, sizeof(__pyx_k_Array), 0, 0, 1, 1},
   {&__pyx_n_s_ArrayBuffer, __pyx_k_ArrayBuffer, sizeof(__pyx_k_ArrayBuffer), 0, 0, 1, 1},
   {&__pyx_n_s_Array___iter, __pyx_k_Array___iter, sizeof(__pyx_k_Array___iter), 0, 0, 1, 1},
-  {&__pyx_kp_u_Attempted_to_set_a_runtime_imple, __pyx_k_Attempted_to_set_a_runtime_imple, sizeof(__pyx_k_Attempted_to_set_a_runtime_imple), 0, 1, 0, 0},
+  {&__pyx_kp_u_Attempted_to_set_a_runtime_Imple, __pyx_k_Attempted_to_set_a_runtime_Imple, sizeof(__pyx_k_Attempted_to_set_a_runtime_Imple), 0, 1, 0, 0},
   {&__pyx_kp_s_Buffer_view_does_not_expose_stri, __pyx_k_Buffer_view_does_not_expose_stri, sizeof(__pyx_k_Buffer_view_does_not_expose_stri), 0, 0, 1, 0},
   {&__pyx_kp_s_Can_only_create_a_buffer_that_is, __pyx_k_Can_only_create_a_buffer_that_is, sizeof(__pyx_k_Can_only_create_a_buffer_that_is), 0, 0, 1, 0},
   {&__pyx_kp_s_Cannot_assign_to_read_only_memor, __pyx_k_Cannot_assign_to_read_only_memor, sizeof(__pyx_k_Cannot_assign_to_read_only_memor), 0, 0, 1, 0},
@@ -23696,7 +23696,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_u_Tried_to_re_use_a_parser_while_s, __pyx_k_Tried_to_re_use_a_parser_while_s, sizeof(__pyx_k_Tried_to_re_use_a_parser_while_s), 0, 1, 0, 0},
   {&__pyx_n_s_TypeError, __pyx_k_TypeError, sizeof(__pyx_k_TypeError), 0, 0, 1, 1},
   {&__pyx_kp_s_Unable_to_convert_item_to_object, __pyx_k_Unable_to_convert_item_to_object, sizeof(__pyx_k_Unable_to_convert_item_to_object), 0, 0, 1, 0},
-  {&__pyx_kp_u_Unknown_implementation, __pyx_k_Unknown_implementation, sizeof(__pyx_k_Unknown_implementation), 0, 1, 0, 0},
+  {&__pyx_kp_u_Unknown_Implementation, __pyx_k_Unknown_Implementation, sizeof(__pyx_k_Unknown_Implementation), 0, 1, 0, 0},
   {&__pyx_n_s_VERSION, __pyx_k_VERSION, sizeof(__pyx_k_VERSION), 0, 0, 1, 1},
   {&__pyx_n_s_ValueError, __pyx_k_ValueError, sizeof(__pyx_k_ValueError), 0, 0, 1, 1},
   {&__pyx_n_s_View_MemoryView, __pyx_k_View_MemoryView, sizeof(__pyx_k_View_MemoryView), 0, 0, 1, 1},
@@ -23915,19 +23915,19 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
  * 
  *             if not impl.supported_by_runtime_system():
  *                 raise RuntimeError(             # <<<<<<<<<<<<<<
- *                     'Attempted to set a runtime implementation that is not'
+ *                     'Attempted to set a runtime Implementation that is not'
  *                     'supported on the current host.'
  */
-  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_u_Attempted_to_set_a_runtime_imple); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 560, __pyx_L1_error)
+  __pyx_tuple__12 = PyTuple_Pack(1, __pyx_kp_u_Attempted_to_set_a_runtime_Imple); if (unlikely(!__pyx_tuple__12)) __PYX_ERR(0, 560, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__12);
   __Pyx_GIVEREF(__pyx_tuple__12);
 
   /* "csimdjson.pyx":568
  *             return
  * 
- *         raise ValueError('Unknown implementation')             # <<<<<<<<<<<<<<
+ *         raise ValueError('Unknown Implementation')             # <<<<<<<<<<<<<<
  */
-  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_u_Unknown_implementation); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 568, __pyx_L1_error)
+  __pyx_tuple__13 = PyTuple_Pack(1, __pyx_kp_u_Unknown_Implementation); if (unlikely(!__pyx_tuple__13)) __PYX_ERR(0, 568, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__13);
   __Pyx_GIVEREF(__pyx_tuple__13);
 

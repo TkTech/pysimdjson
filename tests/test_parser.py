@@ -50,7 +50,7 @@ def test_parse_empty_buffer(parser):
 def test_unicode_decode_error(parser, jsonexamples):
     """Ensure the parser raises encoding issues."""
     # Not all implementations are equal. When using the byte-by-byte fallback
-    # implementation, a ValueError will be raise for improper tape structure.
+    # Implementation, a ValueError will be raised for improper tape structure.
     # When using most (all?) other implementations, the expected
     # UnicodeDecodeError will be raised instead.
     with pytest.raises((UnicodeDecodeError, ValueError)):
@@ -64,15 +64,15 @@ def test_unicode_decode_error(parser, jsonexamples):
 
 
 def test_implementation():
-    """Ensure we can set, get, and list the implementation."""
+    """Ensure we can set, get, and list the Implementation."""
     parser = simdjson.Parser()
-    # Ensure a rubbish implementation does not get set - simdjson does not do
+    # Ensure a rubbish Implementation does not get set - simdjson does not do
     # a safety check, buy pysimdjson does. A break in this check will cause
     # a segfault.
     with pytest.raises(ValueError):
         parser.implementation = 'rubbish'
 
-    # The generic, always-available implementation.
+    # The generic, always-available Implementation.
     parser.implementation = 'fallback'
     parser.parse(b'{"hello": "world"}')
 

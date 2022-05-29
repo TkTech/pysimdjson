@@ -48,9 +48,7 @@ if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
         ]
         compiler_directives['linetrace'] = True
 
-    force = False
-    if os.getenv('FORCE_REBUILD'):
-        force = True
+    force = bool(os.getenv('FORCE_REBUILD'))
 
     extensions = cythonize([
         Extension(

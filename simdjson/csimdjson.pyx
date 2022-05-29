@@ -537,32 +537,32 @@ cdef class Parser:
     @property
     def implementation(self):
         """
-        The active parser implementation as (name, description). Can be
-        any value from :py:attr:`implementations`. The best implementation
+        The active parser Implementation as (name, description). Can be
+        any value from :py:attr:`implementations`. The best Implementation
         for your current platform will be picked by default.
 
-        Can be set to the name of any valid implementation to globally
-        change underlying Parser implementation, such as to disable AVX-512
+        Can be set to the name of any valid Implementation to globally
+        change underlying Parser Implementation, such as to disable AVX-512
         if it is causing down-clocking.
         """
-        cdef const implementation * impl = (
-            <const implementation *>get_active_implementation()
+        cdef const Implementation * impl = (
+            <const Implementation *>get_active_implementation()
         )
         return impl.name(), impl.description()
 
     @implementation.setter
     def implementation(self, name):
-        for impl  in get_available_implementations():
+        for impl in get_available_implementations():
             if impl.name() != str_as_bytes(name):
                 continue
 
             if not impl.supported_by_runtime_system():
                 raise RuntimeError(
-                    'Attempted to set a runtime implementation that is not'
+                    'Attempted to set a runtime Implementation that is not'
                     'supported on the current host.'
                 )
 
             set_active_implementation(impl)
             return
 
-        raise ValueError('Unknown implementation')
+        raise ValueError('Unknown Implementation')
