@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.1.0
+
+- Updated upstream simdjson library to 2.0.1, which brings AVX-512 support.
+- `Parser.implementations` property replaced with `Parser.get_implementations`
+  to support optionally filtering to just the ones supported by the current
+  runtime.
+
 ## 4.0.3
 
 - Updated upstream simdjson library to 1.0.2.

@@ -78,5 +78,5 @@ def test_implementation():
 
     assert parser.implementation[0] == 'fallback'
 
-    implementations = [imp[0] for imp in parser.implementations]
+    implementations = [imp[0] for imp in parser.get_implementations()]
     assert 'fallback' in implementations

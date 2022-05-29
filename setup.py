@@ -1,4 +1,3 @@
-import os
 import os.path
 import platform
 
@@ -21,7 +20,7 @@ system = platform.system()
 extra_compile_args = []
 
 if system == 'Darwin':
-    # Annoyingly, Github's setup-python action is wrongly building CPython
+    # Annoyingly, GitHub's setup-python action is wrongly building CPython
     # with 10.14 as a target, forcing us to use this as our minimum without
     # rebuilding a dozen combinations of CPython and OS X.
     os.environ.setdefault('MACOSX_DEPLOYMENT_TARGET', '10.14')
@@ -88,7 +87,7 @@ setup(
     long_description_content_type='text/markdown',
     author='Tyler Kennedy',
     author_email='tk@tkte.ch',
-    url='http://github.com/TkTech/pysimdjson',
+    url='https://github.com/TkTech/pysimdjson',
     keywords=['json', 'simdjson', 'simd'],
     zip_safe=False,
     classifiers=[
@@ -113,15 +112,6 @@ setup(
             'pytest-benchmark',
             'flake8',
             'coverage'
-        ],
-        # Dependencies for running benchmarks.
-        'benchmark': [
-            'orjson',
-            'python-rapidjson',
-            'simplejson',
-            'ujson',
-            'yyjson',
-            'numpy'
         ]
     },
     ext_modules=extensions,

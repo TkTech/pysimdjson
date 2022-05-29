@@ -2,19 +2,16 @@
 # distutils: language=c++
 import pathlib
 
-from libc.stdint cimport uint64_t, int64_t
-from libcpp cimport bool
-from libcpp.string cimport string
-from libcpp.memory cimport shared_ptr, weak_ptr, make_shared
-from cython.operator cimport preincrement, dereference
+from cython.operator cimport preincrement, dereference  # noqa
+from libcpp.memory cimport shared_ptr, make_shared
 from cpython.ref cimport Py_INCREF
 from cpython.list cimport PyList_New, PyList_SET_ITEM
 from cpython.bytes cimport PyBytes_AsStringAndSize
 from cpython.slice cimport PySlice_GetIndicesEx, PySlice_New
-from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
+from cpython.mem cimport PyMem_Free
 from cpython.buffer cimport PyBuffer_FillInfo
 
-from simdjson.csimdjson cimport *
+from simdjson.csimdjson cimport *  # noqa
 
 MAXSIZE_BYTES = SIMDJSON_MAXSIZE_BYTES
 PADDING = SIMDJSON_PADDING
@@ -521,14 +518,21 @@ cdef class Parser:
         cdef simd_element document = dereference(self.c_parser).load(path)
         return element_to_primitive(self, document, recursive)
 
-    @property
-    def implementations(self):
+    def get_implementations(self, supported_by_runtime=True):
         """
         A list of available parser implementations in the form of [(name,
         description),…].
+
+        By default, this only returns the implementations that are usable on
+        the current runtime. Setting `supported_by_runtime` to False will
+        instead return all the implementations _compiled_ into this build of
+        simdjson.
         """
-        for implementation in available_implementations:
-            yield (implementation.name(), implementation.description())
+        for impl in get_available_implementations():
+            if supported_by_runtime and not impl.supported_by_runtime_system():
+                continue
+
+            yield impl.name(), impl.description()
 
     @property
     def implementation(self):
@@ -538,26 +542,27 @@ cdef class Parser:
         for your current platform will be picked by default.
 
         Can be set to the name of any valid implementation to globally
-        change the Parser implementation.
-
-        .. warning::
-            Setting this to an implementation inappropriate for your platform
-            WILL cause illegal instructions or segfaults at best. It's up to
-            you to ensure an implementation is valid for your CPU if you
-            choose to override the automatic choice.
+        change underlying Parser implementation, such as to disable AVX-512
+        if it is causing down-clocking.
         """
-        return (
-            active_implementation.name(),
-            active_implementation.description()
+        cdef const implementation * impl = (
+            <const implementation *>get_active_implementation()
         )
+        return impl.name(), impl.description()
 
     @implementation.setter
     def implementation(self, name):
-        global active_implementation
+        for impl  in get_available_implementations():
+            if impl.name() != str_as_bytes(name):
+                continue
 
-        for implementation in available_implementations:
-            if implementation.name() == str_as_bytes(name):
-                active_implementation = implementation
-                return
+            if not impl.supported_by_runtime_system():
+                raise RuntimeError(
+                    'Attempted to set a runtime implementation that is not'
+                    'supported on the current host.'
+                )
+
+            set_active_implementation(impl)
+            return
 
         raise ValueError('Unknown implementation')

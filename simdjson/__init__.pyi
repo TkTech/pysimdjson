@@ -81,12 +81,18 @@ class Parser:
     def __init__(self, max_capacity: int = ...) -> None:
         ...
 
-    @property
-    def implementations(self) -> Sequence[Tuple[str, str]]:
+    def get_implementations(
+        self,
+        supported_by_runtime: Literal[True] = ...
+    ) -> Sequence[Tuple[str, str]]:
         ...
 
     @property
     def implementation(self) -> Tuple[str, str]:
+        ...
+
+    @implementation.setter
+    def implementation(self, name: str):
         ...
 
     @overload

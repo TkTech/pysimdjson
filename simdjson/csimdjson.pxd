@@ -11,6 +11,7 @@ cdef extern from "util.h":
     cdef void simdjson_error_handler()
     cdef void * flatten_array[T](simd_array src) \
         except +simdjson_error_handler
+    cdef void set_active_implementation(implementation *)
 
 
 cdef extern from "simdjson.h" namespace "simdjson":
@@ -26,16 +27,22 @@ cdef extern from "simdjson.h" namespace "simdjson":
     cdef cppclass implementation:
         const string &name()
         const string &description()
+        bint supported_by_runtime_system() const;
 
     # This is marked as private and internal, but we don't have a choice.
-    cdef cppclass available_implementation_list "simdjson::internal":
-        const implementation * const * begin()
-        const implementation * const * end()
+    cdef extern from "simdjson.h" namespace "simdjson::internal":
+        cdef cppclass available_implementation_list:
+            const implementation * const * begin()
+            const implementation * const * end()
 
-        const implementation * operator[](string)
+            const implementation * operator[](string)
 
-    implementation * active_implementation
-    available_implementation_list available_implementations
+        cdef cppclass atomic_ptr[T]:
+            pass
+            # atomic_ptr& operator=(T*)
+
+    const available_implementation_list& get_available_implementations()
+    atomic_ptr[const implementation]* get_active_implementation()
 
 cdef extern from "simdjson.h" namespace "simdjson::dom::element_type":
     cdef enum element_type "simdjson::dom::element_type":
@@ -59,8 +66,8 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
             bint operator!=(iterator)
             simd_element operator*()
 
-        iterator begin()
-        iterator end()
+        simd_array.iterator begin()
+        simd_array.iterator end()
 
         size_t size()
         size_t number_of_slots()
@@ -79,8 +86,8 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
             const char *key_c_str()
             simd_element value()
 
-        iterator begin()
-        iterator end()
+        simd_object.iterator begin()
+        simd_object.iterator end()
 
         size_t size()
 

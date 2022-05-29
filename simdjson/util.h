@@ -40,4 +40,13 @@
         // TODO: Realloc if too large
         return (void*)data;
     }
+
+    // This exists as a workaround to Cython 0.29 apparently not supporting
+    // overloading "atomic_ptr& operator=(T*)" on atomic_ptr, meaning we
+    // can't assign an implementation to the pointer. I'm probably just
+    // using it wrong :)
+    inline void set_active_implementation(const simdjson::implementation *t) {
+        simdjson::get_active_implementation() = t;
+        return;
+    }
 #endif
