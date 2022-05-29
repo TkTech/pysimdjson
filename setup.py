@@ -75,7 +75,7 @@ else:
 setup(
     name='pysimdjson',
     packages=find_packages(),
-    version='5.0.0',
+    version='5.0.1',
     description='simdjson bindings for python',
     long_description=long_description,
     long_description_content_type='text/markdown',
