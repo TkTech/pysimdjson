@@ -20,10 +20,6 @@ system = platform.system()
 extra_compile_args = []
 
 if system == 'Darwin':
-    # Annoyingly, GitHub's setup-python action is wrongly building CPython
-    # with 10.14 as a target, forcing us to use this as our minimum without
-    # rebuilding a dozen combinations of CPython and OS X.
-    os.environ.setdefault('MACOSX_DEPLOYMENT_TARGET', '10.14')
     extra_compile_args.append('-std=c++11')
 
 if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
