@@ -24,6 +24,9 @@ jobs:
       env:
         BUILD_WITH_CYTHON: 1
         BUILD_FOR_DEBUG: 1
+        # 10.9 is the earliest we can target with full C++11 support.
+        # 10.14 for full C++17 support.
+        MACOSX_DEPLOYMENT_TARGET: "10.9"
       run: |
         python -m pip install --upgrade pip wheel
         pip install cython
