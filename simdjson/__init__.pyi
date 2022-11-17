@@ -52,7 +52,7 @@ class Object(Mapping[str, SimValue]):
         ...
 
     @property
-    def mini(self) -> str:
+    def mini(self) -> bytes:
         ...
 
 
@@ -73,7 +73,7 @@ class Array(Sequence[SimValue]):
         ...
 
     @property
-    def mini(self) -> str:
+    def mini(self) -> bytes:
         ...
 
 

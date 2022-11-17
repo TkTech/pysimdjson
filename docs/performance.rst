@@ -36,7 +36,7 @@ Both of these approaches will be much faster than using `load/s()`, since
 they avoid loading the parts of the document we didn't care about.
 
 Both `Object` and `Array` have a `mini` property that returns their entire
-content as a minified Python `str`. A message router for example would only
+content as a minified Python `bytes`. A message router for example would only
 parse the document and retrieve a single property, the destination, and forward
 the payload without ever turning it into a Python object. Here's a (bad)
 example:
