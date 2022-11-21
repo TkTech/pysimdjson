@@ -14,3 +14,6 @@ _build/
 
 # coverage.py default output file
 .coverage
+
+# IDE cruft
+.idea/

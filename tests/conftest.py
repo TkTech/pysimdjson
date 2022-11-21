@@ -42,6 +42,8 @@ def doc(parser):
         "int64": -1,
         "uint64": 18446744073709551615,
         "double": 1.1,
+        "double_zero": 0.0,
+        "double_whole": 1.0,
         "string": "test",
         "bool": true,
         "null_value": null

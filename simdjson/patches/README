@@ -1,0 +1,5 @@
+Patches to be applied to simdjson library files. See simdjson/simdjson/README
+
+To make a new patch file:
+ * Get the patch contents: for f in simdjson.h simdjson.cpp; do diff -u HEAD:simdjson/simdjson_source/$f simdjson/$f; done
+ * Replace in the .patch file, retaining the explanation comment at the top. Make sure patch is newline terminated.
