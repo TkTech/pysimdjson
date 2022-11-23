@@ -1,7 +1,0 @@
-singleheader/ files from the simdjson library. These are not used directly.
-Patch-applied files are used instead, in the simdjson/ directory.
-
-To update:
- * Copy from simdjson: https://github.com/simdjson/simdjson/tree/master/singleheader
- * Run simdjson/patches/apply.sh
- * Increase pysimdjson version in setup.py
