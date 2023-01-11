@@ -128,6 +128,14 @@ class Parser:
         ...
 
 
+def loads(s, *, cls=None, object_hook=None, parse_float=None,
+        parse_int=None, parse_constant=None, object_pairs_hook=None, **kw): ...
+
+
+def load(fp, *, cls=None, object_hook=None, parse_float=None, parse_int=None,
+         parse_constant=None, object_pairs_hook=None, **kwargs): ...
+
+
 dumps = json.dumps
 dump = json.dump
 
