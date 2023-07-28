@@ -4,6 +4,7 @@ import pathlib
 
 from cython.operator cimport preincrement, dereference  # noqa
 from libcpp.memory cimport shared_ptr, make_shared
+from libcpp cimport bool
 from cpython.ref cimport Py_INCREF
 from cpython.list cimport PyList_New, PyList_SET_ITEM
 from cpython.bytes cimport PyBytes_AsStringAndSize
@@ -165,6 +166,7 @@ cdef class Array:
     cdef readonly Parser parser
     cdef simd_array c_element
     cdef shared_ptr[simd_parser] c_parser
+    cdef int valid_id
 
     @staticmethod
     cdef inline from_element(Parser parser, simd_element src):
@@ -172,9 +174,16 @@ cdef class Array:
         self.parser = parser
         self.c_element = src.get_array()
         self.c_parser = parser.c_parser
+        self.valid_id = parser.valid_id
         return self
 
     def __getitem__(self, key):
+        if self.valid_id != self.parser.valid_id:
+            raise RuntimeError(
+                'Tried to use invalidated simdjson.Array.'
+                ' In the meantime the simdjson.Parser re-used the memory.'
+                ' Consider using simdjson.Array.as_list() to get a copy.'
+            )
         cdef:
             Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0
             Py_ssize_t dst, src
@@ -283,6 +292,7 @@ cdef class Object:
     cdef readonly Parser parser
     cdef simd_object c_element
     cdef shared_ptr[simd_parser] c_parser
+    cdef int valid_id
 
     @staticmethod
     cdef inline from_element(Parser parser, simd_element src):
@@ -290,9 +300,16 @@ cdef class Object:
         self.parser = parser
         self.c_element = src.get_object()
         self.c_parser = parser.c_parser
+        self.valid_id = parser.valid_id
         return self
 
     def __getitem__(self, key):
+        if self.valid_id != self.parser.valid_id:
+            raise RuntimeError(
+                'Tried to use invalidated simdjson.Object.'
+                ' In the meantime the simdjson.Parser re-used the memory.'
+                ' Consider using simdjson.Object.as_dict() to get a copy.'
+            )
         return element_to_primitive(
             self.parser,
             self.c_element[str_as_bytes(key)]
@@ -400,9 +417,14 @@ cdef class Parser:
                          grow to. [default: SIMDJSON_MAXSIZE_BYTES]
     """
     cdef shared_ptr[simd_parser] c_parser
+    cdef int valid_id
+    """to identify access to re-used c_parser"""
+    cdef bool late_reuse_check
 
-    def __cinit__(self, size_t max_capacity=SIMDJSON_MAXSIZE_BYTES):
+    def __cinit__(self, size_t max_capacity=SIMDJSON_MAXSIZE_BYTES, bool late_reuse_check=False):
         self.c_parser = make_shared[simd_parser](max_capacity)
+        self.valid_id = 0
+        self.late_reuse_check = late_reuse_check
 
     def __dealloc__(self):
         self.c_parser.reset()
@@ -428,15 +450,19 @@ cdef class Parser:
                           python objects instead of pysimdjson proxies.
                           [default: False]
         """
-        # This may be very non-intuitive on PyPy, where cleanup of references
-        # may not occur until much later than expected by a user. We may need
-        # to recommend against re-use on PyPy.
-        if self.c_parser.use_count() > 1:
-            raise RuntimeError(
-                'Tried to re-use a parser while simdjson.Object and/or'
-                ' simdjson.Array objects still exist referencing the old'
-                ' parser.'
-            )
+        if not self.late_reuse_check:
+            # This may be very non-intuitive on PyPy, where cleanup of references
+            # may not occur until much later than expected by a user. We may need
+            # to recommend against re-use on PyPy.
+            if self.c_parser.use_count() > 1:
+                raise RuntimeError(
+                    'Tried to re-use a parser while simdjson.Object and/or'
+                    ' simdjson.Array objects still exist referencing the old'
+                    ' parser.'
+                )
+
+        # invalidates all old object and arrays
+        self.valid_id += 1
 
         cdef:
             const unsigned char[::1] data
@@ -503,12 +529,19 @@ cdef class Parser:
         :param recursive: Recursively turn the document into real
                           python objects instead of pysimdjson proxies.
         """
-        if self.c_parser.use_count() > 1:
-            raise RuntimeError(
-                'Tried to re-use a parser while simdjson.Object and/or'
-                ' simdjson.Array objects still exist referencing the old'
-                ' parser.'
-            )
+        if not self.late_reuse_check:
+            # This may be very non-intuitive on PyPy, where cleanup of references
+            # may not occur until much later than expected by a user. We may need
+            # to recommend against re-use on PyPy.
+            if self.c_parser.use_count() > 1:
+                raise RuntimeError(
+                    'Tried to re-use a parser while simdjson.Object and/or'
+                    ' simdjson.Array objects still exist referencing the old'
+                    ' parser.'
+                )
+
+        # invalidates all old object and arrays
+        self.valid_id += 1
 
         if isinstance(path, unicode):
             path = (<unicode>path).encode('utf-8')

@@ -78,7 +78,7 @@ class Array(Sequence[SimValue]):
 
 
 class Parser:
-    def __init__(self, max_capacity: int = ...) -> None:
+    def __init__(self, max_capacity: int = ..., late_reuse_check: bool = False) -> None:
         ...
 
     def get_implementations(
