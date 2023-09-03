@@ -105,7 +105,8 @@ setup(
             'pytest',
             'pytest-benchmark',
             'flake8',
-            'coverage'
+            'coverage',
+            'numpy'
         ]
     },
     ext_modules=extensions,

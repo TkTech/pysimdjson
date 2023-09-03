@@ -8,14 +8,8 @@ dependencies, use:
 
     pip install -e ".[test]"
 
-To also install 3rd party JSON libraries used for running benchmarks, use:
-
-.. code::
-
-    pip install -e ".[benchmark]"
-
-To run the tests, just type ``pytest``. To also run the benchmarks, use
-``pytest --runslow``. ``--runslow`` will also run the NumPy integration tests.
+To run the tests, just type ``pytest``. To also run some slow integration
+tests, use ``pytest --runslow``.
 
 To properly test builds on Windows, you need both a recent version of Visual
 Studio as well as VS2015, patch 3. Older versions of CPython required portable
@@ -51,6 +45,16 @@ once, so to force Cython to rebuild it, use ``FORCE_REBUILD``:
 
     BUILD_WITH_CYTHON=1 FORCE_REBUILD=1 python setup.py develop
 
+Benchmarks
+----------
+
+The benchmarks that used to exist in this project have been moved into a
+sister project, `json_benchmark`_. This project contains a number of
+benchmarks for various JSON libraries, including pysimdjson. It also tests
+for correctness, so it can be used to verify that simdjson is working
+correctly.
+
 .. _Developer Command Prompt: https://docs.microsoft.com/en-us/dotnet/
    framework/tools/developer-command-prompt-for-vs
 .. _Cython: https://cython.readthedocs.io/en/latest/
+.. _json_benchmark: https://github.com/tktech/json_benchmark
