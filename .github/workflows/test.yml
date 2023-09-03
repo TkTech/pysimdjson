@@ -18,7 +18,7 @@ jobs:
       run: >
         sudo apt-get install -y
         build-essential
-        clang-17
+        clang-15
 
     - name: Installing python dependencies
       env:
@@ -66,7 +66,7 @@ jobs:
       run: >
         sudo apt-get install -y
         build-essential
-        clang-17
+        clang-15
 
     - name: Installing python dependencies
       env:
