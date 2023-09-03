@@ -2,17 +2,16 @@
 # distutils: language=c++
 from libc.stdint cimport uint8_t, uint32_t, uint64_t, int64_t
 from libcpp.string cimport string
-
-cdef extern from "Python.h":
-    # Correct signature is const, but this was only fixed in Py3.7+
-    cdef char* PyUnicode_AsUTF8AndSize(object, Py_ssize_t *)
-
+from cpython cimport PyObject
 
 cdef extern from "util.h":
     cdef void simdjson_error_handler()
     cdef void * flatten_array[T](simd_array src) \
         except +simdjson_error_handler
     cdef void set_active_implementation(Implementation *)
+    cdef size_t num_utf8_chars(const char*, size_t)
+    cdef object unicode_from_str(const char *, size_t)
+
 
 
 cdef extern from "simdjson.h" namespace "simdjson":
@@ -41,23 +40,6 @@ cdef extern from "simdjson.h" namespace "simdjson":
     cdef cppclass atomic_ptr[T]:
         pass
 
-    const AvailableImplementationList& get_available_implementations()
-    atomic_ptr["const Implementation"]* get_active_implementation()
-
-
-cdef extern from "simdjson.h" namespace "simdjson::dom::element_type":
-    cdef enum element_type "simdjson::dom::element_type":
-        OBJECT,
-        ARRAY,
-        STRING,
-        INT64,
-        UINT64,
-        DOUBLE,
-        BOOL,
-        NULL_VALUE
-
-
-cdef extern from "simdjson.h" namespace "simdjson":
     cdef enum error_code "simdjson::error_code":
         SUCCESS = 0,
         CAPACITY,
@@ -97,6 +79,20 @@ cdef extern from "simdjson.h" namespace "simdjson":
     cdef cppclass simdjson_result[T]:
         error_code get(T&);
 
+    const AvailableImplementationList& get_available_implementations()
+    atomic_ptr["const Implementation"]* get_active_implementation()
+
+
+cdef extern from "simdjson.h" namespace "simdjson::dom::element_type":
+    cdef enum element_type "simdjson::dom::element_type":
+        OBJECT,
+        ARRAY,
+        STRING,
+        INT64,
+        UINT64,
+        DOUBLE,
+        BOOL,
+        NULL_VALUE
 
 
 cdef extern from "simdjson.h" namespace "simdjson::dom":

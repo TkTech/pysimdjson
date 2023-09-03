@@ -49,4 +49,32 @@
         simdjson::get_active_implementation() = t;
         return;
     }
+
+    inline size_t num_utf8_chars(const char *src, size_t len) {
+        size_t count = 0;
+        for (size_t i = 0; i < len; i++) {
+            if (simdjson_likely(src[i] >> 6 != 2)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    inline PyObject *unicode_from_str(const char *src, size_t len) {
+        size_t num_chars = num_utf8_chars(src, len);
+
+        // Exploit the internals of CPython's unicode implementation to
+        // implement a fast-path for ASCII data, which is by far the
+        // most common case. This is the single greatest performance gain
+        // of any optimization in this library.
+        if (simdjson_likely(num_chars == len)) {
+            PyObject *uni = PyUnicode_New(len, 127);
+            if (!uni) return NULL;
+            PyASCIIObject *uni_ascii = (PyASCIIObject*)uni;
+            memcpy(uni_ascii + 1, src, len);
+            return uni;
+        }
+
+        return PyUnicode_DecodeUTF8(src, len, NULL);
+    }
 #endif

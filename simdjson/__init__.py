@@ -16,6 +16,7 @@ except ImportError:
 # Shuts up *all* linters complaining about our unused imports.
 _ALL_IMPORTS = [
     Parser,
+    Document,
     MAXSIZE_BYTES,
     PADDING
 ]

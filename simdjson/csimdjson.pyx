@@ -4,8 +4,10 @@ from cython.operator cimport preincrement, dereference  # noqa
 from libcpp.memory cimport shared_ptr, make_shared
 from cpython.ref cimport Py_INCREF
 from cpython.list cimport PyList_New, PyList_SET_ITEM
+from cpython.dict cimport PyDict_SetItem
 from cpython.bytes cimport PyBytes_AsStringAndSize
 from cpython.bytearray cimport PyByteArray_AsString, PyByteArray_Size
+from cpython.unicode cimport PyUnicode_AsUTF8AndSize
 
 from simdjson.csimdjson cimport *  # noqa
 
@@ -38,7 +40,12 @@ cdef dict object_to_dict(simd_object obj):
         data = it.key_c_str()
         size = it.key_length()
 
-        result[data[:size]] = pyobj
+        PyDict_SetItem(
+            result,
+            unicode_from_str(data, size),
+            pyobj
+        )
+
         preincrement(it)
 
     return result
@@ -75,7 +82,7 @@ cdef inline object element_to_primitive(simd_element e):
     elif type_ == element_type.STRING:
         data = e.get_c_str()
         size = e.get_string_length()
-        return data[:size]
+        return unicode_from_str(data, size)
     elif type_ == element_type.INT64:
         return e.get_int64()
     elif type_ == element_type.UINT64:
