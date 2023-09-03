@@ -1,8 +1,7 @@
 on:
-  workflow_dispatch:
-  push:
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types:
+      - published
 
 name: Creating release
 
@@ -19,7 +18,7 @@ jobs:
     name: Creating source release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setting up Python
         uses: actions/setup-python@v4
@@ -57,7 +56,7 @@ jobs:
         py: ["cp38", "cp39", "cp310", "cp311", "pp37", "pp38", "pp39"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-python@v4
         name: Setting up Python
@@ -100,7 +99,7 @@ jobs:
     needs: [upload_all]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setting up Python
         uses: actions/setup-python@v4
