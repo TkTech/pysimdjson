@@ -5,8 +5,7 @@ try:
     from csimdjson import (
         # Objects
         Parser,
-        Array,
-        Object,
+        Document,
         # Constants
         MAXSIZE_BYTES,
         PADDING
@@ -17,8 +16,6 @@ except ImportError:
 # Shuts up *all* linters complaining about our unused imports.
 _ALL_IMPORTS = [
     Parser,
-    Array,
-    Object,
     MAXSIZE_BYTES,
     PADDING
 ]
@@ -34,8 +31,7 @@ def load(fp, *, cls=None, object_hook=None, parse_float=None, parse_int=None,
         - object_pairs_hook is ignored.
         - cls is ignored.
     """
-    parser = Parser()
-    return parser.parse(fp.read(), True)
+    return Parser().parse(fp.read()).as_object
 
 
 def loads(s, *, cls=None, object_hook=None, parse_float=None, parse_int=None,
@@ -48,8 +44,7 @@ def loads(s, *, cls=None, object_hook=None, parse_float=None, parse_int=None,
         - object_pairs_hook is ignored.
         - cls is ignored.
     """
-    parser = Parser()
-    return parser.parse(s, True)
+    return Parser().parse(s).as_object
 
 
 dumps = json.dumps

@@ -1,15 +1,11 @@
 # cython: language_level=3, c_string_type=unicode, c_string_encoding=utf8
 # distutils: language=c++
-import pathlib
-
 from cython.operator cimport preincrement, dereference  # noqa
 from libcpp.memory cimport shared_ptr, make_shared
 from cpython.ref cimport Py_INCREF
 from cpython.list cimport PyList_New, PyList_SET_ITEM
 from cpython.bytes cimport PyBytes_AsStringAndSize
-from cpython.slice cimport PySlice_GetIndicesEx, PySlice_New
-from cpython.mem cimport PyMem_Free
-from cpython.buffer cimport PyBuffer_FillInfo
+from cpython.bytearray cimport PyByteArray_AsString, PyByteArray_Size
 
 from simdjson.csimdjson cimport *  # noqa
 
@@ -22,13 +18,13 @@ VERSION = (
 )
 
 
-cdef bytes str_as_bytes(s):
+cdef inline bytes str_as_bytes(s):
     if isinstance(s, unicode):
         return (<unicode>s).encode('utf-8')
     return s
 
 
-cdef dict object_to_dict(Parser p, simd_object obj, bint recursive):
+cdef dict object_to_dict(simd_object obj):
     cdef:
         dict result = {}
         object pyobj
@@ -37,7 +33,7 @@ cdef dict object_to_dict(Parser p, simd_object obj, bint recursive):
         simd_object.iterator it = obj.begin()
 
     while it != obj.end():
-        pyobj = element_to_primitive(p, it.value(), recursive)
+        pyobj = element_to_primitive(it.value())
 
         data = it.key_c_str()
         size = it.key_length()
@@ -48,13 +44,13 @@ cdef dict object_to_dict(Parser p, simd_object obj, bint recursive):
     return result
 
 
-cdef list array_to_list(Parser p, simd_array arr, bint recursive):
+cdef list array_to_list(simd_array arr):
     cdef:
         list result = PyList_New(arr.size())
         size_t i = 0
 
     for element in arr:
-        primitive = element_to_primitive(p, element, recursive)
+        primitive = element_to_primitive(element)
         Py_INCREF(primitive)
         PyList_SET_ITEM(
             result,
@@ -66,21 +62,16 @@ cdef list array_to_list(Parser p, simd_array arr, bint recursive):
     return result
 
 
-cdef inline object element_to_primitive(Parser p, simd_element e,
-                                        bint recursive=False):
+cdef inline object element_to_primitive(simd_element e):
     cdef:
         const char *data
         size_t size
         element_type type_ = e.type()
 
     if type_ == element_type.OBJECT:
-        if recursive:
-            return object_to_dict(p, e.get_object(), recursive)
-        return Object.from_element(p, e)
+        return object_to_dict(e.get_object())
     elif type_ == element_type.ARRAY:
-        if recursive:
-            return array_to_list(p, e.get_array(), recursive)
-        return Array.from_element(p, e)
+        return array_to_list(e.get_array())
     elif type_ == element_type.STRING:
         data = e.get_c_str()
         size = e.get_string_length()
@@ -100,293 +91,103 @@ cdef inline object element_to_primitive(Parser p, simd_element e,
             'Encountered an unknown element_type.'
         )
 
+cdef inline error_check(error_code result):
+    if result == error_code.SUCCESS:
+        return
+    elif result == error_code.NO_SUCH_FIELD:
+        raise KeyError(error_message(result))
+    elif result == error_code.INDEX_OUT_OF_BOUNDS:
+        raise IndexError(error_message(result))
+    elif result == error_code.INCORRECT_TYPE:
+        raise TypeError(error_message(result))
+    elif result == error_code.MEMALLOC:
+        raise MemoryError(error_message(result))
+    elif result == error_code.IO_ERROR:
+        raise IOError(error_message(result))
+    elif result == error_code.UTF8_ERROR:
+        raise UnicodeDecodeError(
+            'utf-8',
+            b'',
+            0,
+            0,
+            error_message(result)
+        )
+    else:
+        raise ValueError(error_message(result))
 
-cdef class ArrayBuffer:
-    """
-    A container for the flattened data of a homogeneous :class:`Array`.
 
-    .. admonition::
-        :class: note
+cdef class Document:
+    cdef simd_document c_document
 
-        This object is responsible for keeping the contents of an Array alive
-        even after the simdjson Parser has been reused or destroyed.
+    def __init__(self):
+        self.c_document = simd_document()
 
-    .. admonition::
-       :class: warning
+    @property
+    def root(self):
+        """
+        The root JSON element of the document.
 
-       You should never create this class on your own. It is created and
-       returned for you by :func:`Array.as_buffer`.
-    """
-    cdef void *buffer
-    cdef readonly size_t size
+        :returns: The root JSON element of the document.
+        :rtype: object
+        """
+        return element_to_primitive(self.c_document.root())
 
-    def __cinit__(self):
-        self.buffer = NULL
-        self.size = 0
+    @property
+    def as_object(self):
+        """
+        Get the JSON document as a Python object.
 
-    def __dealloc__(self):
-        if self.buffer != NULL:
-            PyMem_Free(self.buffer)
+        :returns: The JSON document as a Python object.
+        :rtype: object
+        """
+        return element_to_primitive(self.c_document.root())
 
-    @staticmethod
-    cdef inline from_element(simd_array src, of_type):
-        cdef:
-            ArrayBuffer self = ArrayBuffer.__new__(ArrayBuffer)
+    @property
+    def capacity(self):
+        """
+        The current capacity of the internal buffer.
 
-        if of_type == 'd':
-            self.buffer = flatten_array[double](src, &self.size)
-        elif of_type == 'i':
-            self.buffer = flatten_array[int64_t](src, &self.size)
-        elif of_type == 'u':
-            self.buffer = flatten_array[uint64_t](src, &self.size)
+        :returns: The current capacity of the internal buffer.
+        :rtype: int
+        """
+        return self.c_document.capacity()
+
+    def allocate(self, size_t capacity):
+        """
+        Resize internal buffers to the specified capacity. Once used, any
+        existing parsed document is lost.
+
+        If the new capacity is 0, all internal buffers will be freed.
+
+        :param capacity: The new capacity to allocate.
+        :raises MemoryError: If the new capacity cannot be allocated.
+        :raises RuntimeError: If the new capacity cannot be allocated for an
+                              unknown reason.
+        """
+        cdef error_code result = self.c_document.allocate(capacity)
+        if result == error_code.SUCCESS:
+            return
+        elif result == error_code.MEMALLOC:
+            raise MemoryError(
+                'Failed to allocate a new buffer with the given capacity.'
+            )
         else:
-            raise ValueError('of_type must be one of {d,i,u}.')
-
-        if not self.buffer:
-            raise MemoryError()  # pragma: no cover
-
-        return self
-
-    def __getbuffer__(self, Py_buffer *buffer, int flags):
-        PyBuffer_FillInfo(buffer, self, self.buffer, self.size, 0, flags)
-
-    def __releasebuffer__(self, Py_buffer *buffer):
-        pass
-
-
-cdef class Array:
-    """A proxy object that behaves much like a real `list()`.
-
-    Python objects are not created until an element in the list is accessed.
-    When you only need a subset of an Array, this can be much faster than
-    converting an entire array (and all of its children) into real Python
-    objects.
-    """
-    cdef readonly Parser parser
-    cdef simd_array c_element
-    cdef shared_ptr[simd_parser] c_parser
-
-    @staticmethod
-    cdef inline from_element(Parser parser, simd_element src):
-        cdef Array self = Array.__new__(Array)
-        self.parser = parser
-        self.c_element = src.get_array()
-        self.c_parser = parser.c_parser
-        return self
-
-    def __getitem__(self, key):
-        cdef:
-            Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0
-            Py_ssize_t dst, src
-            list result
-
-        if isinstance(key, slice):
-            PySlice_GetIndicesEx(
-                key,
-                self.c_element.size(),
-                &start,
-                &stop,
-                &step,
-                &slice_length
+            # Currently, the simdjson implementation of allocate() can only
+            # return SUCCESS or MEMALLOC, but we'll leave this here in case.
+            raise RuntimeError(
+                'Failed to adjust buffer capacity for an unknown reason.'
             )
 
-            result = PyList_New(slice_length)
-            for dst, src in enumerate(range(start, stop, step)):
-                primitive = element_to_primitive(
-                    self.parser,
-                    self.c_element.at(src),
-                    True
-                )
-                Py_INCREF(primitive)
-                PyList_SET_ITEM(
-                    result,
-                    dst,
-                    primitive
-                )
-
-            return result
-        elif isinstance(key, int):
-            # Wrap around negative indexes.
-            if key < 0:
-                key += self.c_element.size()
-
-        return element_to_primitive(self.parser, self.c_element.at(key))
-
-    def __len__(self):
-        return self.c_element.size()
-
-    def __iter__(self):
-        cdef simd_array.iterator it = self.c_element.begin()
-        while it != self.c_element.end():
-            yield element_to_primitive(
-                self.parser,
-                dereference(it),
-                False
-            )
-            preincrement(it)
-
-    def at_pointer(self, json_pointer):
-        """Get the value at the given JSON pointer."""
-        return element_to_primitive(
-            self.parser,
-            self.c_element.at_pointer(
-                str_as_bytes(json_pointer)
-            )
-        )
-
-    def as_list(self):
+    def at_pointer(self, char* pointer):
         """
-        Convert this Array to a regular python list, recursively
-        converting any objects/lists it finds.
+        Get the JSON element at the given JSON Pointer as a Python object.
+
+        :param pointer: A JSON Pointer to the element to retrieve.
+        :returns: The element at the given pointer.
+        :rtype: object
         """
-        return array_to_list(self.parser, self.c_element, True)
-
-    def as_buffer(self, *, of_type):
-        """
-        **Copies** the contents of a **homogeneous** array to an
-        object that can be used as a `buffer`. This means it can be
-        used as input for `numpy.frombuffer`, `bytearray`,
-        `memoryview`, etc.
-
-        When n-dimensional arrays are encountered, this method will recursively
-        flatten them.
-
-        .. note::
-
-            The object returned by this method contains a *copy* of the Array's
-            data. Thus, it's safe to use even after the Array or Parser are
-            destroyed or reused.
-
-        :param of_type: One of 'd' (double), 'i' (signed 64-bit integer) or 'u'
-                        (unsigned 64-bit integer).
-        """
-        return ArrayBuffer.from_element(self.c_element, of_type)
-
-    @property
-    def mini(self):
-        """
-        Returns the minified JSON representation of this Array.
-
-        :rtype: bytes
-        """
-        return <bytes>minify(self.c_element)
-
-
-cdef class Object:
-    """A proxy object that behaves much like a real `dict()`.
-
-    Python objects are not created until an element in the Object
-    is accessed. When you only need a subset of an Object, this can be much
-    faster than converting an entire Object (and all of its children) into real
-    Python objects.
-    """
-    cdef readonly Parser parser
-    cdef simd_object c_element
-    cdef shared_ptr[simd_parser] c_parser
-
-    @staticmethod
-    cdef inline from_element(Parser parser, simd_element src):
-        cdef Object self = Object.__new__(Object)
-        self.parser = parser
-        self.c_element = src.get_object()
-        self.c_parser = parser.c_parser
-        return self
-
-    def __getitem__(self, key):
-        return element_to_primitive(
-            self.parser,
-            self.c_element[str_as_bytes(key)]
-        )
-
-    def get(self, key, default=None):
-        """
-        Return the value of `key`, or `default` if the key does
-        not exist.
-        """
-        try:
-            return self[key]
-        except KeyError:
-            return default
-
-    def __len__(self):
-        return self.c_element.size()
-
-    def __contains__(self, key):
-        try:
-            self.c_element[str_as_bytes(key)]
-        except KeyError:
-            return False
-        return True
-
-    def __iter__(self):
-        """
-        Returns an iterator over all keys in this `Object`.
-        """
-        cdef:
-            size_t size
-            const char *data
-            simd_object.iterator it = self.c_element.begin()
-
-        while it != self.c_element.end():
-            data = it.key_c_str()
-            size = it.key_length()
-            yield data[:size]
-            preincrement(it)
-
-    keys = __iter__
-
-    def values(self):
-        """
-        Returns an iterator over of all values in this `Object`.
-        """
-        cdef simd_object.iterator it = self.c_element.begin()
-        while it != self.c_element.end():
-            yield element_to_primitive(self.parser, it.value(), True)
-            preincrement(it)
-
-    def items(self):
-        """
-        Returns an iterator over all the (key, value) pairs in this
-        `Object`.
-        """
-        cdef:
-            size_t size
-            const char *data
-            simd_object.iterator it = self.c_element.begin()
-
-        while it != self.c_element.end():
-            data = it.key_c_str()
-            size = it.key_length()
-            yield (
-                data[:size],
-                element_to_primitive(self.parser, it.value(), True)
-            )
-            preincrement(it)
-
-    def at_pointer(self, json_pointer):
-        """Get the value at the given JSON pointer."""
-        return element_to_primitive(
-            self.parser,
-            self.c_element.at_pointer(
-                str_as_bytes(json_pointer)
-            )
-        )
-
-    def as_dict(self):
-        """
-        Convert this `Object` to a regular python dictionary,
-        recursively converting any objects or lists it finds.
-        """
-        return object_to_dict(self.parser, self.c_element, True)
-
-    @property
-    def mini(self):
-        """
-        Returns the minified JSON representation of this Object.
-
-        :rtype: bytes
-        """
-        return <bytes>minify(self.c_element)
+        cdef simd_element root = self.c_document.root()
+        return element_to_primitive(root.at_pointer(pointer))
 
 
 cdef class Parser:
@@ -399,7 +200,11 @@ cdef class Parser:
     :param max_capacity: The maximum size the internal buffer can
                          grow to. [default: SIMDJSON_MAXSIZE_BYTES]
     """
+    # Keep a reference to our underlying simdjson parser to prevent it being
+    # freed while we still have proxy objects pointing to it.
     cdef shared_ptr[simd_parser] c_parser
+    # This is a unique ID that is incremented every time the parser is reset.
+    cdef unsigned long long valid_id
 
     def __cinit__(self, size_t max_capacity=SIMDJSON_MAXSIZE_BYTES):
         self.c_parser = make_shared[simd_parser](max_capacity)
@@ -407,10 +212,10 @@ cdef class Parser:
     def __dealloc__(self):
         self.c_parser.reset()
 
-    def parse(self, src not None, bint recursive=False):
+    def parse(self, src not None, Document doc = None):
         """Parse the given JSON document.
 
-        The source document may be a `str`, `bytes`, `bytearray`, or any other
+        The source JSON may be a `str`, `bytes`, `bytearray`, or any other
         object that implements the buffer protocol.
 
         .. admonition:: Performance
@@ -419,104 +224,98 @@ cdef class Parser:
             While you can pass quite a few things to this method to be parsed,
             simple ``bytes`` will almost always be the fastest.
 
-        If any :class:`~Object` or :class:`~Array` proxies still pointing to
-        a previously-parsed document exist when this method is called, a
-        ``RuntimeError`` may be raised.
-
-        :param src: The document to parse.
-        :param recursive: Recursively turn the document into real
-                          python objects instead of pysimdjson proxies.
-                          [default: False]
+        :param src: The JSON document to parse.
+        :param doc: An optional `Document` instance to reuse.
+        :returns: A parsed `Document` instance.
+        :rtype: Document
         """
-        # This may be very non-intuitive on PyPy, where cleanup of references
-        # may not occur until much later than expected by a user. We may need
-        # to recommend against re-use on PyPy.
-        if self.c_parser.use_count() > 1:
-            raise RuntimeError(
-                'Tried to re-use a parser while simdjson.Object and/or'
-                ' simdjson.Array objects still exist referencing the old'
-                ' parser.'
-            )
-
         cdef:
-            const unsigned char[::1] data
-            const char * str_data = NULL
-            char * bytes_data = NULL
-            Py_ssize_t str_size = 0
+            char *data = NULL
+            const char *const_data = NULL
+            const uint8_t[::1] typed_memory_view
+            Py_ssize_t size = 0
+            error_code result
+            simd_element root
+
+        if doc is None:
+            doc = Document()
 
         if isinstance(src, bytes):
-            # Handling bytes is drastically faster than using the buffer API.
-            PyBytes_AsStringAndSize(src, &bytes_data, &str_size)
-            return element_to_primitive(
-                self,
-                dereference(self.c_parser).parse(
-                    bytes_data,
-                    str_size,
-                    True
-                ),
-                recursive
-            )
-        elif isinstance(src, str):
-            # str can't be handled using the buffer API, oddly, even if you
-            # know the encoding.
-            str_data = PyUnicode_AsUTF8AndSize(src, &str_size)
-            return element_to_primitive(
-                self,
-                dereference(self.c_parser).parse(
-                    str_data,
-                    str_size,
-                    True
-                ),
-                recursive
-            )
-        else:
-            # Handle any type that provides the buffer API (bytes, bytearray,
-            # memoryview, etc). This is significantly slower than the
-            # type-specific APIs, but gives much greater compatibility.
-            data = src
+            PyBytes_AsStringAndSize(src, &data, &size)
 
-            if data.size == 0:
-                # If we were given a completely empty buffer, trying to access
-                # a stride in the next step will cause a (potentially
-                # confusing) IndexError. This isn't a very good error message,
-                # but it's identical to the one simdjson would have raised.
+            result = dereference(self.c_parser).parse_into_document(
+                doc.c_document,
+                <const uint8_t *>data,
+                size,
+                1
+            ).get(root)
+        elif isinstance(src, str):
+            const_data = PyUnicode_AsUTF8AndSize(src, &size)
+
+            result = dereference(self.c_parser).parse_into_document(
+                doc.c_document,
+                <const uint8_t *>const_data,
+                size,
+                1
+            ).get(root)
+        elif isinstance(src, bytearray):
+            const_data = PyByteArray_AsString(src)
+            size = PyByteArray_Size(src)
+
+            result = dereference(self.c_parser).parse_into_document(
+                doc.c_document,
+                <const uint8_t *>const_data,
+                size,
+                1
+            ).get(root)
+        else:
+            # Fallback to using Cython's typed memoryviews to handle pretty
+            # much anything that implements the buffer protocol.
+            typed_memory_view = src
+
+            # This isn't a great error message, but it's identical to the
+            # one that simdjson would raise if given an empty source document.
+            if len(typed_memory_view) == 0:
                 raise ValueError('EMPTY: no JSON found')
 
-            return element_to_primitive(
-                self,
-                dereference(self.c_parser).parse(
-                    <const char*>&data[0],
-                    data.shape[0],
-                    True
-                ),
-                recursive
-            )
+            result = dereference(self.c_parser).parse_into_document(
+                doc.c_document,
+                &typed_memory_view[0],
+                len(typed_memory_view),
+                1
+            ).get(root)
 
-    def load(self, path, bint recursive=False):
-        """Load a JSON document from the file system path `path`.
+        error_check(result)
+        return doc
 
-        If any :class:`~Object` or :class:`~Array` proxies still pointing to
-        a previously-parsed document exist when this method is called, a
-        `RuntimeError` may be raised.
+    # This is kept here as an example. Cython's typed memoryviews are very
+    # convenient, but they are also very slow. Using them here results in an
+    # unacceptable level of overhead for trivial parsing tasks.
+    #
+    # cdef inline _parse(self, const uint8_t[:] src, Document doc):
+    #     cdef:
+    #         error_code result,
+    #         simd_element root
 
-        :param path: A filesystem path.
-        :param recursive: Recursively turn the document into real
-                          python objects instead of pysimdjson proxies.
+    #     result = dereference(self.c_parser).parse_into_document(
+    #         doc.c_document,
+    #         &src[0],
+    #         len(src),
+    #         1
+    #     ).get(root)
+
+    #     if result != error_code.SUCCESS:
+    #         raise ValueError(error_message(result))
+
+    def load(self, path):
+        """Load and parse the given JSON document.
+
+        :param path: The path to the JSON document to load.
+        :returns: A parsed `Document` instance.
+        :rtype: Document
         """
-        if self.c_parser.use_count() > 1:
-            raise RuntimeError(
-                'Tried to re-use a parser while simdjson.Object and/or'
-                ' simdjson.Array objects still exist referencing the old'
-                ' parser.'
-            )
-
-        if isinstance(path, unicode):
-            path = (<unicode>path).encode('utf-8')
-        elif isinstance(path, pathlib.Path):
-            path = str(path).encode('utf-8')
-
-        cdef simd_element document = dereference(self.c_parser).load(path)
-        return element_to_primitive(self, document, recursive)
+        with open(path, 'rb') as f:
+            return self.parse(f.read())
 
     def get_implementations(self, supported_by_runtime=True):
         """
@@ -527,6 +326,12 @@ cdef class Parser:
         the current runtime. Setting `supported_by_runtime` to False will
         instead return all the implementations _compiled_ into this build of
         simdjson.
+
+        :param supported_by_runtime: Whether to only return implementations
+                                     that are usable on the current runtime.
+                                     [default: True]
+        :returns: A list of available parser implementations.
+        :rtype: list
         """
         for impl in get_available_implementations():
             if supported_by_runtime and not impl.supported_by_runtime_system():
@@ -544,6 +349,9 @@ cdef class Parser:
         Can be set to the name of any valid Implementation to globally
         change underlying Parser Implementation, such as to disable AVX-512
         if it is causing down-clocking.
+
+        :returns: The active parser Implementation as (name, description).
+        :rtype: tuple
         """
         cdef const Implementation * impl = (
             <const Implementation *>get_active_implementation()

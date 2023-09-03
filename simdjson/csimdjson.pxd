@@ -1,6 +1,6 @@
 # cython: language_level=3
 # distutils: language=c++
-from libc.stdint cimport uint32_t, uint64_t, int64_t
+from libc.stdint cimport uint8_t, uint32_t, uint64_t, int64_t
 from libcpp.string cimport string
 
 cdef extern from "Python.h":
@@ -57,6 +57,48 @@ cdef extern from "simdjson.h" namespace "simdjson::dom::element_type":
         NULL_VALUE
 
 
+cdef extern from "simdjson.h" namespace "simdjson":
+    cdef enum error_code "simdjson::error_code":
+        SUCCESS = 0,
+        CAPACITY,
+        MEMALLOC,
+        TAPE_ERROR,
+        DEPTH_ERROR,
+        STRING_ERROR,
+        T_ATOM_ERROR,
+        F_ATOM_ERROR,
+        N_ATOM_ERROR,
+        NUMBER_ERROR,
+        UTF8_ERROR,
+        UNINITIALIZED,
+        EMPTY,
+        UNESCAPED_CHARS,
+        UNCLOSED_STRING,
+        UNSUPPORTED_ARCHITECTURE,
+        INCORRECT_TYPE,
+        NUMBER_OUT_OF_RANGE,
+        INDEX_OUT_OF_BOUNDS,
+        NO_SUCH_FIELD,
+        IO_ERROR,
+        INVALID_JSON_POINTER,
+        INVALID_URI_FRAGMENT,
+        UNEXPECTED_ERROR,
+        PARSER_IN_USE,
+        OUT_OF_ORDER_ITERATION,
+        INSUFFICIENT_PADDING,
+        INCOMPLETE_ARRAY_OR_OBJECT,
+        SCALAR_DOCUMENT_AS_VALUE,
+        OUT_OF_BOUNDS,
+        TRAILING_CONTENT,
+        NUM_ERROR_CODES
+
+    cdef const char *error_message(error_code)
+
+    cdef cppclass simdjson_result[T]:
+        error_code get(T&);
+
+
+
 cdef extern from "simdjson.h" namespace "simdjson::dom":
     cdef cppclass simd_array "simdjson::dom::array":
         cppclass iterator:
@@ -97,17 +139,26 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
 
 
     cdef cppclass simd_element "simdjson::dom::element":
-        element_type type() except +simdjson_error_handler
+        element_type type()
 
-        const char *get_c_str() except +simdjson_error_handler
-        size_t get_string_length() except +simdjson_error_handler
+        const char *get_c_str()
+        size_t get_string_length()
 
-        simd_array get_array() except +simdjson_error_handler
-        simd_object get_object() except +simdjson_error_handler
-        int64_t get_int64() except +simdjson_error_handler
-        uint64_t get_uint64() except +simdjson_error_handler
-        double get_double() except +simdjson_error_handler
-        bint get_bool() except +simdjson_error_handler
+        simd_array get_array()
+        simd_object get_object()
+        int64_t get_int64()
+        uint64_t get_uint64()
+        double get_double()
+        bint get_bool()
+
+        simd_element at_pointer(const char*) except +simdjson_error_handler
+
+
+    cdef cppclass simd_document "simdjson::dom::document":
+        simd_document() except +
+        simd_element root()
+        size_t capacity()
+        error_code allocate(size_t)
 
 
     cdef cppclass simd_parser "simdjson::dom::parser":
@@ -117,3 +168,10 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
         simd_element parse(const char *, size_t, bint) \
             except +simdjson_error_handler
         simd_element load(const char *) except +simdjson_error_handler
+
+        simdjson_result[simd_element] parse_into_document(
+            simd_document&,
+            const uint8_t *,
+            size_t,
+            bint
+        )
