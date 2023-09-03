@@ -8,9 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Python 3.9
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.9
+        python-version: 3.11
 
     - uses: actions/checkout@v2
 
@@ -18,7 +18,7 @@ jobs:
       run: >
         sudo apt-get install -y
         build-essential
-        clang-6.0
+        clang-17
 
     - name: Installing python dependencies
       env:
@@ -49,13 +49,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9, "3.10"]
+        python-version: [3.8, 3.9, "3.10", "3.11"]
 
     steps:
       # Python needs to be setup before checkout to prevent files from being
       # left in the source tree. See setup-python/issues/106.
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -66,7 +66,7 @@ jobs:
       run: >
         sudo apt-get install -y
         build-essential
-        clang-6.0
+        clang-17
 
     - name: Installing python dependencies
       env:

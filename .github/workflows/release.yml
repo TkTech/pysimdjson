@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setting up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
@@ -54,12 +54,12 @@ jobs:
         os: [ubuntu-20.04, windows-2019, macos-10.15]
         # cp - CPython
         # pp - PyPy
-        py: ["cp36", "cp37", "cp38", "cp39", "cp310", "pp37", "pp38", "pp39"]
+        py: ["cp38", "cp39", "cp310", "cp311", "pp37", "pp38", "pp39"]
 
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         name: Setting up Python
         with:
           python-version: '3.8'
@@ -103,7 +103,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setting up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
