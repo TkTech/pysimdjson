@@ -22,6 +22,11 @@ def test_json_pointer(parser):
     with pytest.raises(ValueError):
         doc.at_pointer('/array/')
 
+    result = doc.at_pointer('/array')
+    assert result == [0, 1, 2]
+    result = doc.at_pointer('/no_such_key', default='default')
+    assert result == 'default'
+
 
 def test_uplift(doc):
     """Test uplifting of primitive types to their Python types."""

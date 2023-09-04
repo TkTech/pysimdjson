@@ -147,7 +147,7 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
         double get_double()
         bint get_bool()
 
-        simd_element at_pointer(const char*) except +simdjson_error_handler
+        simdjson_result[simd_element] at_pointer(const char*)
 
 
     cdef cppclass simd_document "simdjson::dom::document":

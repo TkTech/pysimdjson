@@ -123,6 +123,12 @@ cdef inline error_check(error_code result):
         raise ValueError(error_message(result))
 
 
+cdef class Missing:
+    """
+    Sentinel object used when no argument is given to a function or method.
+    """
+
+
 cdef class Document:
     cdef simd_document c_document
 
@@ -185,16 +191,30 @@ cdef class Document:
                 'Failed to adjust buffer capacity for an unknown reason.'
             )
 
-    def at_pointer(self, char* pointer):
+    def at_pointer(self, char* pointer, object default = Missing):
         """
         Get the JSON element at the given JSON Pointer as a Python object.
 
         :param pointer: A JSON Pointer to the element to retrieve.
+        :param default: The value to return if the pointer does not exist.
+                        [default: Missing]
         :returns: The element at the given pointer.
         :rtype: object
         """
-        cdef simd_element root = self.c_document.root()
-        return element_to_primitive(root.at_pointer(pointer))
+        cdef:
+            simd_element root = self.c_document.root()
+            error_code error
+            simd_element result
+
+        error = root.at_pointer(pointer).get(result)
+        if error == error_code.SUCCESS:
+            return element_to_primitive(result)
+        elif error == error_code.NO_SUCH_FIELD:
+            if default is Missing:
+                error_check(error)
+            return default
+        else:
+            error_check(error)
 
 
 cdef class Parser:
