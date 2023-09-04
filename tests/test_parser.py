@@ -25,13 +25,13 @@ def test_load_path(parser, jsonexamples):
 def test_parse_bytes(parser):
     """Ensure we can load from byte string fragments."""
     doc = parser.parse(b'{"hello": "world"}')
-    assert doc.as_dict() == {'hello': 'world'}
+    assert doc.as_object == {'hello': 'world'}
 
 
 def test_parse_str(parser):
     """Ensure we can load from string fragments."""
     doc = parser.parse('{"hello": "world"}')
-    assert doc.as_dict() == {'hello': 'world'}
+    assert doc.as_object == {'hello': 'world'}
 
 
 def test_parse_empty_buffer(parser):

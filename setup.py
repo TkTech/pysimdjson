@@ -30,15 +30,19 @@ if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
     )
 
 if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
-    macros = []
+    macros = [
+        ('NDEBUG', 1)
+    ]
     compiler_directives = {
-        'embedsignature': True
+        'embedsignature': True,
+        'boundscheck': False
     }
 
     if os.getenv('BUILD_FOR_DEBUG'):
         # Enable line tracing, which also enables support for coverage
         # reporting.
         macros = [
+            ('CYTHON_PROFILE', 1),
             ('CYTHON_TRACE', 1),
             ('CYTHON_TRACE_NOGIL', 1)
         ]
@@ -68,14 +72,17 @@ else:
                 'simdjson/csimdjson.cpp'
             ],
             extra_compile_args=extra_compile_args,
-            language='c++'
+            language='c++',
+            define_macros=[
+                ('NDEBUG', 1)
+            ]
         )
     ]
 
 setup(
     name='pysimdjson',
     packages=find_packages(),
-    version='5.0.2',
+    version='6.0.0',
     description='simdjson bindings for python',
     long_description=long_description,
     long_description_content_type='text/markdown',
