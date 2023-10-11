@@ -66,7 +66,7 @@ jobs:
       run: >
         sudo apt-get install -y
         build-essential
-        clang-6.0
+        clang
 
     - name: Installing python dependencies
       env:
