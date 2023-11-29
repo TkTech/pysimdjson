@@ -7,8 +7,8 @@ Python bindings for the [simdjson][] project, a SIMD-accelerated JSON parser.
 If SIMD instructions are unavailable a fallback parser is used, making
 pysimdjson safe to use anywhere.
 
-Bindings are currently tested on OS X, Linux, and Windows for Python version
-3.6 to 3.9.
+Bindings are currently tested on OS X, Linux, and Windows for CPython version
+3.6 to 3.10.
 
 ## 📝 Documentation
 
