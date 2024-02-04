@@ -480,7 +480,7 @@ cdef class Parser:
                 # a stride in the next step will cause a (potentially
                 # confusing) IndexError. This isn't a very good error message,
                 # but it's identical to the one simdjson would have raised.
-                raise ValueError('Empty: no JSON found')
+                raise ValueError('EMPTY: no JSON found')
 
             return element_to_primitive(
                 self,
