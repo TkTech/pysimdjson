@@ -25,7 +25,7 @@ If SIMD instructions are unavailable a fallback parser is used, making
 pysimdjson safe to use anywhere.
 
 Bindings are currently tested on OS X, Linux, and Windows for Python version
-3.6 to 3.10.
+3.9 to 3.12.
 
 Installation
 ------------
@@ -44,15 +44,13 @@ Binary wheels are available for the following:
 +--------------+-------+-------+-------+---------+---------+
 | Interpreter  | OS X  |  Win  | Linux | Linux   | Linux   |
 +==============+=======+=======+=======+=========+=========+
-| CPython 3.6  | Yes   | Yes   | Yes   | Yes     | Yes     |
-+--------------+-------+-------+-------+---------+---------+
-| CPython 3.7  | Yes   | Yes   | Yes   | Yes     | Yes     |
-+--------------+-------+-------+-------+---------+---------+
-| CPython 3.8  | Yes   | Yes   | Yes   | Yes     | Yes     |
-+--------------+-------+-------+-------+---------+---------+
 | CPython 3.9  | Yes   | Yes   | Yes   | Yes     | Yes     |
 +--------------+-------+-------+-------+---------+---------+
 | CPython 3.10 | Yes   | Yes   | Yes   | Yes     | Yes     |
++--------------+-------+-------+-------+---------+---------+
+| CPython 3.11 | Yes   | Yes   | Yes   | Yes     | Yes     |
++--------------+-------+-------+-------+---------+---------+
+| CPython 3.12 | Yes   | Yes   | Yes   | Yes     | Yes     |
 +--------------+-------+-------+-------+---------+---------+
 
 When binary wheels are not available, a C++11 (or better) compiler is required
