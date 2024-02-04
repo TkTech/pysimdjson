@@ -29,8 +29,10 @@ if os.getenv('BUILD_WITH_CYTHON') and not CYTHON_AVAILABLE:
         ' available.'
     )
 
+macros = [
+    ('SIMDJSON_IMPLEMENTATION_FALLBACK', "1"),
+]
 if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
-    macros = []
     compiler_directives = {
         'embedsignature': True
     }
@@ -38,10 +40,10 @@ if os.getenv('BUILD_WITH_CYTHON') and CYTHON_AVAILABLE:
     if os.getenv('BUILD_FOR_DEBUG'):
         # Enable line tracing, which also enables support for coverage
         # reporting.
-        macros = [
-            ('CYTHON_TRACE', 1),
-            ('CYTHON_TRACE_NOGIL', 1)
-        ]
+        macros.extend([
+            ('CYTHON_TRACE', "1"),
+            ('CYTHON_TRACE_NOGIL', "1")
+        ])
         compiler_directives['linetrace'] = True
 
     force = bool(os.getenv('FORCE_REBUILD'))
@@ -67,6 +69,7 @@ else:
                 'simdjson/util.cpp',
                 'simdjson/csimdjson.cpp'
             ],
+            define_macros=macros,
             extra_compile_args=extra_compile_args,
             language='c++'
         )

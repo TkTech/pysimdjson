@@ -3,6 +3,12 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
+        "define_macros": [
+            [
+                "SIMDJSON_IMPLEMENTATION_FALLBACK",
+                "1"
+            ]
+        ],
         "depends": [
             "simdjson/simdjson.h",
             "simdjson/util.h"
