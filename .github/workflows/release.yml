@@ -51,7 +51,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-20.04, windows-2019, macos-10.15]
+        os: [ubuntu-20.04, windows-2019, macos-11]
         # cp - CPython
         # pp - PyPy
         py: ["cp39", "cp310", "cp311", "cp312", "pp37", "pp38", "pp39"]
