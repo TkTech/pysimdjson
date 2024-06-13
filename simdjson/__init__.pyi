@@ -128,6 +128,8 @@ class Parser:
         ...
 
 
+loads = json.loads
+load = json.load
 dumps = json.dumps
 dump = json.dump
 
