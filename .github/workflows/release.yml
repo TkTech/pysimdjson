@@ -9,12 +9,6 @@ on:
   pull_request:
 
 name: Tests/Release
-
-env:
-  CIBW_TEST_COMMAND: "pytest {project}/tests"
-  CIBW_TEST_SKIP: "*_arm64 *_universal2:arm64"
-  CIBW_ARCHS_MACOS: "x86_64 universal2"
-
 jobs:
   # Build & test simple source release before wasting hours building and
   # testing the binary build matrix.
@@ -22,31 +16,30 @@ jobs:
     name: Creating source release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4.1.7
 
       - name: Setting up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: 3.13
 
       - name: Installing python build dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade setuptools build uv
+          pip install uv
 
       - name: Building source distribution
         run: |
-          pip install -e ".[release]"
-          python -m build . --sdist
+          uv build --sdist
 
       - name: Ensuring documentation builds
         run: |
           cd docs && make clean && make html
-
-      - uses: actions/upload-artifact@v2
+  
+      - uses: actions/upload-artifact@v4.6.0
         with:
+          name: dist-sdist
           path: dist/*.tar.gz
-
+  
   build_wheels:
     needs: [sdist]
     name: "[${{ strategy.job-index }}/${{ strategy.job-total }}] py${{ matrix.py }} on ${{ matrix.os }}"
@@ -58,12 +51,12 @@ jobs:
         py: ["cp39", "cp310", "cp311", "cp312", "cp313", "pp37", "pp38", "pp39"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4.1.7
 
-      - uses: actions/setup-python@v2
-        name: Setting up Python
+      - name: Setting up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: 3.13
 
       - name: Set up QEMU
         if: runner.os == 'Linux'
@@ -76,9 +69,13 @@ jobs:
         env:
           CIBW_ARCHS_LINUX: auto aarch64 ppc64le
           CIBW_BUILD: "${{ matrix.py }}-*"
+          CIBW_TEST_COMMAND: "pytest {project}/tests"
+          CIBW_TEST_SKIP: "*_arm64 *_universal2:arm64"
+          CIBW_ARCHS_MACOS: "x86_64 universal2"
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4.6.0
         with:
+          name: dist-${{ matrix.os }}-${{ matrix.py }}
           path: ./wheelhouse/*.whl
 
   upload_all:
@@ -87,9 +84,10 @@ jobs:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v4.1.8
       with:
-        name: artifact
+        pattern: dist-*
+        merge-multiple: true
         path: dist
 
     - uses: pypa/gh-action-pypi-publish@v1.4.2
@@ -103,21 +101,20 @@ jobs:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4.1.7
 
       - name: Setting up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: 3.13
 
       - name: Installing python build dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade setuptools
+          pip install uv
 
       - name: Installing release dependencies.
         run: |
-          pip install -e ".[release]"
+          uv sync
 
       - name: Building documentation
         run: |
