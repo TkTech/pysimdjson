@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=74.1", "Cython"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pysimdjson"
+version = "7.0.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pysimdjson",
+]
+
+[tool.uv.sources]
+pysimdjson = { workspace = true }
+
+[tool.setuptools]
+ext-modules = [
+    { name = "csimdjson", sources = ["simdjson/simdjson.cpp", "simdjson/util.cpp", "simdjson/csimdjson.pyx"], py-limited-api = true },
+]
+
+[tool.setuptools.packages.find]
+include = ["simdjson"]
+
+[dependency-groups]
+dev = [
+    "build>=1.2.2.post1",
+    "bumpversion>=0.6.0",
+    "coverage>=7.6.12",
+    "furo>=2024.8.6",
+    "ghp-import>=2.1.0",
+    "numpy>=2.2.3",
+    "pytest>=8.3.4",
+    "pytest-benchmark>=5.1.0",
+    "sphinx>=8.2.0",
+]

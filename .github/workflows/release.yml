@@ -1,13 +1,16 @@
 on:
   workflow_dispatch:
+  release:
+    types:
+      - published
   push:
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    branches:
+      - main
+  pull_request:
 
-name: Creating release
+name: Tests/Release
 
 env:
-  CIBW_TEST_EXTRAS: test
   CIBW_TEST_COMMAND: "pytest {project}/tests"
   CIBW_TEST_SKIP: "*_arm64 *_universal2:arm64"
   CIBW_ARCHS_MACOS: "x86_64 universal2"
@@ -24,17 +27,17 @@ jobs:
       - name: Setting up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: "3.13"
 
       - name: Installing python build dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --upgrade setuptools
+          python -m pip install --upgrade setuptools build uv
 
       - name: Building source distribution
         run: |
           pip install -e ".[release]"
-          python setup.py sdist
+          python -m build . --sdist
 
       - name: Ensuring documentation builds
         run: |
@@ -51,10 +54,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-20.04, windows-2019, macos-11]
-        # cp - CPython
-        # pp - PyPy
-        py: ["cp39", "cp310", "cp311", "cp312", "pp37", "pp38", "pp39"]
+        os: [ubuntu-latest, windows-latest, macos-14]
+        py: ["cp39", "cp310", "cp311", "cp312", "cp313", "pp37", "pp38", "pp39"]
 
     steps:
       - uses: actions/checkout@v2
@@ -62,11 +63,11 @@ jobs:
       - uses: actions/setup-python@v2
         name: Setting up Python
         with:
-          python-version: '3.8'
+          python-version: '3.13'
 
       - name: Set up QEMU
         if: runner.os == 'Linux'
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: all
 
@@ -81,8 +82,9 @@ jobs:
           path: ./wheelhouse/*.whl
 
   upload_all:
-    needs: [build_wheels, sdist]
     name: Uploading built packages to pypi for release.
+    needs: [build_wheels, sdist]
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v2
@@ -98,6 +100,7 @@ jobs:
   build_documentation:
     name: Building & uploading documentation.
     needs: [upload_all]
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -105,7 +108,7 @@ jobs:
       - name: Setting up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: "3.13"
 
       - name: Installing python build dependencies
         run: |
