@@ -38,6 +38,7 @@ dev = [
 
 
 [tool.cibuildwheel]
+before-test = "pip install pytest pytest-benchmark"
 test-command = "pytest {project}/tests"
 test-skip = "*_arm64 *_universal2:arm64"
 
