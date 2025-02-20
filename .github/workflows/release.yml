@@ -56,7 +56,7 @@ jobs:
       - name: Setting up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.13
+          python-version: "3.13"
 
       - name: Set up QEMU
         if: runner.os == 'Linux'
@@ -65,7 +65,7 @@ jobs:
           platforms: all
 
       - name: Build & test wheels
-        uses: pypa/cibuildwheel@v2.16.5
+        uses: pypa/cibuildwheel@v2.22.0
         env:
           CIBW_ARCHS_LINUX: auto aarch64 ppc64le
           CIBW_BUILD: "${{ matrix.py }}-*"
