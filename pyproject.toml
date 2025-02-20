@@ -35,3 +35,16 @@ dev = [
     "pytest-benchmark>=5.1.0",
     "sphinx>=7.4.7",
 ]
+
+
+[tool.cibuildwheel]
+build = "${{ matrix.py }}-*"
+test-command = "pytest {project}/tests"
+test-skip = "*_arm64 *_universal2:arm64"
+
+[tool.cibuildwheel.linux]
+archs = ["auto", "aarch64", "ppc64le"]
+
+[tool.cibuildwheel.macos]
+environment = { CXXFLAGS="-std=c++11" }
+archs = ["x86_64", "universal2"]

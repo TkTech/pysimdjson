@@ -66,12 +66,6 @@ jobs:
 
       - name: Build & test wheels
         uses: pypa/cibuildwheel@v2.22.0
-        env:
-          CIBW_ARCHS_LINUX: auto aarch64 ppc64le
-          CIBW_BUILD: "${{ matrix.py }}-*"
-          CIBW_TEST_COMMAND: "pytest {project}/tests"
-          CIBW_TEST_SKIP: "*_arm64 *_universal2:arm64"
-          CIBW_ARCHS_MACOS: "x86_64 universal2"
 
       - uses: actions/upload-artifact@v4.6.0
         with:
