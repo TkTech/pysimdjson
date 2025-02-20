@@ -33,7 +33,7 @@ jobs:
 
       - name: Ensuring documentation builds
         run: |
-          cd docs && make clean && make html
+          cd docs && uv run make clean html
   
       - uses: actions/upload-artifact@v4.6.0
         with:
@@ -118,8 +118,8 @@ jobs:
 
       - name: Building documentation
         run: |
-          cd docs && make clean && make html
+          cd docs && uv run make clean html
 
       - name: Publishing documentation
         run: |
-          ghp-import -f -n -c pysimdjson.tkte.ch -p docs/_build/html
+          uv run ghp-import -f -n -c pysimdjson.tkte.ch -p docs/_build/html
