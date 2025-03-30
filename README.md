@@ -1,5 +1,6 @@
 ![PyPI - License](https://img.shields.io/pypi/l/pysimdjson.svg?style=flat-square)
 ![Tests](https://github.com/TkTech/pysimdjson/workflows/Run%20tests/badge.svg)
+[![libs.tech recommends](https://libs.tech/project/171987885/badge.svg)](https://libs.tech/project/171987885/pysimdjson)
 
 # pysimdjson
 
