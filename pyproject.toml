@@ -15,11 +15,6 @@ dependencies = [
 [tool.uv.sources]
 pysimdjson = { workspace = true }
 
-[tool.setuptools]
-ext-modules = [
-    { name = "csimdjson", sources = ["simdjson/simdjson.cpp", "simdjson/util.cpp", "simdjson/csimdjson.pyx"], py-limited-api = true },
-]
-
 [tool.setuptools.packages.find]
 include = ["simdjson"]
 
