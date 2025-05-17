@@ -1,5 +1,14 @@
 # Changelog
 
+## 7.0.0
+
+- Drop python 3.8, pypy builds, add python 3.13 (#117, #123)
+- Add proper .load/.loads type signatures (#116)
+- Updating and modernize github actions, simplify packaging and CI.
+- Update upstream simdjson to 3.12.3.
+- Add alias to json.JSONEncoder to drop-in API. (#118)
+- Deterministic build / static build metadata
+
 ## 6.0.0
 
 - Dropped support for CPython 3.6 - 3.8 which are long past their support window,
