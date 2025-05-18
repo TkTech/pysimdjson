@@ -130,6 +130,9 @@ class Parser:
 
 dumps = json.dumps
 dump = json.dump
+JSONEncoder = json.JSONEncoder
+loads = json.loads
+load = json.load
 
 MAXSIZE_BYTES: Final[int] = ...
 PADDING: Final[int] = ...

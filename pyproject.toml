@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=74.1", "Cython"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pysimdjson"
+version = "7.0.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pysimdjson",
+]
+
+[tool.uv.sources]
+pysimdjson = { workspace = true }
+
+[tool.setuptools]
+ext-modules = [
+    { name = "csimdjson", sources = ["simdjson/simdjson.cpp", "simdjson/util.cpp", "simdjson/csimdjson.pyx"], py-limited-api = true },
+]
+
+[tool.setuptools.packages.find]
+include = ["simdjson"]
+
+[dependency-groups]
+dev = [
+    "build>=1.2.2.post1",
+    "bumpversion>=0.6.0",
+    "coverage>=7.6.12",
+    "furo>=2024.8.6",
+    "ghp-import>=2.1.0",
+    "numpy>=2.0.2",
+    "pytest>=8.3.4",
+    "pytest-benchmark>=5.1.0",
+    "sphinx>=7.4.7",
+]
+
+
+[tool.cibuildwheel]
+before-test = "pip install pytest pytest-benchmark"
+test-command = "pytest {project}/tests"
+test-skip = "*_arm64 *_universal2:arm64"
+# This should be part of ext-modules but is blocked by setuptools issue #4810.
+environment = { CPPFLAGS="-DSIMDJSON_IMPLEMENTATION_FALLBACK=1" }
+
+[tool.cibuildwheel.linux]
+archs = ["auto", "aarch64", "ppc64le"]
+
+[tool.cibuildwheel.macos]
+environment = { CXXFLAGS="-std=c++11" }
+archs = ["x86_64", "universal2"]

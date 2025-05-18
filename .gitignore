@@ -14,3 +14,4 @@ _build/
 
 # coverage.py default output file
 .coverage
+.idea
