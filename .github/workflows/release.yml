@@ -1,17 +1,14 @@
 on:
   workflow_dispatch:
+  release:
+    types:
+      - published
   push:
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    branches:
+      - main
+  pull_request:
 
-name: Creating release
-
-env:
-  CIBW_TEST_EXTRAS: test
-  CIBW_TEST_COMMAND: "pytest {project}/tests"
-  CIBW_TEST_SKIP: "*_arm64 *_universal2:arm64"
-  CIBW_ARCHS_MACOS: "x86_64 universal2"
-
+name: Tests/Release
 jobs:
   # Build & test simple source release before wasting hours building and
   # testing the binary build matrix.
@@ -19,31 +16,30 @@ jobs:
     name: Creating source release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4.1.7
 
       - name: Setting up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: 3.13
 
       - name: Installing python build dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade setuptools
+          pip install uv
 
       - name: Building source distribution
         run: |
-          pip install -e ".[release]"
-          python setup.py sdist
+          uv build --sdist
 
       - name: Ensuring documentation builds
         run: |
-          cd docs && make clean && make html
-
-      - uses: actions/upload-artifact@v2
+          cd docs && uv run make clean html
+  
+      - uses: actions/upload-artifact@v4.6.0
         with:
+          name: dist-sdist
           path: dist/*.tar.gz
-
+  
   build_wheels:
     needs: [sdist]
     name: "[${{ strategy.job-index }}/${{ strategy.job-total }}] py${{ matrix.py }} on ${{ matrix.os }}"
@@ -51,43 +47,43 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-20.04, windows-2019, macos-11]
-        # cp - CPython
-        # pp - PyPy
-        py: ["cp39", "cp310", "cp311", "cp312", "pp37", "pp38", "pp39"]
+        os: [ubuntu-latest, windows-latest, macos-14]
+        py: ["cp39", "cp310", "cp311", "cp312", "cp313"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4.1.7
 
-      - uses: actions/setup-python@v2
-        name: Setting up Python
+      - name: Setting up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.8'
+          python-version: "3.13"
 
       - name: Set up QEMU
         if: runner.os == 'Linux'
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: all
 
       - name: Build & test wheels
-        uses: pypa/cibuildwheel@v2.16.5
+        uses: pypa/cibuildwheel@v2.22.0
         env:
-          CIBW_ARCHS_LINUX: auto aarch64 ppc64le
           CIBW_BUILD: "${{ matrix.py }}-*"
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4.6.0
         with:
+          name: dist-${{ matrix.os }}-${{ matrix.py }}
           path: ./wheelhouse/*.whl
 
   upload_all:
-    needs: [build_wheels, sdist]
     name: Uploading built packages to pypi for release.
+    needs: [build_wheels, sdist]
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v4.1.8
       with:
-        name: artifact
+        pattern: dist-*
+        merge-multiple: true
         path: dist
 
     - uses: pypa/gh-action-pypi-publish@v1.4.2
@@ -98,28 +94,28 @@ jobs:
   build_documentation:
     name: Building & uploading documentation.
     needs: [upload_all]
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4.1.7
 
       - name: Setting up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: 3.13
 
       - name: Installing python build dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install --upgrade setuptools
+          pip install uv
 
       - name: Installing release dependencies.
         run: |
-          pip install -e ".[release]"
+          uv sync
 
       - name: Building documentation
         run: |
-          cd docs && make clean && make html
+          cd docs && uv run make clean html
 
       - name: Publishing documentation
         run: |
-          ghp-import -f -n -c pysimdjson.tkte.ch -p docs/_build/html
+          uv run ghp-import -f -n -c pysimdjson.tkte.ch -p docs/_build/html
