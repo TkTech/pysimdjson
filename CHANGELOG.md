@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.1
+
+- Ensure csimdjson.pxd is included in the sdist (#129)
+
 ## 7.0.0
 
 - Drop python 3.8, pypy builds, add python 3.13 (#117, #123)
