@@ -1,5 +1,9 @@
 # Changelog
 
+## 7.0.2
+
+- Remove self-dependency in the pyproject.toml, fixing poetry installs (#130)
+
 ## 7.0.1
 
 - Ensure csimdjson.pxd is included in the sdist (#129)
