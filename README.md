@@ -1,5 +1,5 @@
 ![PyPI - License](https://img.shields.io/pypi/l/pysimdjson.svg?style=flat-square)
-![Tests](https://github.com/TkTech/pysimdjson/workflows/Run%20tests/badge.svg)
+[![tests](https://github.com/TkTech/pysimdjson/actions/workflows/release.yml/badge.svg)](https://github.com/TkTech/pysimdjson/actions/workflows/release.yml)
 
 # pysimdjson
 
@@ -10,7 +10,8 @@ pysimdjson safe to use anywhere.
 Bindings are currently tested on OS X, Linux, and Windows for Python version
 3.9 to 3.12.
 
-## 📝 Documentation
+
+## 📈 Documentation
 
 The latest documentation can be found at https://pysimdjson.tkte.ch.
 
@@ -24,3 +25,33 @@ found in its sister project [json_benchmark][].
 
 [simdjson]: https://github.com/lemire/simdjson
 [json_benchmark]: https://github.com/tktech/json_benchmark
+
+## 📈 Building Locally
+
+To build pysimdjson from source, you'll need Python 3.9+ and a C++ compiler.
+
+1. **Install uv** (if not already installed):
+   ```bash
+   pip install uv
+   ```
+
+2. **Clone the repository**:
+   ```bash
+   git clone https://github.com/TkTech/pysimdjson.git
+   cd pysimdjson
+   ```
+
+3. **Build the package**:
+   ```bash
+   uv sync
+   ```
+
+4. **(Optional) Run tests**:
+   ```bash
+   uv run pytest
+   ```
+
+5. **(Optional) Build documentation**:
+   ```bash
+   cd docs && uv run make html
+   ```

@@ -72,11 +72,13 @@ def test_implementation():
     with pytest.raises(ValueError):
         parser.implementation = 'rubbish'
 
-    # The generic, always-available Implementation.
-    parser.implementation = 'fallback'
-    parser.parse(b'{"hello": "world"}')
-
-    assert parser.implementation[0] == 'fallback'
-
+    # The generic implementation is only available on systems where it is 
+    # potentially needed, or when you force it to be available.
+    # The cost of forcing the generic implementation is that you then
+    # have the runtime dispatching overhead (it is tiny but not zero) and
+    # a larger binary.
     implementations = [imp[0] for imp in parser.get_implementations()]
-    assert 'fallback' in implementations
+    for imp in implementations:
+        parser.implementation = imp
+        parser.parse(b'{"hello": "world"}')
+        assert parser.implementation[0] == imp
