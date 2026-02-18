@@ -53,5 +53,5 @@ environment = { CPPFLAGS="-DSIMDJSON_IMPLEMENTATION_FALLBACK=1" }
 archs = ["auto", "aarch64", "ppc64le"]
 
 [tool.cibuildwheel.macos]
-environment = { CXXFLAGS="-std=c++11" }
+environment = { CXXFLAGS="-std=c++17" }
 archs = ["x86_64", "universal2"]
