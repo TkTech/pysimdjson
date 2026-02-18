@@ -22,6 +22,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.13"
+          enable-cache: "false"
 
       - name: Building source distribution
         run: |
@@ -53,6 +54,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.13"
+          enable-cache: "false"
 
       - name: Set up QEMU
         if: runner.os == 'Linux'
@@ -86,6 +88,9 @@ jobs:
 
     - name: Installing uv
       uses: astral-sh/setup-uv@v5
+      with:
+        python-version: "3.13"
+        enable-cache: "false"
 
     - name: Publishing to PyPI
       run: uv publish dist/*
@@ -102,6 +107,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.13"
+          enable-cache: "false"
 
       - name: Installing release dependencies.
         run: |
