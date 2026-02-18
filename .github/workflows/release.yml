@@ -18,14 +18,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.2
 
-      - name: Setting up Python
-        uses: actions/setup-python@v6.2.0
+      - name: Setting up uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: 3.13
-
-      - name: Installing python build dependencies
-        run: |
-          pip install uv
+          python-version: "3.13"
 
       - name: Building source distribution
         run: |
@@ -34,7 +30,7 @@ jobs:
       - name: Ensuring documentation builds
         run: |
           cd docs && uv run make clean html
-  
+
       - uses: actions/upload-artifact@v6.0.0
         with:
           name: dist-sdist
@@ -53,8 +49,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.2
 
-      - name: Setting up Python
-        uses: actions/setup-python@v6.2.0
+      - name: Setting up uv
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.13"
 
@@ -79,6 +75,8 @@ jobs:
     needs: [build_wheels, sdist]
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
     - uses: actions/download-artifact@v7.0.0
       with:
@@ -86,10 +84,11 @@ jobs:
         merge-multiple: true
         path: dist
 
-    - uses: pypa/gh-action-pypi-publish@v1.13.0
-      with:
-        user: ${{ secrets.PYPI_USERNAME }}
-        password: ${{ secrets.PYPI_PASSWORD }}
+    - name: Installing uv
+      uses: astral-sh/setup-uv@v5
+
+    - name: Publishing to PyPI
+      run: uv publish dist/*
 
   build_documentation:
     name: Building & uploading documentation.
@@ -99,14 +98,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.2
 
-      - name: Setting up Python
-        uses: actions/setup-python@v6.2.0
+      - name: Setting up uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: 3.13
-
-      - name: Installing python build dependencies
-        run: |
-          pip install uv
+          python-version: "3.13"
 
       - name: Installing release dependencies.
         run: |
