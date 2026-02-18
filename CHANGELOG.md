@@ -1,5 +1,10 @@
 # Changelog
 
+## 7.03
+
+- Update to upstream simdjson 4.2.4.
+- Started building CPython 3.14 binary wheels.
+
 ## 7.0.2
 
 - Remove self-dependency in the pyproject.toml, fixing poetry installs (#130)
