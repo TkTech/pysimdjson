@@ -16,10 +16,10 @@ jobs:
     name: Creating source release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v6.0.2
 
       - name: Setting up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: 3.13
 
@@ -35,7 +35,7 @@ jobs:
         run: |
           cd docs && uv run make clean html
   
-      - uses: actions/upload-artifact@v4.6.0
+      - uses: actions/upload-artifact@v6.0.0
         with:
           name: dist-sdist
           path: dist/*.tar.gz
@@ -51,25 +51,25 @@ jobs:
         py: ["cp39", "cp310", "cp311", "cp312", "cp313", "cp314"]
 
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v6.0.2
 
       - name: Setting up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: "3.13"
 
       - name: Set up QEMU
         if: runner.os == 'Linux'
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v3.7.0
         with:
           platforms: all
 
       - name: Build & test wheels
-        uses: pypa/cibuildwheel@v2.22.0
+        uses: pypa/cibuildwheel@v3.3.1
         env:
           CIBW_BUILD: "${{ matrix.py }}-*"
 
-      - uses: actions/upload-artifact@v4.6.0
+      - uses: actions/upload-artifact@v6.0.0
         with:
           name: dist-${{ matrix.os }}-${{ matrix.py }}
           path: ./wheelhouse/*.whl
@@ -80,13 +80,13 @@ jobs:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v4.1.8
+    - uses: actions/download-artifact@v7.0.0
       with:
         pattern: dist-*
         merge-multiple: true
         path: dist
 
-    - uses: pypa/gh-action-pypi-publish@v1.4.2
+    - uses: pypa/gh-action-pypi-publish@v1.13.0
       with:
         user: ${{ secrets.PYPI_USERNAME }}
         password: ${{ secrets.PYPI_PASSWORD }}
@@ -97,10 +97,10 @@ jobs:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v6.0.2
 
       - name: Setting up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: 3.13
 
