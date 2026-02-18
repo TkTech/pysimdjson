@@ -55,3 +55,6 @@ archs = ["auto", "aarch64", "ppc64le"]
 [tool.cibuildwheel.macos]
 environment = { CXXFLAGS="-std=c++17" }
 archs = ["x86_64", "universal2"]
+
+[tool.cibuildwheel.windows]
+environment = { CXXFLAGS="/std:c++17" }
