@@ -24,10 +24,6 @@ keywords = [
     "parser",
     "simd"
 ]
-dependencies = [
-    "build>=1.2.2.post1",
-    "coverage>=7.9.0",
-]
 
 [project.urls]
 Homepage = "https://github.com/tktech/pysimdjson"
