@@ -35,7 +35,6 @@ pysimdjson = { workspace = true }
 [[tool.setuptools.ext-modules]]
 name = "csimdjson"
 sources = ["simdjson/simdjson.cpp", "simdjson/util.cpp", "simdjson/csimdjson.pyx"]
-py-limited-api = true
 define-macros = [
     [
         "SIMDJSON_IMPLEMENTATION_FALLBACK",

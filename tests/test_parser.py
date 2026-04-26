@@ -22,6 +22,16 @@ def test_load_path(parser, jsonexamples):
     doc.at_pointer('/Image/Width')
 
 
+def test_load_pathlike(parser, jsonexamples):
+    """Ensure we can load a file using a custom PathLike object."""
+    class PathLike:
+        def __fspath__(self):
+            return os.path.join(jsonexamples, 'small', 'demo.json')
+
+    doc = parser.load(PathLike())
+    doc.at_pointer('/Image/Width')
+
+
 def test_parse_bytes(parser):
     """Ensure we can load from byte string fragments."""
     doc = parser.parse(b'{"hello": "world"}')
@@ -45,6 +55,16 @@ def test_parse_empty_buffer(parser):
         parser.parse(io.BytesIO(b'').getbuffer())
 
     assert str(bytes_exc.value) == str(buffer_exc.value)
+
+
+@pytest.mark.parametrize('src', [
+    b'123456789012345678901234567890',
+    b'[' + (b'[' * 1100) + (b']' * 1100) + b']',
+])
+def test_parser_errors_are_value_errors(parser, src):
+    """Parser-stage JSON failures should be reported as ValueError."""
+    with pytest.raises(ValueError):
+        parser.parse(src)
 
 
 def test_unicode_decode_error(parser, jsonexamples):

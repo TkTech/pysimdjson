@@ -41,17 +41,17 @@ To build pysimdjson from source, you'll need Python 3.9+ and a C++ compiler.
    cd pysimdjson
    ```
 
-3. **Build the package**:
+3. **Set up the development environment**:
    ```bash
-   uv sync
+   uv sync --group dev
    ```
 
 4. **(Optional) Run tests**:
    ```bash
-   uv run pytest
+   uv run --group dev --reinstall-package pysimdjson pytest
    ```
 
 5. **(Optional) Build documentation**:
    ```bash
-   cd docs && uv run make html
+   uv run --group dev make -C docs html
    ```

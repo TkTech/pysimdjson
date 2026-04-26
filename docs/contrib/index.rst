@@ -6,10 +6,11 @@ dependencies, use:
 
 .. code::
 
-    pip install -e ".[test]"
+    uv sync --group dev
 
-To run the tests, just type ``pytest``. To also run some slow integration
-tests, use ``pytest --runslow``.
+To run the tests, use ``uv run --group dev --reinstall-package pysimdjson
+pytest``. To also run the slow integration tests, use ``uv run --group dev
+--reinstall-package pysimdjson pytest --runslow``.
 
 To properly test builds on Windows, you need both a recent version of Visual
 Studio as well as VS2015, patch 3. Older versions of CPython required portable
@@ -19,31 +20,27 @@ Use the `Developer Command Prompt`_ to easily switch between versions.
 Cythonize
 ---------
 
-pysimdjson is written using `Cython`_. However, by default ``setup.py`` will
-use the already-generated ``csimdjson.cpp`` instead of regenerating it. This
-is to avoid making Cython an install-time requirement.
-
-To force the usage of Cython, use ``BUILD_WITH_CYTHON``:
+pysimdjson is written using `Cython`_. The extension module is declared in
+``pyproject.toml`` and built by setuptools. ``uv sync`` installs the project in
+editable mode by default:
 
 .. code::
 
-    BUILD_WITH_CYTHON=1 python setup.py develop
+    uv sync --group dev
 
-This will cause Cython to regenerate the ``csimdjson.cpp`` from the
-``csimdjson.pyx`` and ``csimdjson.pxd`` files.
-
-To build pysimdjson with support for linetracing and coverage, use ``BUILD_FOR_DEBUG``:
+Python source changes are visible immediately. When you change Cython or C++
+sources, force uv to rebuild and reinstall the extension:
 
 .. code::
 
-    BUILD_WITH_CYTHON=1 BUILD_FOR_DEBUG=1 python setup.py develop
+    uv sync --group dev --reinstall-package pysimdjson
 
-pysimdjson will also reuse the generated .so file if you build it more than
-once, so to force Cython to rebuild it, use ``FORCE_REBUILD``:
+To build pysimdjson with support for linetracing and coverage, use
+``BUILD_FOR_DEBUG``:
 
 .. code::
 
-    BUILD_WITH_CYTHON=1 FORCE_REBUILD=1 python setup.py develop
+    BUILD_FOR_DEBUG=1 uv sync --group dev --reinstall-package pysimdjson
 
 Benchmarks
 ----------

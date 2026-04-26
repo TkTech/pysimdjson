@@ -1,18 +1,15 @@
 import json
 from pathlib import Path
 from typing import (
-    AbstractSet,
     Any,
     Dict,
     Final,
     Iterator,
     List,
-    Mapping,
     Optional,
-    Sequence,
     Tuple,
+    TypeVar,
     Union,
-    ValuesView,
     overload,
 )
 
@@ -22,12 +19,19 @@ except ImportError:
     from typing_extensions import Literal  # type: ignore
 
 Primitives = Union[int, float, str, bool]
-SimValue = Optional[Union['Object', 'Array', Primitives]]
-UnboxedValue = Optional[Union[Primitives, Dict[str, Any], List[Any]]]
+JSONScalar = Optional[Primitives]
+SimValue = Union['Object', 'Array', JSONScalar]
+UnboxedValue = Union[JSONScalar, Dict[str, Any], List[Any]]
+ParseInput = Union[str, bytes, bytearray, memoryview]
+PathInput = Union[str, bytes, Path]
+KeyInput = Union[str, bytes]
+_Default = TypeVar('_Default')
 
 
-class Object(Mapping[str, SimValue]):
-    def __getitem__(self, key: str) -> SimValue:
+class Object:
+    parser: 'Parser'
+
+    def __getitem__(self, key: KeyInput) -> SimValue:
         ...
 
     def __iter__(self) -> Iterator[str]:
@@ -36,44 +40,65 @@ class Object(Mapping[str, SimValue]):
     def __len__(self) -> int:
         ...
 
+    def __contains__(self, key: object) -> bool:
+        ...
+
     def as_dict(self) -> Dict[str, UnboxedValue]:
         ...
 
-    def at_pointer(self, key: str) -> SimValue:
+    def at_pointer(self, key: KeyInput) -> SimValue:
         ...
 
-    def keys(self) -> AbstractSet[str]:
+    def keys(self) -> Iterator[str]:
         ...
 
-    def values(self) -> ValuesView[SimValue]:
+    def values(self) -> Iterator[UnboxedValue]:
         ...
 
-    def items(self) -> AbstractSet[Tuple[str, SimValue]]:
+    def items(self) -> Iterator[Tuple[str, UnboxedValue]]:
+        ...
+
+    @overload
+    def get(self, key: KeyInput) -> Optional[SimValue]:
+        ...
+
+    @overload
+    def get(self, key: KeyInput, default: _Default) -> Union[SimValue, _Default]:
         ...
 
     @property
-    def mini(self) -> str:
+    def mini(self) -> bytes:
         ...
 
 
-class Array(Sequence[SimValue]):
+class Array:
+    parser: 'Parser'
+
     def __len__(self) -> int:
         ...
 
-    def __getitem__(self, idx: Union[int, slice]) -> 'Array':
+    @overload
+    def __getitem__(self, idx: int) -> SimValue:
         ...
 
-    def as_list(self) -> List[Optional[Union[Primitives, dict, list]]]:
+    @overload
+    def __getitem__(self, idx: slice) -> List[UnboxedValue]:
         ...
 
-    def as_buffer(self, *, of_type: Literal['d', 'i', 'u']) -> bytes:
+    def __iter__(self) -> Iterator[SimValue]:
         ...
 
-    def at_pointer(self, key: str) -> SimValue:
+    def as_list(self) -> List[UnboxedValue]:
+        ...
+
+    def as_buffer(self, *, of_type: Literal['d', 'i', 'u']) -> Any:
+        ...
+
+    def at_pointer(self, key: KeyInput) -> SimValue:
         ...
 
     @property
-    def mini(self) -> str:
+    def mini(self) -> bytes:
         ...
 
 
@@ -83,8 +108,8 @@ class Parser:
 
     def get_implementations(
         self,
-        supported_by_runtime: Literal[True] = ...
-    ) -> Sequence[Tuple[str, str]]:
+        supported_by_runtime: bool = ...
+    ) -> Iterator[Tuple[str, str]]:
         ...
 
     @property
@@ -92,13 +117,13 @@ class Parser:
         ...
 
     @implementation.setter
-    def implementation(self, name: str):
+    def implementation(self, name: str) -> None:
         ...
 
     @overload
     def load(
         self,
-        path: Union[str, Path],
+        path: PathInput,
         recursive: Literal[False] = ...,
     ) -> SimValue:
         ...
@@ -106,7 +131,7 @@ class Parser:
     @overload
     def load(
         self,
-        path: Union[str, Path],
+        path: PathInput,
         recursive: Literal[True],
     ) -> UnboxedValue:
         ...
@@ -114,7 +139,7 @@ class Parser:
     @overload
     def parse(
         self,
-        data: Union[str, bytes, bytearray, memoryview],
+        data: ParseInput,
         recursive: Literal[False] = ...,
     ) -> SimValue:
         ...
@@ -122,7 +147,7 @@ class Parser:
     @overload
     def parse(
         self,
-        data: Union[str, bytes, bytearray, memoryview],
+        data: ParseInput,
         recursive: Literal[True],
     ) -> UnboxedValue:
         ...
@@ -131,8 +156,32 @@ class Parser:
 dumps = json.dumps
 dump = json.dump
 JSONEncoder = json.JSONEncoder
-loads = json.loads
-load = json.load
+
+def loads(
+    s: ParseInput,
+    *,
+    cls: Any = ...,
+    object_hook: Any = ...,
+    parse_float: Any = ...,
+    parse_int: Any = ...,
+    parse_constant: Any = ...,
+    object_pairs_hook: Any = ...,
+    **kwargs: Any,
+) -> UnboxedValue:
+    ...
+
+def load(
+    fp: Any,
+    *,
+    cls: Any = ...,
+    object_hook: Any = ...,
+    parse_float: Any = ...,
+    parse_int: Any = ...,
+    parse_constant: Any = ...,
+    object_pairs_hook: Any = ...,
+    **kwargs: Any,
+) -> UnboxedValue:
+    ...
 
 MAXSIZE_BYTES: Final[int] = ...
 PADDING: Final[int] = ...
