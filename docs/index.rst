@@ -53,7 +53,7 @@ Binary wheels are available for the following:
 | CPython 3.12 | Yes   | Yes   | Yes   | Yes     | Yes     |
 +--------------+-------+-------+-------+---------+---------+
 
-When binary wheels are not available, a C++11 (or better) compiler is required
+When binary wheels are not available, a C++17 (or better) compiler is required
 when installing in order to build the underlying simdjson library.
 
 If you would prefer to always install pysimdjson from source even when

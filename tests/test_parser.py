@@ -22,6 +22,16 @@ def test_load_path(parser, jsonexamples):
     doc.at_pointer('/Image/Width')
 
 
+def test_load_pathlike(parser, jsonexamples):
+    """Ensure we can load a file using a custom PathLike object."""
+    class PathLike:
+        def __fspath__(self):
+            return os.path.join(jsonexamples, 'small', 'demo.json')
+
+    doc = parser.load(PathLike())
+    doc.at_pointer('/Image/Width')
+
+
 def test_parse_bytes(parser):
     """Ensure we can load from byte string fragments."""
     doc = parser.parse(b'{"hello": "world"}')
@@ -45,6 +55,16 @@ def test_parse_empty_buffer(parser):
         parser.parse(io.BytesIO(b'').getbuffer())
 
     assert str(bytes_exc.value) == str(buffer_exc.value)
+
+
+@pytest.mark.parametrize('src', [
+    b'123456789012345678901234567890',
+    b'[' + (b'[' * 1100) + (b']' * 1100) + b']',
+])
+def test_parser_errors_are_value_errors(parser, src):
+    """Parser-stage JSON failures should be reported as ValueError."""
+    with pytest.raises(ValueError):
+        parser.parse(src)
 
 
 def test_unicode_decode_error(parser, jsonexamples):
@@ -72,11 +92,13 @@ def test_implementation():
     with pytest.raises(ValueError):
         parser.implementation = 'rubbish'
 
-    # The generic, always-available Implementation.
-    parser.implementation = 'fallback'
-    parser.parse(b'{"hello": "world"}')
-
-    assert parser.implementation[0] == 'fallback'
-
+    # The generic implementation is only available on systems where it is 
+    # potentially needed, or when you force it to be available.
+    # The cost of forcing the generic implementation is that you then
+    # have the runtime dispatching overhead (it is tiny but not zero) and
+    # a larger binary.
     implementations = [imp[0] for imp in parser.get_implementations()]
-    assert 'fallback' in implementations
+    for imp in implementations:
+        parser.implementation = imp
+        parser.parse(b'{"hello": "world"}')
+        assert parser.implementation[0] == imp
