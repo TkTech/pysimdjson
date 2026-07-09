@@ -5,11 +5,27 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pysimdjson"
 version = "7.0.2"
-description = "Add your description here"
+description = "simdjson bindings for python"
 readme = "README.md"
 requires-python = ">=3.9"
+authors = [
+    { name = "Tyler Kennedy", email = "tk@tkte.ch" },
+]
+keywords = ["json", "simdjson", "simd"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+]
 dependencies = [
 ]
+
+[project.urls]
+Homepage = "https://github.com/TkTech/pysimdjson"
+Source = "https://github.com/TkTech/pysimdjson"
+Issues = "https://github.com/TkTech/pysimdjson/issues"
 
 [tool.uv.sources]
 pysimdjson = { workspace = true }
