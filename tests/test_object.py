@@ -20,6 +20,10 @@ def test_object_abc_mapping(parser):
     # __contains__
     assert 'a' in doc
     assert 'd' not in doc
+    # Non-string keys can never be present and should return False rather
+    # than raising, just like a regular dict (see issue #122).
+    assert None not in doc
+    assert 1 not in doc
     # __getitem__
     # Individual key access returns proxy objects.
     assert isinstance(doc['x'], simdjson.Object)

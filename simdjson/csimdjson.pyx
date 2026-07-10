@@ -312,6 +312,12 @@ cdef class Object:
         return self.c_element.size()
 
     def __contains__(self, key):
+        # JSON object keys are always strings, so anything that isn't a
+        # str/bytes can't possibly be a key. Return False instead of letting
+        # str_as_bytes hand a bad type to the C++ layer (which raised a
+        # TypeError before), matching how a plain dict behaves.
+        if not isinstance(key, (str, bytes)):
+            return False
         try:
             self.c_element[str_as_bytes(key)]
         except KeyError:
