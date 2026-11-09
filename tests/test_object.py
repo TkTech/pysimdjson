@@ -48,6 +48,31 @@ def test_object_abc_mapping(parser):
     assert doc.get('z', True) is True
 
 
+@pytest.mark.parametrize('key', [5, None, 1.5, (1, 2), frozenset({1})])
+def test_object_missing_non_string_key(parser, key):
+    doc = parser.parse(b'{"5":1,"null":2}')
+    with pytest.raises(KeyError) as error:
+        doc[key]
+    assert error.value.args == (key,)
+    assert key not in doc
+    assert doc.get(key) is None
+    default = object()
+    assert doc.get(key, default) is default
+
+
+@pytest.mark.parametrize('key', [[], {}, set(), bytearray(b'a'), ([],)])
+def test_object_unhashable_key(parser, key):
+    doc = parser.parse(b'{"a":1}')
+    with pytest.raises(TypeError):
+        doc[key]
+    with pytest.raises(TypeError):
+        key in doc
+    with pytest.raises(TypeError):
+        doc.get(key)
+    with pytest.raises(TypeError):
+        doc.get(key, 'default')
+
+
 def test_object_uplift(parser):
     """Ensure we can turn our Object into a python dict."""
     doc = parser.parse(b'{"a": "b", "c": [0, 1, 2], "x": {"f": "z"}}')

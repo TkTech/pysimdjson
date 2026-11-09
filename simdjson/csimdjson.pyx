@@ -312,6 +312,9 @@ cdef class Object:
         return self
 
     def __getitem__(self, key):
+        if not isinstance(key, (str, bytes)):
+            hash(key)
+            raise KeyError(key)
         cdef bytes key_bytes = str_as_bytes(key)
         return element_to_primitive(
             self.parser,
@@ -332,6 +335,9 @@ cdef class Object:
         return self.c_element.size()
 
     def __contains__(self, key):
+        if not isinstance(key, (str, bytes)):
+            hash(key)
+            return False
         cdef bytes key_bytes = str_as_bytes(key)
         try:
             self.c_element[string_view(<const char*>key_bytes, len(key_bytes))]
