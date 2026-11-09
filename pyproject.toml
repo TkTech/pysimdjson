@@ -56,6 +56,5 @@ test-command = "pytest {project}/tests"
 archs = ["auto", "aarch64", "ppc64le"]
 
 [tool.cibuildwheel.macos]
-test-skip = "*_arm64 *_universal2:arm64"
 environment = { CXXFLAGS="-std=c++11" }
 archs = ["x86_64", "universal2"]
