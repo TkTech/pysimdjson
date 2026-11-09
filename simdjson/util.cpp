@@ -33,6 +33,7 @@ simdjson_error_handler() {
                 PyErr_SetString(PyExc_TypeError, e.what());
                 return;
             case error_code::MEMALLOC:
+            case error_code::OUT_OF_CAPACITY:
                 PyErr_SetNone(PyExc_MemoryError);
                 return;
             case error_code::EMPTY:

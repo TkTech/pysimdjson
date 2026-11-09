@@ -2,6 +2,8 @@
 
 ## 8.0.0
 
+- Update bundled simdjson to 5.1.1 using the upstream singleheader release.
+- Map simdjson's `OUT_OF_CAPACITY` error to `MemoryError`.
 - Correct extension ABI configuration and enable the fallback implementation in all builds (#136).
 - Export `simdjson.VERSION`, define public exports, and correct typing stubs (#136).
 - Support general path-like objects in `Parser.load()` and map additional parsing errors to `ValueError` (#136).
