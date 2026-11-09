@@ -8,6 +8,7 @@ from typing import (
     List,
     Literal,
     Optional,
+    SupportsIndex,
     Tuple,
     TypeVar,
     Union,
@@ -78,7 +79,7 @@ class Array:
         ...
 
     @overload
-    def __getitem__(self, key: int) -> SimValue:
+    def __getitem__(self, key: SupportsIndex) -> SimValue:
         ...
 
     @overload

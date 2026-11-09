@@ -9,6 +9,7 @@ from cpython.list cimport PyList_New, PyList_SET_ITEM
 from cpython.bytes cimport PyBytes_AsStringAndSize
 from cpython.slice cimport PySlice_GetIndicesEx, PySlice_New
 from cpython.mem cimport PyMem_Free
+from cpython.number cimport PyNumber_AsSsize_t
 from cpython.buffer cimport PyBuffer_FillInfo
 
 from simdjson.csimdjson cimport *  # noqa
@@ -177,13 +178,15 @@ cdef class Array:
     def __getitem__(self, key):
         cdef:
             Py_ssize_t start = 0, stop = 0, step = 0, slice_length = 0
-            Py_ssize_t dst, src
+            Py_ssize_t dst, src, target, remaining, index
+            Py_ssize_t array_size = self.c_element.size()
+            simd_array.iterator it
             list result
 
         if isinstance(key, slice):
             PySlice_GetIndicesEx(
                 key,
-                self.c_element.size(),
+                array_size,
                 &start,
                 &stop,
                 &step,
@@ -191,26 +194,41 @@ cdef class Array:
             )
 
             result = PyList_New(slice_length)
-            for dst, src in enumerate(range(start, stop, step)):
-                primitive = element_to_primitive(
-                    self.parser,
-                    self.c_element.at(src),
-                    True
-                )
-                Py_INCREF(primitive)
-                PyList_SET_ITEM(
-                    result,
-                    dst,
-                    primitive
-                )
+            if slice_length == 0:
+                return result
+
+            # Traverse once, even for reverse slices. For negative steps,
+            # visit selected elements in ascending order and fill backwards.
+            target = start if step > 0 else start + (slice_length - 1) * step
+            dst = 0 if step > 0 else slice_length - 1
+            remaining = slice_length
+            src = 0
+            it = self.c_element.begin()
+            while remaining:
+                if src == target:
+                    primitive = element_to_primitive(self.parser, dereference(it), True)
+                    Py_INCREF(primitive)
+                    PyList_SET_ITEM(result, dst, primitive)
+                    remaining -= 1
+                    if remaining == 0:
+                        break
+                    if step > 0:
+                        target += step
+                        dst += 1
+                    else:
+                        target -= step
+                        dst -= 1
+                preincrement(it)
+                src += 1
 
             return result
-        elif isinstance(key, int):
-            # Wrap around negative indexes.
-            if key < 0:
-                key += self.c_element.size()
 
-        return element_to_primitive(self.parser, self.c_element.at(key))
+        index = PyNumber_AsSsize_t(key, IndexError)
+        if index < 0:
+            index += array_size
+        if index < 0 or index >= array_size:
+            raise IndexError('array index out of range')
+        return element_to_primitive(self.parser, self.c_element.at(<size_t>index))
 
     def __len__(self):
         return self.c_element.size()
@@ -227,10 +245,11 @@ cdef class Array:
 
     def at_pointer(self, json_pointer):
         """Get the value at the given JSON pointer."""
+        cdef bytes pointer_bytes = str_as_bytes(json_pointer)
         return element_to_primitive(
             self.parser,
             self.c_element.at_pointer(
-                str_as_bytes(json_pointer)
+                string_view(<const char*>pointer_bytes, len(pointer_bytes))
             )
         )
 
@@ -293,9 +312,10 @@ cdef class Object:
         return self
 
     def __getitem__(self, key):
+        cdef bytes key_bytes = str_as_bytes(key)
         return element_to_primitive(
             self.parser,
-            self.c_element[str_as_bytes(key)]
+            self.c_element[string_view(<const char*>key_bytes, len(key_bytes))]
         )
 
     def get(self, key, default=None):
@@ -312,8 +332,9 @@ cdef class Object:
         return self.c_element.size()
 
     def __contains__(self, key):
+        cdef bytes key_bytes = str_as_bytes(key)
         try:
-            self.c_element[str_as_bytes(key)]
+            self.c_element[string_view(<const char*>key_bytes, len(key_bytes))]
         except KeyError:
             return False
         return True
@@ -365,10 +386,11 @@ cdef class Object:
 
     def at_pointer(self, json_pointer):
         """Get the value at the given JSON pointer."""
+        cdef bytes pointer_bytes = str_as_bytes(json_pointer)
         return element_to_primitive(
             self.parser,
             self.c_element.at_pointer(
-                str_as_bytes(json_pointer)
+                string_view(<const char*>pointer_bytes, len(pointer_bytes))
             )
         )
 
@@ -557,7 +579,7 @@ cdef class Parser:
 
             if not impl.supported_by_runtime_system():
                 raise RuntimeError(
-                    'Attempted to set a runtime Implementation that is not'
+                    'Attempted to set a runtime Implementation that is not '
                     'supported on the current host.'
                 )
 

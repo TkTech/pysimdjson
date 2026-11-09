@@ -3,6 +3,11 @@
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 from libcpp.string cimport string
 
+# simdjson provides this type on C++11 too; do not include <string_view>.
+cdef extern from "simdjson.h" namespace "std":
+    cdef cppclass string_view:
+        string_view(const char*, size_t)
+
 cdef extern from "Python.h":
     # Correct signature is const, but this was only fixed in Py3.7+
     cdef char* PyUnicode_AsUTF8AndSize(object, Py_ssize_t *)
@@ -72,8 +77,8 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
         size_t size()
         size_t number_of_slots()
 
-        simd_element at(int) except +simdjson_error_handler
-        simd_element at_pointer(const char*) except +simdjson_error_handler
+        simd_element at(size_t) except +simdjson_error_handler
+        simd_element at_pointer(string_view) except +simdjson_error_handler
 
 
     cdef cppclass simd_object "simdjson::dom::object":
@@ -92,8 +97,8 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
 
         size_t size()
 
-        simd_element at_pointer(const char*) except +simdjson_error_handler
-        simd_element operator[](const char*) except +simdjson_error_handler
+        simd_element at_pointer(string_view) except +simdjson_error_handler
+        simd_element operator[](string_view) except +simdjson_error_handler
 
 
     cdef cppclass simd_element "simdjson::dom::element":

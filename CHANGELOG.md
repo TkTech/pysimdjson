@@ -6,6 +6,12 @@ Upstream improvements have improved number-heavy benchmarks by about 4.2%.
 When re-using parsers, number-heavy benchmarks improved by over 8%. Direct
 buffer exports have improved by 8.4%.
 
+Tail slices on a `simdjson.Array` proxy are now 1,130x faster.
+
+- Preserve embedded NUL characters in object keys and JSON pointers.
+- Make array slicing traverse the source once, including reverse slices.
+- Require integer array indices and raise `IndexError` for out-of-range integers.
+- Document duplicate-key behavior and fix the unsupported-implementation error message.
 - Update bundled simdjson to 5.1.1 using the upstream singleheader release.
 - Map simdjson's `OUT_OF_CAPACITY` error to `MemoryError`.
 - Correct extension ABI configuration and enable the fallback implementation in all builds (#136).
