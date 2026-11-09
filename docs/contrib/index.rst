@@ -1,49 +1,43 @@
 Development
 ===========
 
-This project comes with a full test suite. To install development and testing
-dependencies, use:
+Development requires Python 3.11+ and a C++11-compatible compiler. On Windows,
+install Visual Studio C++ build tools for your target architecture and use the
+`Developer Command Prompt`_.
 
-.. code::
+Install uv with ``python -m pip install uv``, then install the development
+and testing dependencies:
 
-    pip install -e ".[test]"
+.. code-block:: console
 
-To run the tests, just type ``pytest``. To also run some slow integration
-tests, use ``pytest --runslow``.
+    uv sync --group dev
 
-To properly test builds on Windows, you need both a recent version of Visual
-Studio as well as VS2015, patch 3. Older versions of CPython required portable
-C/C++ extensions to be built with the same version of VS as the interpreter.
-Use the `Developer Command Prompt`_ to easily switch between versions.
+To rebuild the extension and run the tests:
 
-Cythonize
----------
+.. code-block:: console
 
-pysimdjson is written using `Cython`_. However, by default ``setup.py`` will
-use the already-generated ``csimdjson.cpp`` instead of regenerating it. This
-is to avoid making Cython an install-time requirement.
+    uv run --group dev --reinstall-package pysimdjson pytest
 
-To force the usage of Cython, use ``BUILD_WITH_CYTHON``:
+Add ``--runslow`` to include the slow integration tests.
 
-.. code::
+Building the extension
+----------------------
 
-    BUILD_WITH_CYTHON=1 python setup.py develop
+pysimdjson is written using `Cython`_. The extension is declared in
+``pyproject.toml`` and built by setuptools, which installs Cython in an isolated
+build environment. ``uv sync`` installs the project in editable mode by default.
+Python source changes are visible immediately. After changing Cython or C++
+sources, rebuild and reinstall the extension:
 
-This will cause Cython to regenerate the ``csimdjson.cpp`` from the
-``csimdjson.pyx`` and ``csimdjson.pxd`` files.
+.. code-block:: console
 
-To build pysimdjson with support for linetracing and coverage, use ``BUILD_FOR_DEBUG``:
+    uv sync --group dev --reinstall-package pysimdjson
 
-.. code::
+To build the documentation:
 
-    BUILD_WITH_CYTHON=1 BUILD_FOR_DEBUG=1 python setup.py develop
+.. code-block:: console
 
-pysimdjson will also reuse the generated .so file if you build it more than
-once, so to force Cython to rebuild it, use ``FORCE_REBUILD``:
-
-.. code::
-
-    BUILD_WITH_CYTHON=1 FORCE_REBUILD=1 python setup.py develop
+    uv run --group dev make -C docs html
 
 Benchmarks
 ----------

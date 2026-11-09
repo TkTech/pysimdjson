@@ -28,6 +28,44 @@ def test_parse_bytes(parser):
     assert doc.as_dict() == {'hello': 'world'}
 
 
+@pytest.mark.parametrize('as_bytes', [False, True])
+def test_load_pathlike(parser, tmp_path, as_bytes):
+    path = tmp_path / 'document.json'
+    path.write_text('{"hello": "world"}', encoding='utf-8')
+
+    class CustomPath:
+        def __fspath__(self):
+            return os.fsencode(path) if as_bytes else str(path)
+
+    assert parser.load(CustomPath(), recursive=True) == {'hello': 'world'}
+
+
+def test_load_bytes(parser, tmp_path):
+    path = tmp_path / 'document.json'
+    path.write_text('[1, 2]', encoding='utf-8')
+    assert parser.load(os.fsencode(path), recursive=True) == [1, 2]
+
+
+def test_load_invalid_pathlike(parser):
+    class InvalidPath:
+        def __fspath__(self):
+            return 123
+
+    with pytest.raises(TypeError):
+        parser.load(InvalidPath())
+
+
+@pytest.mark.parametrize('src', [
+    b'123456789012345678901234567890',
+    b'[' * 1101 + b']' * 1101,
+    b'{"unfinished": [1, 2',
+    b'{} {}',
+])
+def test_parser_errors_are_value_errors(parser, src):
+    with pytest.raises(ValueError):
+        parser.parse(src)
+
+
 def test_parse_str(parser):
     """Ensure we can load from string fragments."""
     doc = parser.parse('{"hello": "world"}')
@@ -72,11 +110,15 @@ def test_implementation():
     with pytest.raises(ValueError):
         parser.implementation = 'rubbish'
 
-    # The generic, always-available Implementation.
-    parser.implementation = 'fallback'
-    parser.parse(b'{"hello": "world"}')
-
-    assert parser.implementation[0] == 'fallback'
-
     implementations = [imp[0] for imp in parser.get_implementations()]
     assert 'fallback' in implementations
+    original = parser.implementation[0]
+    try:
+        for implementation in implementations:
+            parser.implementation = implementation
+            assert parser.parse(b'{"hello": "world"}', recursive=True) == {
+                'hello': 'world'
+            }
+            assert parser.implementation[0] == implementation
+    finally:
+        parser.implementation = original

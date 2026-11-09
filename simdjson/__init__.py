@@ -7,17 +7,24 @@ try:
         Array,
         Object,
         MAXSIZE_BYTES,
-        PADDING
+        PADDING,
+        VERSION
     )
 except ImportError:
     raise RuntimeError('Unable to import low-level simdjson bindings.')
 
-_ALL_IMPORTS = [
-    Parser,
-    Array,
-    Object,
-    MAXSIZE_BYTES,
-    PADDING
+__all__ = [
+    'Parser',
+    'Array',
+    'Object',
+    'MAXSIZE_BYTES',
+    'PADDING',
+    'VERSION',
+    'load',
+    'loads',
+    'dump',
+    'dumps',
+    'JSONEncoder',
 ]
 
 

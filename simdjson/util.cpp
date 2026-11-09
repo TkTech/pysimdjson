@@ -36,11 +36,13 @@ simdjson_error_handler() {
                 PyErr_SetNone(PyExc_MemoryError);
                 return;
             case error_code::EMPTY:
+            case error_code::DEPTH_ERROR:
             case error_code::STRING_ERROR:
             case error_code::T_ATOM_ERROR:
             case error_code::F_ATOM_ERROR:
             case error_code::N_ATOM_ERROR:
             case error_code::NUMBER_ERROR:
+            case error_code::BIGINT_ERROR:
             case error_code::UNESCAPED_CHARS:
             case error_code::UNCLOSED_STRING:
             case error_code::NUMBER_OUT_OF_RANGE:
@@ -48,6 +50,9 @@ simdjson_error_handler() {
             case error_code::INVALID_URI_FRAGMENT:
             case error_code::CAPACITY:
             case error_code::TAPE_ERROR:
+            case error_code::INSUFFICIENT_PADDING:
+            case error_code::INCOMPLETE_ARRAY_OR_OBJECT:
+            case error_code::TRAILING_CONTENT:
                 PyErr_SetString(PyExc_ValueError, e.what());
                 return;
             case error_code::IO_ERROR:

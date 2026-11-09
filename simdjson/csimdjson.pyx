@@ -1,6 +1,6 @@
 # cython: language_level=3, c_string_type=unicode, c_string_encoding=utf8
 # distutils: language=c++
-import pathlib
+import os
 
 from cython.operator cimport preincrement, dereference  # noqa
 from libcpp.memory cimport shared_ptr, make_shared
@@ -510,10 +510,9 @@ cdef class Parser:
                 ' parser.'
             )
 
+        path = os.fspath(path)
         if isinstance(path, unicode):
             path = (<unicode>path).encode('utf-8')
-        elif isinstance(path, pathlib.Path):
-            path = str(path).encode('utf-8')
 
         cdef simd_element document = dereference(self.c_parser).load(path)
         return element_to_primitive(self, document, recursive)

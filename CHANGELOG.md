@@ -2,6 +2,10 @@
 
 ## 8.0.0
 
+- Correct extension ABI configuration and enable the fallback implementation in all builds (#136).
+- Export `simdjson.VERSION`, define public exports, and correct typing stubs (#136).
+- Support general path-like objects in `Parser.load()` and map additional parsing errors to `ValueError` (#136).
+- Restore stdlib shim test collection and update package metadata and development instructions (#136).
 - Drop Python 3.9 and 3.10 support; add Python 3.14 and 3.15 wheel builds.
 - Update CI build and documentation jobs to Python 3.15.
 - Update all GitHub Actions to their latest stable releases.

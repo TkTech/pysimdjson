@@ -25,7 +25,7 @@ If SIMD instructions are unavailable a fallback parser is used, making
 pysimdjson safe to use anywhere.
 
 Bindings are currently tested on OS X, Linux, and Windows for Python version
-3.9 to 3.12.
+3.11 to 3.15.
 
 Installation
 ------------
@@ -37,21 +37,11 @@ with no further requirements:
 
     pip install pysimdjson
 
-Binary wheels are available for the following:
+The release workflow builds wheels for CPython 3.11–3.15 on:
 
-+--------------+-------+-------+-------+---------+---------+
-|              |     x86_64            |  ARM64  | PowerPC |
-+--------------+-------+-------+-------+---------+---------+
-| Interpreter  | OS X  |  Win  | Linux | Linux   | Linux   |
-+==============+=======+=======+=======+=========+=========+
-| CPython 3.9  | Yes   | Yes   | Yes   | Yes     | Yes     |
-+--------------+-------+-------+-------+---------+---------+
-| CPython 3.10 | Yes   | Yes   | Yes   | Yes     | Yes     |
-+--------------+-------+-------+-------+---------+---------+
-| CPython 3.11 | Yes   | Yes   | Yes   | Yes     | Yes     |
-+--------------+-------+-------+-------+---------+---------+
-| CPython 3.12 | Yes   | Yes   | Yes   | Yes     | Yes     |
-+--------------+-------+-------+-------+---------+---------+
+* Linux: x86_64, ARM64, and PowerPC (ppc64le).
+* Windows: x86, x86_64, and ARM64.
+* macOS: x86_64 and universal2 (Intel and Apple Silicon).
 
 When binary wheels are not available, a C++11 (or better) compiler is required
 when installing in order to build the underlying simdjson library.
