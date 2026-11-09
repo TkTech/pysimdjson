@@ -5,6 +5,7 @@
 - Drop Python 3.9 and 3.10 support; add Python 3.14 and 3.15 wheel builds.
 - Update CI build and documentation jobs to Python 3.15.
 - Update all GitHub Actions to their latest stable releases.
+- Build and test Windows ARM64 wheels for Python 3.11–3.15 on native runners (#141).
 
 ## 7.0.2
 
