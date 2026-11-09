@@ -2,6 +2,10 @@
 
 ## 8.0.0
 
+Upstream improvements have improved number-heavy benchmarks by about 4.2%.
+When re-using parsers, number-heavy benchmarks improved by over 8%. Direct
+buffer exports have improved by 8.4%.
+
 - Update bundled simdjson to 5.1.1 using the upstream singleheader release.
 - Map simdjson's `OUT_OF_CAPACITY` error to `MemoryError`.
 - Correct extension ABI configuration and enable the fallback implementation in all builds (#136).
