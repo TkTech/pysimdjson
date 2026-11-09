@@ -16,12 +16,12 @@ jobs:
     name: Creating source release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v7.0.1
 
       - name: Setting up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7.1.0
         with:
-          python-version: 3.13
+          python-version: "3.15"
 
       - name: Installing python build dependencies
         run: |
@@ -35,7 +35,7 @@ jobs:
         run: |
           cd docs && uv run make clean html
   
-      - uses: actions/upload-artifact@v4.6.0
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: dist-sdist
           path: dist/*.tar.gz
@@ -48,28 +48,28 @@ jobs:
       fail-fast: true
       matrix:
         os: [ubuntu-latest, windows-latest, macos-14]
-        py: ["cp39", "cp310", "cp311", "cp312", "cp313"]
+        py: ["cp311", "cp312", "cp313", "cp314", "cp315"]
 
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v7.0.1
 
       - name: Setting up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7.1.0
         with:
-          python-version: "3.13"
+          python-version: "3.15"
 
       - name: Set up QEMU
         if: runner.os == 'Linux'
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4.4.0
         with:
           platforms: all
 
       - name: Build & test wheels
-        uses: pypa/cibuildwheel@v2.22.0
+        uses: pypa/cibuildwheel@v4.3.5
         env:
           CIBW_BUILD: "${{ matrix.py }}-*"
 
-      - uses: actions/upload-artifact@v4.6.0
+      - uses: actions/upload-artifact@v7.0.2
         with:
           name: dist-${{ matrix.os }}-${{ matrix.py }}
           path: ./wheelhouse/*.whl
@@ -80,13 +80,13 @@ jobs:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v4.1.8
+    - uses: actions/download-artifact@v8.0.2
       with:
         pattern: dist-*
         merge-multiple: true
         path: dist
 
-    - uses: pypa/gh-action-pypi-publish@v1.4.2
+    - uses: pypa/gh-action-pypi-publish@v1.14.3
       with:
         user: ${{ secrets.PYPI_USERNAME }}
         password: ${{ secrets.PYPI_PASSWORD }}
@@ -97,12 +97,12 @@ jobs:
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v7.0.1
 
       - name: Setting up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7.1.0
         with:
-          python-version: 3.13
+          python-version: "3.15"
 
       - name: Installing python build dependencies
         run: |

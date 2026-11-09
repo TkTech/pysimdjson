@@ -1,5 +1,11 @@
 # Changelog
 
+## 8.0.0
+
+- Drop Python 3.9 and 3.10 support; add Python 3.14 and 3.15 wheel builds.
+- Update CI build and documentation jobs to Python 3.15.
+- Update all GitHub Actions to their latest stable releases.
+
 ## 7.0.2
 
 - Remove self-dependency in the pyproject.toml, fixing poetry installs (#130)
