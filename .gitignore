@@ -11,6 +11,7 @@ _build/
 
 # Extension building cruft
 *.so
+/simdjson/csimdjson.cpp
 
 # coverage.py default output file
 .coverage
