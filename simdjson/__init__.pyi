@@ -2,6 +2,7 @@ import json
 from os import PathLike
 from typing import (
     Any,
+    BinaryIO,
     Dict,
     Final,
     Iterator,
@@ -27,7 +28,7 @@ _Default = TypeVar('_Default')
 
 class Object:
     @property
-    def parser(self) -> 'Parser':
+    def parser(self) -> Optional['Parser']:
         ...
 
     def __getitem__(self, key: KeyInput) -> SimValue:
@@ -72,7 +73,7 @@ class Object:
 
 class Array:
     @property
-    def parser(self) -> 'Parser':
+    def parser(self) -> Optional['Parser']:
         ...
 
     def __len__(self) -> int:
@@ -105,6 +106,14 @@ class Array:
 
 class Parser:
     def __init__(self, max_capacity: int = ...) -> None:
+        ...
+
+    def parse_many(self, src: ParseInput, *, batch_size: int = ...) -> DocumentStream:
+        ...
+
+    def load_many(
+        self, source: Union[PathInput, BinaryIO], *, batch_size: int = ...,
+    ) -> DocumentStream:
         ...
 
     def get_implementations(
@@ -152,6 +161,37 @@ class Parser:
         recursive: Literal[True],
     ) -> UnboxedValue:
         ...
+
+
+class DocumentStream(Iterator[UnboxedValue]):
+    def __enter__(self) -> DocumentStream:
+        ...
+
+    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> None:
+        ...
+
+    @property
+    def closed(self) -> bool:
+        ...
+
+    def __iter__(self) -> DocumentStream:
+        ...
+
+    def __next__(self) -> UnboxedValue:
+        ...
+
+    def close(self) -> None:
+        ...
+
+
+def parse_many(src: ParseInput, *, batch_size: int = ...) -> DocumentStream:
+    ...
+
+
+def load_many(
+    source: Union[PathInput, BinaryIO], *, batch_size: int = ...,
+) -> DocumentStream:
+    ...
 
 
 dumps = json.dumps
