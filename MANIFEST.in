@@ -1,5 +1,6 @@
 include simdjson/simdjson.h
 include simdjson/simdjson.cpp
 include simdjson/util.h
+include simdjson/ondemand.h
 include simdjson/util.cpp
 include simdjson/csimdjson.pxd

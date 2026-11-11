@@ -1,5 +1,36 @@
 # Changelog
 
+## 8.0.0
+
+Upstream improvements have improved number-heavy benchmarks by about 4.2%.
+When re-using parsers, number-heavy benchmarks improved by over 8%. Direct
+buffer exports have improved by 8.4%.
+
+These measurements predate the proxy-lifetime fix, which reduces retained
+memory but adds allocation overhead on repeated parses.
+
+Tail slices on a `simdjson.Array` proxy are now 1,130x faster.
+
+- Add `parse_many()` for in-memory NDJSON and `load_many()` for bounded-memory
+  NDJSON reads. (#71)
+- Keep proxies and iterators valid across parser reuse and destruction (#125).
+  Proxy `.parser` attributes no longer keep parsers alive and return `None`
+  after the originating parser is destroyed.
+- Preserve embedded NUL characters in object keys and JSON pointers.
+- Make array slicing traverse the source once, including reverse slices.
+- Require integer array indices and raise `IndexError` for out-of-range integers.
+- Document duplicate-key behavior and fix the unsupported-implementation error message.
+- Update bundled simdjson to 5.1.1 using the upstream singleheader release.
+- Map simdjson's `OUT_OF_CAPACITY` error to `MemoryError`.
+- Correct extension ABI configuration and enable the fallback implementation in all builds (#136).
+- Export `simdjson.VERSION`, define public exports, and correct typing stubs (#136).
+- Support general path-like objects in `Parser.load()` and map additional parsing errors to `ValueError` (#136).
+- Restore stdlib shim test collection and update package metadata and development instructions (#136).
+- Drop Python 3.9 and 3.10 support; add Python 3.14 and 3.15 wheel builds.
+- Update CI build and documentation jobs to Python 3.15.
+- Update all GitHub Actions to their latest stable releases.
+- Build and test Windows ARM64 wheels for Python 3.11–3.15 on native runners (#141).
+
 ## 7.0.2
 
 - Remove self-dependency in the pyproject.toml, fixing poetry installs (#130)

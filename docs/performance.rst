@@ -69,7 +69,8 @@ to re-use the parser.
         doc = parser.parse(b'{"a": "b"}')
         del doc
 
-This will drastically reduce the number of allocations being made, as it will
-reuse the existing buffer when possible. If it's too small, it'll grow to fit.
+This reuses scratch buffers, but allocates fresh document buffers on each parse.
+Release old results and their descendants before parsing again to reduce peak
+memory.
 
 .. _numpy: https://numpy.org/

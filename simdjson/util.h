@@ -4,7 +4,20 @@
 
 #ifndef _PY_SIMDJSON_ERRORS
 #define _PY_SIMDJSON_ERRORS
+    // Keep the file buffer local: the document owns all parsed values, and
+    // the parser need not retain a second, input-sized allocation.
+    inline simdjson::dom::element load_document(
+        simdjson::dom::parser &parser, simdjson::dom::document &document,
+        std::string_view path
+    ) {
+        auto input = simdjson::padded_string::load(path).value();
+        return parser.parse_into_document(
+            document, input.data(), input.size(), false
+        ).value();
+    }
+
     void simdjson_error_handler();
+    void simdjson_ondemand_error_handler();
     template<typename T>
     void * flatten_array(simdjson::dom::array src, size_t *size);
 

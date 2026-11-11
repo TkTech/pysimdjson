@@ -3,6 +3,11 @@
 from libc.stdint cimport uint32_t, uint64_t, int64_t
 from libcpp.string cimport string
 
+# simdjson provides this type on C++11 too; do not include <string_view>.
+cdef extern from "simdjson.h" namespace "std":
+    cdef cppclass string_view:
+        string_view(const char*, size_t)
+
 cdef extern from "Python.h":
     # Correct signature is const, but this was only fixed in Py3.7+
     cdef char* PyUnicode_AsUTF8AndSize(object, Py_ssize_t *)
@@ -10,10 +15,19 @@ cdef extern from "Python.h":
 
 cdef extern from "util.h":
     cdef void simdjson_error_handler()
+    cdef void simdjson_ondemand_error_handler()
     cdef void * flatten_array[T](simd_array src) \
         except +simdjson_error_handler
     cdef void set_active_implementation(Implementation *)
+    cdef simd_element load_document(simd_parser&, simd_document&, string_view) \
+        except +simdjson_error_handler
 
+
+cdef extern from "ondemand.h" namespace "pysimdjson":
+    cppclass records:
+        records(size_t, size_t) except +simdjson_error_handler
+        void reset(const char*, size_t) except +simdjson_error_handler
+        object next() except +simdjson_ondemand_error_handler
 
 cdef extern from "simdjson.h" namespace "simdjson":
     cdef size_t SIMDJSON_MAXSIZE_BYTES
@@ -58,6 +72,9 @@ cdef extern from "simdjson.h" namespace "simdjson::dom::element_type":
 
 
 cdef extern from "simdjson.h" namespace "simdjson::dom":
+    cdef cppclass simd_document "simdjson::dom::document":
+        simd_document() noexcept
+
     cdef cppclass simd_array "simdjson::dom::array":
         cppclass iterator:
             iterator()
@@ -72,8 +89,8 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
         size_t size()
         size_t number_of_slots()
 
-        simd_element at(int) except +simdjson_error_handler
-        simd_element at_pointer(const char*) except +simdjson_error_handler
+        simd_element at(size_t) except +simdjson_error_handler
+        simd_element at_pointer(string_view) except +simdjson_error_handler
 
 
     cdef cppclass simd_object "simdjson::dom::object":
@@ -92,8 +109,8 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
 
         size_t size()
 
-        simd_element at_pointer(const char*) except +simdjson_error_handler
-        simd_element operator[](const char*) except +simdjson_error_handler
+        simd_element at_pointer(string_view) except +simdjson_error_handler
+        simd_element operator[](string_view) except +simdjson_error_handler
 
 
     cdef cppclass simd_element "simdjson::dom::element":
@@ -114,6 +131,5 @@ cdef extern from "simdjson.h" namespace "simdjson::dom":
         simd_parser() except +simdjson_error_handler
         simd_parser(size_t max_capacity) except +simdjson_error_handler
 
-        simd_element parse(const char *, size_t, bint) \
+        simd_element parse_into_document_unpadded(simd_document&, const unsigned char *, size_t) \
             except +simdjson_error_handler
-        simd_element load(const char *) except +simdjson_error_handler

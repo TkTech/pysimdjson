@@ -1,25 +1,33 @@
 import json
+import os.path
 import simdjson
 
 
-def _test_load():
+def test_load(jsonexamples):
     """Ensure basic usage of load is the same."""
-    # We don't use a binary file here because pre-py3.6 the built-in couldn't
-    # handle bytes.
-    with open('jsonexamples/canada.json', 'r') as fin:
+    path = os.path.join(jsonexamples, 'canada.json')
+    with open(path, 'r', encoding='utf-8') as fin:
         builtin_json = json.load(fin)
 
-    with open('jsonexamples/canada.json', 'rb') as fin:
+    with open(path, 'rb') as fin:
         simd_json = simdjson.load(fin)
 
     assert builtin_json == simd_json
 
 
-def _test_loads():
+def test_loads(jsonexamples):
     """Ensure basic usage of loads is the same."""
-    # We don't use a binary file here because pre-py3.6 the built-in couldn't
-    # handle bytes.
-    with open('jsonexamples/canada.json', 'r') as fin:
+    with open(os.path.join(jsonexamples, 'canada.json'), 'r', encoding='utf-8') as fin:
         content = fin.read()
 
     assert json.loads(content) == simdjson.loads(content)
+
+
+def test_public_exports():
+    import csimdjson
+
+    assert simdjson.VERSION == csimdjson.VERSION
+    namespace = {}
+    exec('from simdjson import *', namespace)
+    assert {name for name in namespace if name != '__builtins__'} == set(simdjson.__all__)
+    assert namespace['loads']('{"a": 1}') == {'a': 1}

@@ -1,33 +1,37 @@
 import json
-from pathlib import Path
+from os import PathLike
 from typing import (
-    AbstractSet,
     Any,
+    BinaryIO,
     Dict,
     Final,
     Iterator,
     List,
-    Mapping,
+    Literal,
     Optional,
-    Sequence,
+    SupportsIndex,
     Tuple,
+    TypeVar,
     Union,
-    ValuesView,
     overload,
 )
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal  # type: ignore
-
 Primitives = Union[int, float, str, bool]
-SimValue = Optional[Union['Object', 'Array', Primitives]]
-UnboxedValue = Optional[Union[Primitives, Dict[str, Any], List[Any]]]
+JSONScalar = Optional[Primitives]
+SimValue = Union['Object', 'Array', JSONScalar]
+UnboxedValue = Union[JSONScalar, Dict[str, Any], List[Any]]
+ParseInput = Union[str, bytes, bytearray, memoryview]
+PathInput = Union[str, bytes, PathLike[str], PathLike[bytes]]
+KeyInput = Union[str, bytes]
+_Default = TypeVar('_Default')
 
 
-class Object(Mapping[str, SimValue]):
-    def __getitem__(self, key: str) -> SimValue:
+class Object:
+    @property
+    def parser(self) -> Optional['Parser']:
+        ...
+
+    def __getitem__(self, key: KeyInput) -> SimValue:
         ...
 
     def __iter__(self) -> Iterator[str]:
@@ -36,44 +40,67 @@ class Object(Mapping[str, SimValue]):
     def __len__(self) -> int:
         ...
 
+    def __contains__(self, key: object) -> bool:
+        ...
+
     def as_dict(self) -> Dict[str, UnboxedValue]:
         ...
 
-    def at_pointer(self, key: str) -> SimValue:
+    def at_pointer(self, json_pointer: KeyInput) -> SimValue:
         ...
 
-    def keys(self) -> AbstractSet[str]:
+    def keys(self) -> Iterator[str]:
         ...
 
-    def values(self) -> ValuesView[SimValue]:
+    def values(self) -> Iterator[UnboxedValue]:
         ...
 
-    def items(self) -> AbstractSet[Tuple[str, SimValue]]:
+    def items(self) -> Iterator[Tuple[str, UnboxedValue]]:
+        ...
+
+    @overload
+    def get(self, key: KeyInput) -> Optional[SimValue]:
+        ...
+
+    @overload
+    def get(self, key: KeyInput, default: _Default) -> Union[SimValue, _Default]:
         ...
 
     @property
-    def mini(self) -> str:
+    def mini(self) -> bytes:
         ...
 
 
-class Array(Sequence[SimValue]):
+class Array:
+    @property
+    def parser(self) -> Optional['Parser']:
+        ...
+
     def __len__(self) -> int:
         ...
 
-    def __getitem__(self, idx: Union[int, slice]) -> 'Array':
+    @overload
+    def __getitem__(self, key: SupportsIndex) -> SimValue:
         ...
 
-    def as_list(self) -> List[Optional[Union[Primitives, dict, list]]]:
+    @overload
+    def __getitem__(self, key: slice) -> List[UnboxedValue]:
         ...
 
-    def as_buffer(self, *, of_type: Literal['d', 'i', 'u']) -> bytes:
+    def __iter__(self) -> Iterator[SimValue]:
         ...
 
-    def at_pointer(self, key: str) -> SimValue:
+    def as_list(self) -> List[UnboxedValue]:
+        ...
+
+    def as_buffer(self, *, of_type: Literal['d', 'i', 'u']) -> Any:
+        ...
+
+    def at_pointer(self, json_pointer: KeyInput) -> SimValue:
         ...
 
     @property
-    def mini(self) -> str:
+    def mini(self) -> bytes:
         ...
 
 
@@ -81,10 +108,18 @@ class Parser:
     def __init__(self, max_capacity: int = ...) -> None:
         ...
 
+    def parse_many(self, src: ParseInput, *, batch_size: int = ...) -> DocumentStream:
+        ...
+
+    def load_many(
+        self, source: Union[PathInput, BinaryIO], *, batch_size: int = ...,
+    ) -> DocumentStream:
+        ...
+
     def get_implementations(
         self,
-        supported_by_runtime: Literal[True] = ...
-    ) -> Sequence[Tuple[str, str]]:
+        supported_by_runtime: bool = ...
+    ) -> Iterator[Tuple[str, str]]:
         ...
 
     @property
@@ -92,13 +127,13 @@ class Parser:
         ...
 
     @implementation.setter
-    def implementation(self, name: str):
+    def implementation(self, name: str) -> None:
         ...
 
     @overload
     def load(
         self,
-        path: Union[str, Path],
+        path: PathInput,
         recursive: Literal[False] = ...,
     ) -> SimValue:
         ...
@@ -106,7 +141,7 @@ class Parser:
     @overload
     def load(
         self,
-        path: Union[str, Path],
+        path: PathInput,
         recursive: Literal[True],
     ) -> UnboxedValue:
         ...
@@ -114,7 +149,7 @@ class Parser:
     @overload
     def parse(
         self,
-        data: Union[str, bytes, bytearray, memoryview],
+        src: ParseInput,
         recursive: Literal[False] = ...,
     ) -> SimValue:
         ...
@@ -122,17 +157,72 @@ class Parser:
     @overload
     def parse(
         self,
-        data: Union[str, bytes, bytearray, memoryview],
+        src: ParseInput,
         recursive: Literal[True],
     ) -> UnboxedValue:
         ...
+
+
+class DocumentStream(Iterator[UnboxedValue]):
+    def __enter__(self) -> DocumentStream:
+        ...
+
+    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> None:
+        ...
+
+    @property
+    def closed(self) -> bool:
+        ...
+
+    def __iter__(self) -> DocumentStream:
+        ...
+
+    def __next__(self) -> UnboxedValue:
+        ...
+
+    def close(self) -> None:
+        ...
+
+
+def parse_many(src: ParseInput, *, batch_size: int = ...) -> DocumentStream:
+    ...
+
+
+def load_many(
+    source: Union[PathInput, BinaryIO], *, batch_size: int = ...,
+) -> DocumentStream:
+    ...
 
 
 dumps = json.dumps
 dump = json.dump
 JSONEncoder = json.JSONEncoder
-loads = json.loads
-load = json.load
+
+def loads(
+    s: ParseInput,
+    *,
+    cls: Any = ...,
+    object_hook: Any = ...,
+    parse_float: Any = ...,
+    parse_int: Any = ...,
+    parse_constant: Any = ...,
+    object_pairs_hook: Any = ...,
+    **kwargs: Any,
+) -> UnboxedValue:
+    ...
+
+def load(
+    fp: Any,
+    *,
+    cls: Any = ...,
+    object_hook: Any = ...,
+    parse_float: Any = ...,
+    parse_int: Any = ...,
+    parse_constant: Any = ...,
+    object_pairs_hook: Any = ...,
+    **kwargs: Any,
+) -> UnboxedValue:
+    ...
 
 MAXSIZE_BYTES: Final[int] = ...
 PADDING: Final[int] = ...

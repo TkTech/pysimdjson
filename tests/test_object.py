@@ -48,6 +48,31 @@ def test_object_abc_mapping(parser):
     assert doc.get('z', True) is True
 
 
+@pytest.mark.parametrize('key', [5, None, 1.5, (1, 2), frozenset({1})])
+def test_object_missing_non_string_key(parser, key):
+    doc = parser.parse(b'{"5":1,"null":2}')
+    with pytest.raises(KeyError) as error:
+        doc[key]
+    assert error.value.args == (key,)
+    assert key not in doc
+    assert doc.get(key) is None
+    default = object()
+    assert doc.get(key, default) is default
+
+
+@pytest.mark.parametrize('key', [[], {}, set(), bytearray(b'a'), ([],)])
+def test_object_unhashable_key(parser, key):
+    doc = parser.parse(b'{"a":1}')
+    with pytest.raises(TypeError):
+        doc[key]
+    with pytest.raises(TypeError):
+        key in doc
+    with pytest.raises(TypeError):
+        doc.get(key)
+    with pytest.raises(TypeError):
+        doc.get(key, 'default')
+
+
 def test_object_uplift(parser):
     """Ensure we can turn our Object into a python dict."""
     doc = parser.parse(b'{"a": "b", "c": [0, 1, 2], "x": {"f": "z"}}')
@@ -71,3 +96,31 @@ def test_object_pointer(parser):
     """Ensure we can access an object element by pointer."""
     doc = parser.parse(b'{"a" : "z" }')
     assert doc.at_pointer('/a') == 'z'
+
+
+@pytest.mark.parametrize('encode', [str, str.encode])
+def test_object_nul_keys(parser, encode):
+    doc = parser.parse(b'{"a":1,"a\\u0000b":2,"":3,"\\u0000":4,"caf\\u00e9\\u0000/~":5}')
+    for key, value in [('a', 1), ('a\0b', 2), ('', 3), ('\0', 4), ('café\0/~', 5)]:
+        assert doc[encode(key)] == value
+        assert doc.get(encode(key)) == value
+        assert encode(key) in doc
+    assert encode('a\0z') not in doc
+    assert doc.get(encode('a\0z'), 'missing') == 'missing'
+    with pytest.raises(KeyError):
+        doc[encode('a\0z')]
+    assert doc.at_pointer(encode('/a\0b')) == 2
+    assert doc.at_pointer(encode('/café\0~1~0')) == 5
+    with pytest.raises(KeyError):
+        doc.at_pointer(encode('/a\0z'))
+
+
+def test_duplicate_keys(parser):
+    doc = parser.parse(b'{"a":1,"a":2}')
+    assert doc['a'] == doc.get('a') == doc.at_pointer('/a') == 1
+    assert len(doc) == 2
+    assert list(doc.keys()) == ['a', 'a']
+    assert list(doc.values()) == [1, 2]
+    assert list(doc.items()) == [('a', 1), ('a', 2)]
+    assert doc.as_dict() == {'a': 2}
+    assert simdjson.loads(b'{"a":1,"a":2}') == {'a': 2}
